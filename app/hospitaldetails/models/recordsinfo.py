@@ -4,8 +4,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class RecordsInfo(models.Model):
-    hospital = models.ForeignKey('hospital.Hospital', on_delete=models.CASCADE, related_name='records_info')
-    repository = models.ForeignKey('repository.Repository', on_delete=models.CASCADE, related_name='records_info')
+    hospital = models.ForeignKey('hospitaldetails.Hospital', on_delete=models.CASCADE, related_name='records_info')
+    repository = models.ForeignKey('hospitaldetails.Repository', on_delete=models.CASCADE, related_name='records_info')
     administrative_start = models.IntegerField(
         null=True, blank=True,
         validators=[MinValueValidator(1000), MaxValueValidator(datetime.date.today().year)],
@@ -137,8 +137,8 @@ class RecordsInfo(models.Model):
         help_text="Year the clinical records finish (YYYY)"
     )
     records_notes = models.TextField(null=True, blank=True)
-    finding_aids = models.ForeignKey('findingaids.FindingAids', null=True, blank=True, on_delete=models.SET_NULL, related_name='records_info')
-    finding_aids_location = models.ForeignKey('findingaids.FindingAidsLocation', null=True, blank=True, on_delete=models.SET_NULL, related_name='records_info')
+    finding_aids = models.ForeignKey('hospitaldetails.FindingAids', null=True, blank=True, on_delete=models.SET_NULL, related_name='records_info')
+    finding_aids_location = models.ForeignKey('hospitaldetails.FindingAidsLocation', null=True, blank=True, on_delete=models.SET_NULL, related_name='records_info')
     finding_aids_details = models.TextField(null=True, blank=True)
     more_research_required = models.BooleanField(default=False)
     researcher_comment = models.TextField(null=True, blank=True)
