@@ -187,11 +187,15 @@
       {% for record in records %}
       <div class="tna-card">
         <h3 class="tna-heading-m">
-           
+            <a href="{{ url_for('hospitaldetails:repository_detail', kwargs={'id': record.repository.id}) }}">{{ record.repository.name }}</a>
         </h3>
         
         {% if record.repository_code %}
         <p><strong>Repository Code:</strong> {{ record.repository_code }}</p>
+        {% endif %}
+
+        {% if record.repository.archon_code %}
+        <p><strong>ARCHON Code:</strong> {{ record.repository.archon_code }}</p>
         {% endif %}
         
         <h4 class="tna-heading-s">Record Coverage</h4>

@@ -45,7 +45,7 @@
       {% for record in records %}
       <div class="tna-card">
         <h3 class="tna-heading-m">
-          <a href="{% url 'hospitaldetails:hospital_detail' record.hospital.id %}">{{ record.hospital.name }}</a>
+          <a href="{{ url_for('hospitaldetails:hospital_detail', kwargs={'id': record.hospital.id}) }}">{{ record.hospital.name }}</a>
         </h3>
         
         {% if record.repository_code %}
