@@ -95,6 +95,17 @@ class Command(BaseCommand):
             # First, ensure lookup tables are populated
             self.populate_lookup_tables()
             
+            # Migrate reference/lookup tables before hospitals
+            self.migrate_pre_1974_counties(cursor, dry_run)
+            self.migrate_post_1974_counties(cursor, dry_run)
+            self.migrate_post_1996_counties(cursor, dry_run)
+            self.migrate_regional_boards(cursor, dry_run)
+            self.migrate_management_committees(cursor, dry_run)
+            self.migrate_pre_1982_regional_authorities(cursor, dry_run)
+            self.migrate_post_1982_regional_authorities(cursor, dry_run)
+            self.migrate_pre_1982_district_authorities(cursor, dry_run)
+            self.migrate_post_1982_district_authorities(cursor, dry_run)
+            
             # Then migrate hospitals
             self.migrate_hospitals(cursor, dry_run)
             
@@ -137,6 +148,390 @@ class Command(BaseCommand):
             Post1948Type.objects.get_or_create(value=type_val)
         
         self.stdout.write(self.style.SUCCESS('Lookup tables populated'))
+    
+    @transaction.atomic
+    def migrate_pre_1974_counties(self, cursor, dry_run=False):
+        """Migrate Pre-1974 counties from MSSQL"""
+        self.stdout.write('Migrating Pre-1974 counties...')
+        
+        query = """
+        SELECT 
+        [CountyPre74ID]
+        ,[CountyPre74] 
+        FROM dbo.tblRefCountyPre74
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Pre-1974 counties')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                county_id = row.get('CountyPre74ID')
+                county_name = row.get('CountyPre74')
+                
+                if not county_name:
+                    continue
+                
+                if not dry_run:
+                    county, created = Pre1974County.objects.update_or_create(
+                        id=county_id,
+                        defaults={'name': county_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {county_name} (ID: {county_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Pre-1974 county {row.get('CountyPre74')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Pre-1974 Counties: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_post_1974_counties(self, cursor, dry_run=False):
+        """Migrate Post-1974 counties from MSSQL"""
+        self.stdout.write('Migrating Post-1974 counties...')
+        
+        query = """
+        SELECT 
+        [CountyPost74ID]
+        ,[CountyPost74] 
+        FROM dbo.tblRefCountyPost74
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Post-1974 counties')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                county_id = row.get('CountyPost74ID')
+                county_name = row.get('CountyPost74')
+                
+                if not county_name:
+                    continue
+                
+                if not dry_run:
+                    county, created = Post1974County.objects.update_or_create(
+                        id=county_id,
+                        defaults={'name': county_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {county_name} (ID: {county_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Post-1974 county {row.get('CountyPost74')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Post-1974 Counties: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_post_1996_counties(self, cursor, dry_run=False):
+        """Migrate Post-1996 counties from MSSQL"""
+        self.stdout.write('Migrating Post-1996 counties...')
+        
+        query = """
+        SELECT 
+        [CountyPost96ID]
+        ,[CountyPost96] 
+        FROM dbo.tblRefCountyPost96
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Post-1996 counties')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                county_id = row.get('CountyPost96ID')
+                county_name = row.get('CountyPost96')
+                
+                if not county_name:
+                    continue
+                
+                if not dry_run:
+                    county, created = Post1996County.objects.update_or_create(
+                        id=county_id,
+                        defaults={'name': county_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {county_name} (ID: {county_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Post-1996 county {row.get('CountyPost96')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Post-1996 Counties: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_regional_boards(self, cursor, dry_run=False):
+        """Migrate Regional Boards from MSSQL"""
+        self.stdout.write('Migrating Regional Boards...')
+        
+        query = "SELECT RegionalBoard1948ID, RegionalBoard1948 FROM dbo.tblRefRegionalBoard1948"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Regional Boards')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                board_id = row.get('RegionalBoard1948ID')
+                board_name = row.get('RegionalBoard1948')
+                
+                if not board_name:
+                    continue
+                
+                if not dry_run:
+                    board, created = RegionalBoard.objects.update_or_create(
+                        id=board_id,
+                        defaults={'name': board_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {board_name} (ID: {board_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Regional Board {row.get('RegionalBoard1948')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Regional Boards: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_management_committees(self, cursor, dry_run=False):
+        """Migrate Management Committees from MSSQL"""
+        self.stdout.write('Migrating Management Committees...')
+        
+        query = "SELECT ManagementCommittee1948ID, ManagementCommittee1948 FROM dbo.tblRefManagementCommittee1948"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Management Committees')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                committee_id = row.get('ManagementCommittee1948ID')
+                committee_name = row.get('ManagementCommittee1948')
+                
+                if not committee_name:
+                    continue
+                
+                if not dry_run:
+                    committee, created = ManagementCommittee.objects.update_or_create(
+                        id=committee_id,
+                        defaults={'name': committee_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {committee_name} (ID: {committee_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Management Committee {row.get('ManagementCommittee1948')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Management Committees: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_pre_1982_regional_authorities(self, cursor, dry_run=False):
+        """Migrate Pre-1982 Regional Authorities from MSSQL"""
+        self.stdout.write('Migrating Pre-1982 Regional Authorities...')
+        
+        query = "SELECT RegionalAuthority1974ID, RegionalAuthority1974 FROM dbo.tblRefRegionalAuthority1974"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Pre-1982 Regional Authorities')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                authority_id = row.get('RegionalAuthority1974ID')
+                authority_name = row.get('RegionalAuthority1974')
+                
+                if not authority_name:
+                    continue
+                
+                if not dry_run:
+                    authority, created = Pre1982RegionalAuthority.objects.update_or_create(
+                        id=authority_id,
+                        defaults={'name': authority_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Pre-1982 Regional Authority {row.get('RegionalAuthority1974')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Pre-1982 Regional Authorities: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_post_1982_regional_authorities(self, cursor, dry_run=False):
+        """Migrate Post-1982 Regional Authorities from MSSQL"""
+        self.stdout.write('Migrating Post-1982 Regional Authorities...')
+        
+        query = "SELECT RegionalAuthority1982ID, RegionalAuthority1982 FROM dbo.tblRefRegionalAuthority1982"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Post-1982 Regional Authorities')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                authority_id = row.get('RegionalAuthority1982ID')
+                authority_name = row.get('RegionalAuthority1982')
+                
+                if not authority_name:
+                    continue
+                
+                if not dry_run:
+                    authority, created = Post1982RegionalAuthority.objects.update_or_create(
+                        id=authority_id,
+                        defaults={'name': authority_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Post-1982 Regional Authority {row.get('RegionalAuthority1982')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Post-1982 Regional Authorities: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_pre_1982_district_authorities(self, cursor, dry_run=False):
+        """Migrate Pre-1982 District Authorities from MSSQL"""
+        self.stdout.write('Migrating Pre-1982 District Authorities...')
+        
+        query = "SELECT DistrictAuthority1974ID, DistrictAuthority1974 FROM dbo.tblRefDistrictAuthority1974"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Pre-1982 District Authorities')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                authority_id = row.get('DistrictAuthority1974ID')
+                authority_name = row.get('DistrictAuthority1974')
+                
+                if not authority_name:
+                    continue
+                
+                if not dry_run:
+                    authority, created = Pre1982DistrictAuthority.objects.update_or_create(
+                        id=authority_id,
+                        defaults={'name': authority_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Pre-1982 District Authority {row.get('DistrictAuthority1974')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Pre-1982 District Authorities: {created_count} created')
+        )
+    
+    @transaction.atomic
+    def migrate_post_1982_district_authorities(self, cursor, dry_run=False):
+        """Migrate Post-1982 District Authorities from MSSQL"""
+        self.stdout.write('Migrating Post-1982 District Authorities...')
+        
+        query = "SELECT DistrictAuthority1982ID, DistrictAuthority1982 FROM dbo.tblRefDistrictAuthority1982"
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} Post-1982 District Authorities')
+        
+        created_count = 0
+        
+        for row in rows:
+            try:
+                authority_id = row.get('DistrictAuthority1982ID')
+                authority_name = row.get('DistrictAuthority1982')
+                
+                if not authority_name:
+                    continue
+                
+                if not dry_run:
+                    authority, created = Post1982DistrictAuthority.objects.update_or_create(
+                        id=authority_id,
+                        defaults={'name': authority_name}
+                    )
+                    if created:
+                        created_count += 1
+                else:
+                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing Post-1982 District Authority {row.get('DistrictAuthority1982')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Post-1982 District Authorities: {created_count} created')
+        )
     
     @transaction.atomic
     def migrate_hospitals(self, cursor, dry_run=False):
@@ -357,10 +752,124 @@ class Command(BaseCommand):
                         type_obj = Post1948Type.objects.get(value='Other')
                         hospital.post_1948_type.add(type_obj)
                     
-                    # Handle foreign key relationships
-                    # TODO: You'll need to migrate the lookup tables first and map by ID
-                    # Example: if fk_data['pre_1974_county_id']:
-                    #     hospital.pre_1974_county_id = fk_data['pre_1974_county_id']
+                    # Handle county foreign key relationships (skip if ID=1, set to None instead)
+                    if fk_data.get('pre_1974_county_id') and fk_data['pre_1974_county_id'] != 1:
+                        try:
+                            if Pre1974County.objects.filter(id=fk_data['pre_1974_county_id']).exists():
+                                hospital.pre_1974_county_id = fk_data['pre_1974_county_id']
+                            else:
+                                hospital.pre_1974_county_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Pre-1974 county for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.pre_1974_county_id = None
+                    
+                    if fk_data.get('post_1974_county_id') and fk_data['post_1974_county_id'] != 1:
+                        try:
+                            if Post1974County.objects.filter(id=fk_data['post_1974_county_id']).exists():
+                                hospital.post_1974_county_id = fk_data['post_1974_county_id']
+                            else:
+                                hospital.post_1974_county_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Post-1974 county for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.post_1974_county_id = None
+                    
+                    if fk_data.get('post_1996_county_id') and fk_data['post_1996_county_id'] != 1:
+                        try:
+                            if Post1996County.objects.filter(id=fk_data['post_1996_county_id']).exists():
+                                hospital.post_1996_county_id = fk_data['post_1996_county_id']
+                            else:
+                                hospital.post_1996_county_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Post-1996 county for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.post_1996_county_id = None
+                    
+                    # Handle authority foreign key relationships (skip if ID=1, set to None instead)
+                    if fk_data.get('regional_board_id') and fk_data['regional_board_id'] != 1:
+                        try:
+                            if RegionalBoard.objects.filter(id=fk_data['regional_board_id']).exists():
+                                hospital.regional_board_id = fk_data['regional_board_id']
+                            else:
+                                hospital.regional_board_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Regional Board for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.regional_board_id = None
+                    
+                    if fk_data.get('management_committee_id') and fk_data['management_committee_id'] != 1:
+                        try:
+                            if ManagementCommittee.objects.filter(id=fk_data['management_committee_id']).exists():
+                                hospital.management_committee_id = fk_data['management_committee_id']
+                            else:
+                                hospital.management_committee_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Management Committee for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.management_committee_id = None
+                    
+                    if fk_data.get('pre_1982_regional_authority_id') and fk_data['pre_1982_regional_authority_id'] != 1:
+                        try:
+                            if Pre1982RegionalAuthority.objects.filter(id=fk_data['pre_1982_regional_authority_id']).exists():
+                                hospital.pre_1982_regional_authority_id = fk_data['pre_1982_regional_authority_id']
+                            else:
+                                hospital.pre_1982_regional_authority_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Pre-1982 Regional Authority for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.pre_1982_regional_authority_id = None
+                    
+                    if fk_data.get('post_1982_regional_authority_id') and fk_data['post_1982_regional_authority_id'] != 1:
+                        try:
+                            if Post1982RegionalAuthority.objects.filter(id=fk_data['post_1982_regional_authority_id']).exists():
+                                hospital.post_1982_regional_authority_id = fk_data['post_1982_regional_authority_id']
+                            else:
+                                hospital.post_1982_regional_authority_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Post-1982 Regional Authority for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.post_1982_regional_authority_id = None
+                    
+                    if fk_data.get('pre_1982_district_authority_id') and fk_data['pre_1982_district_authority_id'] != 1:
+                        try:
+                            if Pre1982DistrictAuthority.objects.filter(id=fk_data['pre_1982_district_authority_id']).exists():
+                                hospital.pre_1982_district_authority_id = fk_data['pre_1982_district_authority_id']
+                            else:
+                                hospital.pre_1982_district_authority_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Pre-1982 District Authority for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.pre_1982_district_authority_id = None
+                    
+                    if fk_data.get('post_1982_district_authority_id') and fk_data['post_1982_district_authority_id'] != 1:
+                        try:
+                            if Post1982DistrictAuthority.objects.filter(id=fk_data['post_1982_district_authority_id']).exists():
+                                hospital.post_1982_district_authority_id = fk_data['post_1982_district_authority_id']
+                            else:
+                                hospital.post_1982_district_authority_id = None
+                        except Exception as e:
+                            self.stdout.write(
+                                self.style.WARNING(f"Could not set Post-1982 District Authority for {hospital.name}: {str(e)}")
+                            )
+                    else:
+                        hospital.post_1982_district_authority_id = None
                     
                     hospital.save()
                     
