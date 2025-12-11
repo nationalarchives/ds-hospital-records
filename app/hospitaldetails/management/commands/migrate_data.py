@@ -223,389 +223,188 @@ class Command(BaseCommand):
         Pre1974County.objects.all().delete()
         self.stdout.write(self.style.WARNING(f'Deleted {count} records from Pre1974County'))
     
-    @transaction.atomic
-    def migrate_pre_1974_counties(self, cursor, dry_run=False):
-        """Migrate Pre-1974 counties from MSSQL"""
-        self.stdout.write('Migrating Pre-1974 counties...')
+    def make_timezone_aware(self, dt):
+        """Make a datetime timezone-aware if it's naive"""
+        if dt and timezone.is_naive(dt):
+            return timezone.make_aware(dt)
+        return dt
+    
+    def prepare_timestamps(self, input_date, last_updated_date):
+        """Prepare timestamp fields for data dict, returning only non-null values"""
+        timestamps = {}
         
-        query = """
-        SELECT 
-        CountyPre74ID
-        ,CountyPre74
-        FROM dbo.tblRefCountyPre74
-        """
-        cursor.execute(query)
+        input_date = self.make_timezone_aware(input_date)
+        last_updated_date = self.make_timezone_aware(last_updated_date)
+        
+        if input_date:
+            timestamps['created_at'] = input_date
+        elif last_updated_date:
+            timestamps['created_at'] = last_updated_date
+            
+        if last_updated_date:
+            timestamps['last_updated_at'] = last_updated_date
+        elif input_date:
+            timestamps['last_updated_at'] = input_date
+        
+        return timestamps
+    
+    def set_foreign_key_if_valid(self, obj, field_name, fk_id, model_class, error_label):
+        """Set foreign key if valid, skip ID=1, set None if doesn't exist"""
+        if fk_id and fk_id != 1:
+            if model_class.objects.filter(id=fk_id).exists():
+                setattr(obj, field_name, fk_id)
+            else:
+                self.stdout.write(
+                    self.style.WARNING(f"{error_label} {fk_id} not found, setting to None")
+                )
+                setattr(obj, field_name, None)
+        else:
+            setattr(obj, field_name, None)
+    
+    def add_m2m_if_true(self, obj, m2m_field, condition, model_class, value):
+        """Add many-to-many relationship if condition is true"""
+        if condition:
+            item = model_class.objects.get(value=value)
+            m2m_field.add(item)
+    
+    @transaction.atomic
+    def migrate_lookup_table(self, cursor, dry_run, config):
+        """Generic method to migrate simple lookup tables with id and name fields"""
+        self.stdout.write(f"Migrating {config['label']}...")
+        
+        cursor.execute(config['query'])
         rows = cursor.fetchall()
         
-        self.stdout.write(f'Found {len(rows)} Pre-1974 counties')
+        self.stdout.write(f"Found {len(rows)} {config['label']}")
         
         created_count = 0
         
         for row in rows:
             try:
-                county_id = row.get('CountyPre74ID')
-                county_name = row.get('CountyPre74')
+                item_id = row.get(config['id_field'])
+                item_name = row.get(config['name_field'])
                 
-                if not county_name:
+                if not item_name:
                     continue
                 
                 if not dry_run:
-                    county, created = Pre1974County.objects.update_or_create(
-                        id=county_id,
-                        defaults={'name': county_name}
+                    item, created = config['model'].objects.update_or_create(
+                        id=item_id,
+                        defaults={'name': item_name}
                     )
                     if created:
                         created_count += 1
                 else:
-                    self.stdout.write(f"Would create: {county_name} (ID: {county_id})")
+                    self.stdout.write(f"Would create: {item_name} (ID: {item_id})")
                     
             except Exception as e:
                 self.stdout.write(
-                    self.style.ERROR(f"Error processing Pre-1974 county {row.get('CountyPre74')}: {str(e)}")
+                    self.style.ERROR(f"Error processing {config['label']} {row.get(config['name_field'])}: {str(e)}")
                 )
                 continue
         
         self.stdout.write(
-            self.style.SUCCESS(f'Pre-1974 Counties: {created_count} created')
+            self.style.SUCCESS(f"{config['label']}: {created_count} created")
         )
+    
+    @transaction.atomic
+    def migrate_pre_1974_counties(self, cursor, dry_run=False):
+        """Migrate Pre-1974 counties from MSSQL"""
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Pre-1974 Counties',
+            'query': 'SELECT CountyPre74ID, CountyPre74 FROM dbo.tblRefCountyPre74',
+            'id_field': 'CountyPre74ID',
+            'name_field': 'CountyPre74',
+            'model': Pre1974County
+        })
     
     @transaction.atomic
     def migrate_post_1974_counties(self, cursor, dry_run=False):
         """Migrate Post-1974 counties from MSSQL"""
-        self.stdout.write('Migrating Post-1974 counties...')
-        
-        query = """
-        SELECT 
-        CountyPost74ID
-        ,CountyPost74
-        FROM dbo.tblRefCountyPost74
-        """
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Post-1974 counties')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                county_id = row.get('CountyPost74ID')
-                county_name = row.get('CountyPost74')
-                
-                if not county_name:
-                    continue
-                
-                if not dry_run:
-                    county, created = Post1974County.objects.update_or_create(
-                        id=county_id,
-                        defaults={'name': county_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {county_name} (ID: {county_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Post-1974 county {row.get('CountyPost74')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Post-1974 Counties: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Post-1974 Counties',
+            'query': 'SELECT CountyPost74ID, CountyPost74 FROM dbo.tblRefCountyPost74',
+            'id_field': 'CountyPost74ID',
+            'name_field': 'CountyPost74',
+            'model': Post1974County
+        })
     
     @transaction.atomic
     def migrate_post_1996_counties(self, cursor, dry_run=False):
         """Migrate Post-1996 counties from MSSQL"""
-        self.stdout.write('Migrating Post-1996 counties...')
-        
-        query = """
-        SELECT 
-        CountyPost96ID
-        ,CountyPost96
-        FROM dbo.tblRefCountyPost96
-        """
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Post-1996 counties')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                county_id = row.get('CountyPost96ID')
-                county_name = row.get('CountyPost96')
-                
-                if not county_name:
-                    continue
-                
-                if not dry_run:
-                    county, created = Post1996County.objects.update_or_create(
-                        id=county_id,
-                        defaults={'name': county_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {county_name} (ID: {county_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Post-1996 county {row.get('CountyPost96')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Post-1996 Counties: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Post-1996 Counties',
+            'query': 'SELECT CountyPost96ID, CountyPost96 FROM dbo.tblRefCountyPost96',
+            'id_field': 'CountyPost96ID',
+            'name_field': 'CountyPost96',
+            'model': Post1996County
+        })
     
     @transaction.atomic
     def migrate_regional_boards(self, cursor, dry_run=False):
         """Migrate Regional Boards from MSSQL"""
-        self.stdout.write('Migrating Regional Boards...')
-        
-        query = "SELECT RegionalBoard1948ID, RegionalBoard1948 FROM dbo.tblRefRegionalBoard1948"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Regional Boards')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                board_id = row.get('RegionalBoard1948ID')
-                board_name = row.get('RegionalBoard1948')
-                
-                if not board_name:
-                    continue
-                
-                if not dry_run:
-                    board, created = RegionalBoard.objects.update_or_create(
-                        id=board_id,
-                        defaults={'name': board_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {board_name} (ID: {board_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Regional Board {row.get('RegionalBoard1948')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Regional Boards: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Regional Boards',
+            'query': 'SELECT RegionalBoard1948ID, RegionalBoard1948 FROM dbo.tblRefRegionalBoard1948',
+            'id_field': 'RegionalBoard1948ID',
+            'name_field': 'RegionalBoard1948',
+            'model': RegionalBoard
+        })
     
     @transaction.atomic
     def migrate_management_committees(self, cursor, dry_run=False):
         """Migrate Management Committees from MSSQL"""
-        self.stdout.write('Migrating Management Committees...')
-        
-        query = "SELECT ManagementCommittee1948ID, ManagementCommittee1948 FROM dbo.tblRefManagementCommittee1948"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Management Committees')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                committee_id = row.get('ManagementCommittee1948ID')
-                committee_name = row.get('ManagementCommittee1948')
-                
-                if not committee_name:
-                    continue
-                
-                if not dry_run:
-                    committee, created = ManagementCommittee.objects.update_or_create(
-                        id=committee_id,
-                        defaults={'name': committee_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {committee_name} (ID: {committee_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Management Committee {row.get('ManagementCommittee1948')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Management Committees: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Management Committees',
+            'query': 'SELECT ManagementCommittee1948ID, ManagementCommittee1948 FROM dbo.tblRefManagementCommittee1948',
+            'id_field': 'ManagementCommittee1948ID',
+            'name_field': 'ManagementCommittee1948',
+            'model': ManagementCommittee
+        })
     
     @transaction.atomic
     def migrate_pre_1982_regional_authorities(self, cursor, dry_run=False):
         """Migrate Pre-1982 Regional Authorities from MSSQL"""
-        self.stdout.write('Migrating Pre-1982 Regional Authorities...')
-        
-        query = "SELECT RegionalAuthority1974ID, RegionalAuthority1974 FROM dbo.tblRefRegionalAuthority1974"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Pre-1982 Regional Authorities')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                authority_id = row.get('RegionalAuthority1974ID')
-                authority_name = row.get('RegionalAuthority1974')
-                
-                if not authority_name:
-                    continue
-                
-                if not dry_run:
-                    authority, created = Pre1982RegionalAuthority.objects.update_or_create(
-                        id=authority_id,
-                        defaults={'name': authority_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Pre-1982 Regional Authority {row.get('RegionalAuthority1974')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Pre-1982 Regional Authorities: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Pre-1982 Regional Authorities',
+            'query': 'SELECT RegionalAuthority1974ID, RegionalAuthority1974 FROM dbo.tblRefRegionalAuthority1974',
+            'id_field': 'RegionalAuthority1974ID',
+            'name_field': 'RegionalAuthority1974',
+            'model': Pre1982RegionalAuthority
+        })
     
     @transaction.atomic
     def migrate_post_1982_regional_authorities(self, cursor, dry_run=False):
         """Migrate Post-1982 Regional Authorities from MSSQL"""
-        self.stdout.write('Migrating Post-1982 Regional Authorities...')
-        
-        query = "SELECT RegionalAuthority1982ID, RegionalAuthority1982 FROM dbo.tblRefRegionalAuthority1982"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Post-1982 Regional Authorities')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                authority_id = row.get('RegionalAuthority1982ID')
-                authority_name = row.get('RegionalAuthority1982')
-                
-                if not authority_name:
-                    continue
-                
-                if not dry_run:
-                    authority, created = Post1982RegionalAuthority.objects.update_or_create(
-                        id=authority_id,
-                        defaults={'name': authority_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Post-1982 Regional Authority {row.get('RegionalAuthority1982')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Post-1982 Regional Authorities: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Post-1982 Regional Authorities',
+            'query': 'SELECT RegionalAuthority1982ID, RegionalAuthority1982 FROM dbo.tblRefRegionalAuthority1982',
+            'id_field': 'RegionalAuthority1982ID',
+            'name_field': 'RegionalAuthority1982',
+            'model': Post1982RegionalAuthority
+        })
     
     @transaction.atomic
     def migrate_pre_1982_district_authorities(self, cursor, dry_run=False):
         """Migrate Pre-1982 District Authorities from MSSQL"""
-        self.stdout.write('Migrating Pre-1982 District Authorities...')
-        
-        query = "SELECT DistrictAuthority1974ID, DistrictAuthority1974 FROM dbo.tblRefDistrictAuthority1974"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Pre-1982 District Authorities')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                authority_id = row.get('DistrictAuthority1974ID')
-                authority_name = row.get('DistrictAuthority1974')
-                
-                if not authority_name:
-                    continue
-                
-                if not dry_run:
-                    authority, created = Pre1982DistrictAuthority.objects.update_or_create(
-                        id=authority_id,
-                        defaults={'name': authority_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Pre-1982 District Authority {row.get('DistrictAuthority1974')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Pre-1982 District Authorities: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Pre-1982 District Authorities',
+            'query': 'SELECT DistrictAuthority1974ID, DistrictAuthority1974 FROM dbo.tblRefDistrictAuthority1974',
+            'id_field': 'DistrictAuthority1974ID',
+            'name_field': 'DistrictAuthority1974',
+            'model': Pre1982DistrictAuthority
+        })
     
     @transaction.atomic
     def migrate_post_1982_district_authorities(self, cursor, dry_run=False):
         """Migrate Post-1982 District Authorities from MSSQL"""
-        self.stdout.write('Migrating Post-1982 District Authorities...')
-        
-        query = "SELECT DistrictAuthority1982ID, DistrictAuthority1982 FROM dbo.tblRefDistrictAuthority1982"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        self.stdout.write(f'Found {len(rows)} Post-1982 District Authorities')
-        
-        created_count = 0
-        
-        for row in rows:
-            try:
-                authority_id = row.get('DistrictAuthority1982ID')
-                authority_name = row.get('DistrictAuthority1982')
-                
-                if not authority_name:
-                    continue
-                
-                if not dry_run:
-                    authority, created = Post1982DistrictAuthority.objects.update_or_create(
-                        id=authority_id,
-                        defaults={'name': authority_name}
-                    )
-                    if created:
-                        created_count += 1
-                else:
-                    self.stdout.write(f"Would create: {authority_name} (ID: {authority_id})")
-                    
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f"Error processing Post-1982 District Authority {row.get('DistrictAuthority1982')}: {str(e)}")
-                )
-                continue
-        
-        self.stdout.write(
-            self.style.SUCCESS(f'Post-1982 District Authorities: {created_count} created')
-        )
+        self.migrate_lookup_table(cursor, dry_run, {
+            'label': 'Post-1982 District Authorities',
+            'query': 'SELECT DistrictAuthority1982ID, DistrictAuthority1982 FROM dbo.tblRefDistrictAuthority1982',
+            'id_field': 'DistrictAuthority1982ID',
+            'name_field': 'DistrictAuthority1982',
+            'model': Post1982DistrictAuthority
+        })
     
     @transaction.atomic
     def migrate_hospitals(self, cursor, dry_run=False):
@@ -691,15 +490,6 @@ class Command(BaseCommand):
         
         for row in rows:
             try:
-                # Make datetime values timezone-aware
-                input_date = row.get('InputDate')
-                if input_date and timezone.is_naive(input_date):
-                    input_date = timezone.make_aware(input_date)
-                
-                last_updated_date = row.get('LastUpdatedDate')
-                if last_updated_date and timezone.is_naive(last_updated_date):
-                    last_updated_date = timezone.make_aware(last_updated_date)
-                
                 # Map MSSQL fields to Django model fields
                 hospital_data = {
                     'name': row.get('PresentName', ''),
@@ -728,16 +518,8 @@ class Command(BaseCommand):
                     'researcher_comment': row.get('ResearcherInstruction'),
                 }
                 
-                # Only include timestamps if they exist (otherwise let Django auto fields handle them)
-                if input_date:
-                    hospital_data['created_at'] = input_date
-                elif last_updated_date:
-                    hospital_data['created_at'] = last_updated_date
-                    
-                if last_updated_date:
-                    hospital_data['last_updated_at'] = last_updated_date
-                elif input_date:
-                    hospital_data['last_updated_at'] = input_date
+                # Add timestamps using helper method
+                hospital_data.update(self.prepare_timestamps(row.get('InputDate'), row.get('LastUpdatedDate')))
                 
                 # Store foreign key IDs for later lookup
                 fk_data = {
@@ -762,211 +544,55 @@ class Command(BaseCommand):
                         defaults=hospital_data
                     )
                     
-                    # Handle Pre-1948 Status many-to-many relationships
+                    # Handle Pre-1948 Status many-to-many relationships using helper method
                     hospital.pre_1948_status.clear()
-                    if row.get('Pre1948Voluntary'):
-                        status = Pre1948Status.objects.get(value='Voluntary')
-                        hospital.pre_1948_status.add(status)
-                    if row.get('Pre1948PoorLaw'):
-                        status = Pre1948Status.objects.get(value='Poor Law')
-                        hospital.pre_1948_status.add(status)
-                    if row.get('Pre1948LocalAuthority'):
-                        status = Pre1948Status.objects.get(value='Local Authority')
-                        hospital.pre_1948_status.add(status)
-                    if row.get('Pre1948Private'):
-                        status = Pre1948Status.objects.get(value='Private')
-                        hospital.pre_1948_status.add(status)
-                    if row.get('Pre1948OtherStatus'):
-                        status = Pre1948Status.objects.get(value='Other')
-                        hospital.pre_1948_status.add(status)
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_status, row.get('Pre1948Voluntary'), Pre1948Status, 'Voluntary')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_status, row.get('Pre1948PoorLaw'), Pre1948Status, 'Poor Law')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_status, row.get('Pre1948LocalAuthority'), Pre1948Status, 'Local Authority')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_status, row.get('Pre1948Private'), Pre1948Status, 'Private')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_status, row.get('Pre1948OtherStatus'), Pre1948Status, 'Other')
                     
-                    # Handle Post-1948 Status many-to-many relationships
+                    # Handle Post-1948 Status many-to-many relationships using helper method
                     hospital.post_1948_status.clear()
-                    if row.get('Post1948NHS'):
-                        status = Post1948Status.objects.get(value='NHS')
-                        hospital.post_1948_status.add(status)
-                    if row.get('Post1948Private'):
-                        status = Post1948Status.objects.get(value='Private')
-                        hospital.post_1948_status.add(status)
-                    if row.get('Post1948Trust'):
-                        status = Post1948Status.objects.get(value='Trust')
-                        hospital.post_1948_status.add(status)
-                    if row.get('Post1948OtherStatus'):
-                        status = Post1948Status.objects.get(value='Other')
-                        hospital.post_1948_status.add(status)
+                    self.add_m2m_if_true(hospital, hospital.post_1948_status, row.get('Post1948NHS'), Post1948Status, 'NHS')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_status, row.get('Post1948Private'), Post1948Status, 'Private')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_status, row.get('Post1948Trust'), Post1948Status, 'Trust')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_status, row.get('Post1948OtherStatus'), Post1948Status, 'Other')
                     
-                    # Handle Pre-1948 Type many-to-many relationships
+                    # Handle Pre-1948 Type many-to-many relationships using helper method
                     hospital.pre_1948_type.clear()
-                    if row.get('Pre1948General'):
-                        type_obj = Pre1948Type.objects.get(value='General')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948Isolation'):
-                        type_obj = Pre1948Type.objects.get(value='Isolation')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948Maternity'):
-                        type_obj = Pre1948Type.objects.get(value='Maternity')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948Mental'):
-                        type_obj = Pre1948Type.objects.get(value='Mental')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948Tuberculosis'):
-                        type_obj = Pre1948Type.objects.get(value='Tuberculosis')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948Women'):
-                        type_obj = Pre1948Type.objects.get(value='Women')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948Children'):
-                        type_obj = Pre1948Type.objects.get(value='Children')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948Military'):
-                        type_obj = Pre1948Type.objects.get(value='Military')
-                        hospital.pre_1948_type.add(type_obj)
-                    if row.get('Pre1948OtherType'):
-                        type_obj = Pre1948Type.objects.get(value='Other')
-                        hospital.pre_1948_type.add(type_obj)
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948General'), Pre1948Type, 'General')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948Isolation'), Pre1948Type, 'Isolation')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948Maternity'), Pre1948Type, 'Maternity')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948Mental'), Pre1948Type, 'Mental')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948Tuberculosis'), Pre1948Type, 'Tuberculosis')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948Women'), Pre1948Type, 'Women')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948Children'), Pre1948Type, 'Children')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948Military'), Pre1948Type, 'Military')
+                    self.add_m2m_if_true(hospital, hospital.pre_1948_type, row.get('Pre1948OtherType'), Pre1948Type, 'Other')
                     
-                    # Handle Post-1948 Type many-to-many relationships
+                    # Handle Post-1948 Type many-to-many relationships using helper method
                     hospital.post_1948_type.clear()
-                    if row.get('Post1948Acute'):
-                        type_obj = Post1948Type.objects.get(value='Acute')
-                        hospital.post_1948_type.add(type_obj)
-                    if row.get('Post1948Geriatric'):
-                        type_obj = Post1948Type.objects.get(value='Geriatric')
-                        hospital.post_1948_type.add(type_obj)
-                    if row.get('Post1948Maternity'):
-                        type_obj = Post1948Type.objects.get(value='Maternity')
-                        hospital.post_1948_type.add(type_obj)
-                    if row.get('Post1948Mental'):
-                        type_obj = Post1948Type.objects.get(value='Mental')
-                        hospital.post_1948_type.add(type_obj)
-                    if row.get('Post1948Hospice'):
-                        type_obj = Post1948Type.objects.get(value='Hospice')
-                        hospital.post_1948_type.add(type_obj)
-                    if row.get('Post1948Military'):
-                        type_obj = Post1948Type.objects.get(value='Military')
-                        hospital.post_1948_type.add(type_obj)
-                    if row.get('Post1948OtherType'):
-                        type_obj = Post1948Type.objects.get(value='Other')
-                        hospital.post_1948_type.add(type_obj)
+                    self.add_m2m_if_true(hospital, hospital.post_1948_type, row.get('Post1948Acute'), Post1948Type, 'Acute')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_type, row.get('Post1948Geriatric'), Post1948Type, 'Geriatric')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_type, row.get('Post1948Maternity'), Post1948Type, 'Maternity')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_type, row.get('Post1948Mental'), Post1948Type, 'Mental')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_type, row.get('Post1948Hospice'), Post1948Type, 'Hospice')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_type, row.get('Post1948Military'), Post1948Type, 'Military')
+                    self.add_m2m_if_true(hospital, hospital.post_1948_type, row.get('Post1948OtherType'), Post1948Type, 'Other')
                     
-                    # Handle county foreign key relationships (skip if ID=1, set to None instead)
-                    if fk_data.get('pre_1974_county_id') and fk_data['pre_1974_county_id'] != 1:
-                        try:
-                            if Pre1974County.objects.filter(id=fk_data['pre_1974_county_id']).exists():
-                                hospital.pre_1974_county_id = fk_data['pre_1974_county_id']
-                            else:
-                                hospital.pre_1974_county_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Pre-1974 county for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.pre_1974_county_id = None
+                    # Handle county foreign key relationships using helper method
+                    self.set_foreign_key_if_valid(hospital, 'pre_1974_county_id', fk_data.get('pre_1974_county_id'), Pre1974County, 'Pre-1974 County')
+                    self.set_foreign_key_if_valid(hospital, 'post_1974_county_id', fk_data.get('post_1974_county_id'), Post1974County, 'Post-1974 County')
+                    self.set_foreign_key_if_valid(hospital, 'post_1996_county_id', fk_data.get('post_1996_county_id'), Post1996County, 'Post-1996 County')
                     
-                    if fk_data.get('post_1974_county_id') and fk_data['post_1974_county_id'] != 1:
-                        try:
-                            if Post1974County.objects.filter(id=fk_data['post_1974_county_id']).exists():
-                                hospital.post_1974_county_id = fk_data['post_1974_county_id']
-                            else:
-                                hospital.post_1974_county_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Post-1974 county for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.post_1974_county_id = None
-                    
-                    if fk_data.get('post_1996_county_id') and fk_data['post_1996_county_id'] != 1:
-                        try:
-                            if Post1996County.objects.filter(id=fk_data['post_1996_county_id']).exists():
-                                hospital.post_1996_county_id = fk_data['post_1996_county_id']
-                            else:
-                                hospital.post_1996_county_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Post-1996 county for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.post_1996_county_id = None
-                    
-                    # Handle authority foreign key relationships (skip if ID=1, set to None instead)
-                    if fk_data.get('regional_board_id') and fk_data['regional_board_id'] != 1:
-                        try:
-                            if RegionalBoard.objects.filter(id=fk_data['regional_board_id']).exists():
-                                hospital.regional_board_id = fk_data['regional_board_id']
-                            else:
-                                hospital.regional_board_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Regional Board for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.regional_board_id = None
-                    
-                    if fk_data.get('management_committee_id') and fk_data['management_committee_id'] != 1:
-                        try:
-                            if ManagementCommittee.objects.filter(id=fk_data['management_committee_id']).exists():
-                                hospital.management_committee_id = fk_data['management_committee_id']
-                            else:
-                                hospital.management_committee_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Management Committee for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.management_committee_id = None
-                    
-                    if fk_data.get('pre_1982_regional_authority_id') and fk_data['pre_1982_regional_authority_id'] != 1:
-                        try:
-                            if Pre1982RegionalAuthority.objects.filter(id=fk_data['pre_1982_regional_authority_id']).exists():
-                                hospital.pre_1982_regional_authority_id = fk_data['pre_1982_regional_authority_id']
-                            else:
-                                hospital.pre_1982_regional_authority_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Pre-1982 Regional Authority for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.pre_1982_regional_authority_id = None
-                    
-                    if fk_data.get('post_1982_regional_authority_id') and fk_data['post_1982_regional_authority_id'] != 1:
-                        try:
-                            if Post1982RegionalAuthority.objects.filter(id=fk_data['post_1982_regional_authority_id']).exists():
-                                hospital.post_1982_regional_authority_id = fk_data['post_1982_regional_authority_id']
-                            else:
-                                hospital.post_1982_regional_authority_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Post-1982 Regional Authority for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.post_1982_regional_authority_id = None
-                    
-                    if fk_data.get('pre_1982_district_authority_id') and fk_data['pre_1982_district_authority_id'] != 1:
-                        try:
-                            if Pre1982DistrictAuthority.objects.filter(id=fk_data['pre_1982_district_authority_id']).exists():
-                                hospital.pre_1982_district_authority_id = fk_data['pre_1982_district_authority_id']
-                            else:
-                                hospital.pre_1982_district_authority_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Pre-1982 District Authority for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.pre_1982_district_authority_id = None
-                    
-                    if fk_data.get('post_1982_district_authority_id') and fk_data['post_1982_district_authority_id'] != 1:
-                        try:
-                            if Post1982DistrictAuthority.objects.filter(id=fk_data['post_1982_district_authority_id']).exists():
-                                hospital.post_1982_district_authority_id = fk_data['post_1982_district_authority_id']
-                            else:
-                                hospital.post_1982_district_authority_id = None
-                        except Exception as e:
-                            self.stdout.write(
-                                self.style.WARNING(f"Could not set Post-1982 District Authority for {hospital.name}: {str(e)}")
-                            )
-                    else:
-                        hospital.post_1982_district_authority_id = None
+                    # Handle authority foreign key relationships using helper method
+                    self.set_foreign_key_if_valid(hospital, 'regional_board_id', fk_data.get('regional_board_id'), RegionalBoard, 'Regional Board')
+                    self.set_foreign_key_if_valid(hospital, 'management_committee_id', fk_data.get('management_committee_id'), ManagementCommittee, 'Management Committee')
+                    self.set_foreign_key_if_valid(hospital, 'pre_1982_regional_authority_id', fk_data.get('pre_1982_regional_authority_id'), Pre1982RegionalAuthority, 'Pre-1982 Regional Authority')
+                    self.set_foreign_key_if_valid(hospital, 'post_1982_regional_authority_id', fk_data.get('post_1982_regional_authority_id'), Post1982RegionalAuthority, 'Post-1982 Regional Authority')
+                    self.set_foreign_key_if_valid(hospital, 'pre_1982_district_authority_id', fk_data.get('pre_1982_district_authority_id'), Pre1982DistrictAuthority, 'Pre-1982 District Authority')
+                    self.set_foreign_key_if_valid(hospital, 'post_1982_district_authority_id', fk_data.get('post_1982_district_authority_id'), Post1982DistrictAuthority, 'Post-1982 District Authority')
                     
                     hospital.save()
                     
@@ -1075,16 +701,8 @@ class Command(BaseCommand):
                     'researcher_comment': row.get('ResearcherInstruction'),
                 }
                 
-                # Only include timestamps if they exist (otherwise let Django auto fields handle them)
-                if input_date:
-                    repository_data['created_at'] = input_date
-                elif last_updated_date:
-                    repository_data['created_at'] = last_updated_date
-                    
-                if last_updated_date:
-                    repository_data['last_updated_at'] = last_updated_date
-                elif input_date:
-                    repository_data['last_updated_at'] = input_date
+                # Add timestamps using helper method
+                repository_data.update(self.prepare_timestamps(row.get('InputDate'), row.get('LastUpdatedDate')))
                 
                 # Get the original repository ID from MSSQL
                 repository_id = row.get('Repository_No')
@@ -1137,65 +755,65 @@ class Command(BaseCommand):
         
         query = """
             SELECT 
-                [Folder_No]
-                ,[Hospital_No]
-                ,[Repository_No]
-                ,[RepositoryCode]
-                ,[AdministrativeRecords]
-                ,[AdministrativeStart]
-                ,[AdministrativeFinish]
-                ,[GeneralRecords]
-                ,[GeneralStart]
-                ,[GeneralFinish]
-                ,[FinanceRecords]
-                ,[FinanceStart]
-                ,[FinanceFinish]
-                ,[EstatesRecords]
-                ,[EstatesStart]
-                ,[EstatesFinish]
-                ,[NursingRecords]
-                ,[NursingStart]
-                ,[NursingFinish]
-                ,[StaffRecords]
-                ,[StaffStart]
-                ,[StaffFinish]
-                ,[EphemeraRecords]
-                ,[EphemeraStart]
-                ,[EphemeraFinish]
-                ,[PictorialRecords]
-                ,[PictorialStart]
-                ,[PictorialFinish]
-                ,[PrivatePapersRecords]
-                ,[PrivatePapersStart]
-                ,[PrivatePapersFinish]
-                ,[OtherRecords]
-                ,[OtherStart]
-                ,[OtherFinish]
-                ,[PatientsRecords]
-                ,[PatientsStart]
-                ,[PatientsFinish]
-                ,[AdmissionRecords]
-                ,[AdmissionStart]
-                ,[AdmissionFinish]
-                ,[ClinicalRecords]
-                ,[ClinicalStart]
-                ,[ClinicalFinish]
-                ,[RecordsNotes]
-                ,[BriefGuideAids]
-                ,[CatalogueAids]
-                ,[CardIndexAids]
-                ,[ComputerisedAids]
-                ,[AidsWithRecords]
-                ,[AidsAtLRO]
-                ,[AidsAtNRA]
-                ,[AidsAtWIHM]
-                ,[AidsAtPRO]
-                ,[AidsAtOther]
-                ,[AidsDetails]
-                ,[MoreResearchReqd]
-                ,[ResearcherInstruction]
-                ,[InputDate]
-                ,[LastUpdatedDate]
+                Folder_No
+                ,Hospital_No
+                ,Repository_No
+                ,RepositoryCode
+                ,AdministrativeRecords
+                ,AdministrativeStart
+                ,AdministrativeFinish
+                ,GeneralRecords
+                ,GeneralStart
+                ,GeneralFinish
+                ,FinanceRecords
+                ,FinanceStart
+                ,FinanceFinish
+                ,EstatesRecords
+                ,EstatesStart
+                ,EstatesFinish
+                ,NursingRecords
+                ,NursingStart
+                ,NursingFinish
+                ,StaffRecords
+                ,StaffStart
+                ,StaffFinish
+                ,EphemeraRecords
+                ,EphemeraStart
+                ,EphemeraFinish
+                ,PictorialRecords
+                ,PictorialStart
+                ,PictorialFinish
+                ,PrivatePapersRecords
+                ,PrivatePapersStart
+                ,PrivatePapersFinish
+                ,OtherRecords
+                ,OtherStart
+                ,OtherFinish
+                ,PatientsRecords
+                ,PatientsStart
+                ,PatientsFinish
+                ,AdmissionRecords
+                ,AdmissionStart
+                ,AdmissionFinish
+                ,ClinicalRecords
+                ,ClinicalStart
+                ,ClinicalFinish
+                ,RecordsNotes
+                ,BriefGuideAids
+                ,CatalogueAids
+                ,CardIndexAids
+                ,ComputerisedAids
+                ,AidsWithRecords
+                ,AidsAtLRO
+                ,AidsAtNRA
+                ,AidsAtWIHM
+                ,AidsAtPRO
+                ,AidsAtOther
+                ,AidsDetails
+                ,MoreResearchReqd
+                ,ResearcherInstruction
+                ,InputDate
+                ,LastUpdatedDate
             FROM dbo.tblFolder
         """
         
@@ -1237,15 +855,6 @@ class Command(BaseCommand):
                 if repository_code and not dry_run:
                     Repository.objects.filter(id=repository_id).update(repository_code=repository_code)
                 
-                # Make datetime values timezone-aware
-                input_date = row.get('InputDate')
-                if input_date and timezone.is_naive(input_date):
-                    input_date = timezone.make_aware(input_date)
-                
-                last_updated_date = row.get('LastUpdatedDate')
-                if last_updated_date and timezone.is_naive(last_updated_date):
-                    last_updated_date = timezone.make_aware(last_updated_date)
-                
                 # Map MSSQL fields to Django model fields
                 records_data = {
                     'hospital_id': hospital_id,
@@ -1282,16 +891,8 @@ class Command(BaseCommand):
                     'researcher_comment': row.get('ResearcherInstruction'),
                 }
                 
-                # Only include timestamps if they exist (otherwise let Django auto fields handle them)
-                if input_date:
-                    records_data['created_at'] = input_date
-                elif last_updated_date:
-                    records_data['created_at'] = last_updated_date
-                    
-                if last_updated_date:
-                    records_data['last_updated_at'] = last_updated_date
-                elif input_date:
-                    records_data['last_updated_at'] = input_date
+                # Add timestamps using helper method
+                records_data.update(self.prepare_timestamps(row.get('InputDate'), row.get('LastUpdatedDate')))
                 
                 # Get the original folder ID from MSSQL
                 folder_id = row.get('Folder_No')
@@ -1303,52 +904,24 @@ class Command(BaseCommand):
                         defaults=records_data
                     )
                     
-                    # Handle finding aids many-to-many relationships
+                    # Handle finding aids many-to-many relationships using helper method
                     records_info.finding_aids.clear()
-                    if row.get('BriefGuideAids'):
-                        finding_aid = FindingAids.objects.get(value='Brief guide (BG)')
-                        records_info.finding_aids.add(finding_aid)
-                    if row.get('CatalogueAids'):
-                        finding_aid = FindingAids.objects.get(value='Catalogue')
-                        records_info.finding_aids.add(finding_aid)
-                    if row.get('CardIndexAids'):
-                        finding_aid = FindingAids.objects.get(value='Card index')
-                        records_info.finding_aids.add(finding_aid)
-                    if row.get('ComputerisedAids'):
-                        finding_aid = FindingAids.objects.get(value='Computerised')
-                        records_info.finding_aids.add(finding_aid)
+                    self.add_m2m_if_true(records_info, records_info.finding_aids, row.get('BriefGuideAids'), FindingAids, 'Brief guide (BG)')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids, row.get('CatalogueAids'), FindingAids, 'Catalogue')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids, row.get('CardIndexAids'), FindingAids, 'Card index')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids, row.get('ComputerisedAids'), FindingAids, 'Computerised')
                     
-                    # Handle finding aids location many-to-many relationships
+                    # Handle finding aids location many-to-many relationships using helper method
                     records_info.finding_aids_location.clear()
-                    if row.get('AidsWithRecords'):
-                        location = FindingAidsLocation.objects.get(value='Repository (AR)')
-                        records_info.finding_aids_location.add(location)
-                    if row.get('AidsAtLRO'):
-                        location = FindingAidsLocation.objects.get(value='Local Record Office (LRO)')
-                        records_info.finding_aids_location.add(location)
-                    if row.get('AidsAtNRA'):
-                        location = FindingAidsLocation.objects.get(value='National Register of Archives (NRA)')
-                        records_info.finding_aids_location.add(location)
-                    if row.get('AidsAtWIHM'):
-                        location = FindingAidsLocation.objects.get(value='Wellcome Library (WIHM)')
-                        records_info.finding_aids_location.add(location)
-                    if row.get('AidsAtPRO'):
-                        location = FindingAidsLocation.objects.get(value='The National Archives (TNA)')
-                        records_info.finding_aids_location.add(location)
-                    if row.get('AidsAtOther'):
-                        location = FindingAidsLocation.objects.get(value='Other')
-                        records_info.finding_aids_location.add(location)
+                    self.add_m2m_if_true(records_info, records_info.finding_aids_location, row.get('AidsWithRecords'), FindingAidsLocation, 'Repository (AR)')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids_location, row.get('AidsAtLRO'), FindingAidsLocation, 'Local Record Office (LRO)')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids_location, row.get('AidsAtNRA'), FindingAidsLocation, 'National Register of Archives (NRA)')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids_location, row.get('AidsAtWIHM'), FindingAidsLocation, 'Wellcome Library (WIHM)')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids_location, row.get('AidsAtPRO'), FindingAidsLocation, 'The National Archives (TNA)')
+                    self.add_m2m_if_true(records_info, records_info.finding_aids_location, row.get('AidsAtOther'), FindingAidsLocation, 'Other')
                     
                     # Update created_at and last_updated_at with original values
-                    update_fields = {}
-                    if input_date:
-                        update_fields['created_at'] = input_date
-                    
-                    if last_updated_date:
-                        update_fields['last_updated_at'] = last_updated_date
-                    elif input_date:
-                        update_fields['last_updated_at'] = input_date
-                    
+                    update_fields = self.prepare_timestamps(row.get('InputDate'), row.get('LastUpdatedDate'))
                     if update_fields:
                         RecordsInfo.objects.filter(id=records_info.id).update(**update_fields)
                     
