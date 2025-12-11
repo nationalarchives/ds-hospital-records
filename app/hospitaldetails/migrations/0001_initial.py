@@ -8,154 +8,315 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Hospital',
+            name="Hospital",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('name_since', models.CharField(blank=True, max_length=100, null=True)),
-                ('previous_names', models.TextField(blank=True, null=True)),
-                ('street_1', models.CharField(blank=True, max_length=100, null=True)),
-                ('street_2', models.CharField(blank=True, max_length=100, null=True)),
-                ('town', models.CharField(blank=True, max_length=30, null=True)),
-                ('postcode', models.CharField(blank=True, max_length=8, null=True)),
-                ('address_since', models.IntegerField(blank=True, help_text='Year the hospital moved to this address (YYYY)', null=True, validators=[django.core.validators.MinValueValidator(1000), django.core.validators.MaxValueValidator(2025)])),
-                ('previous_locations', models.TextField(blank=True, null=True)),
-                ('trust', models.CharField(blank=True, max_length=200, null=True)),
-                ('trust_since', models.CharField(blank=True, max_length=100, null=True)),
-                ('previous_trusts', models.TextField(blank=True, null=True)),
-                ('foundation_year', models.IntegerField(blank=True, help_text='Year the hospital was founded (YYYY)', null=True, validators=[django.core.validators.MinValueValidator(1000), django.core.validators.MaxValueValidator(2025)])),
-                ('foundation_year_approximate', models.BooleanField(default=False)),
-                ('closed', models.BooleanField(default=False)),
-                ('closure_date', models.IntegerField(blank=True, help_text='Year the hospital closed (YYYY)', null=True, validators=[django.core.validators.MinValueValidator(1000), django.core.validators.MaxValueValidator(2025)])),
-                ('closure_year_approximate', models.BooleanField(default=False)),
-                ('pre_1948_status_info', models.TextField(blank=True, null=True)),
-                ('post_1948_status_info', models.TextField(blank=True, null=True)),
-                ('pre_1948_type_info', models.TextField(blank=True, null=True)),
-                ('post_1948_type_info', models.TextField(blank=True, null=True)),
-                ('other_information', models.TextField(blank=True, null=True)),
-                ('more_research_required', models.BooleanField(default=False)),
-                ('researcher_comment', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('last_updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("name_since", models.CharField(blank=True, max_length=100, null=True)),
+                ("previous_names", models.TextField(blank=True, null=True)),
+                ("street_1", models.CharField(blank=True, max_length=100, null=True)),
+                ("street_2", models.CharField(blank=True, max_length=100, null=True)),
+                ("town", models.CharField(blank=True, max_length=30, null=True)),
+                ("postcode", models.CharField(blank=True, max_length=8, null=True)),
+                (
+                    "address_since",
+                    models.IntegerField(
+                        blank=True,
+                        help_text="Year the hospital moved to this address (YYYY)",
+                        null=True,
+                        validators=[
+                            django.core.validators.MinValueValidator(1000),
+                            django.core.validators.MaxValueValidator(2025),
+                        ],
+                    ),
+                ),
+                ("previous_locations", models.TextField(blank=True, null=True)),
+                ("trust", models.CharField(blank=True, max_length=200, null=True)),
+                (
+                    "trust_since",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                ("previous_trusts", models.TextField(blank=True, null=True)),
+                (
+                    "foundation_year",
+                    models.IntegerField(
+                        blank=True,
+                        help_text="Year the hospital was founded (YYYY)",
+                        null=True,
+                        validators=[
+                            django.core.validators.MinValueValidator(1000),
+                            django.core.validators.MaxValueValidator(2025),
+                        ],
+                    ),
+                ),
+                ("foundation_year_approximate", models.BooleanField(default=False)),
+                ("closed", models.BooleanField(default=False)),
+                (
+                    "closure_date",
+                    models.IntegerField(
+                        blank=True,
+                        help_text="Year the hospital closed (YYYY)",
+                        null=True,
+                        validators=[
+                            django.core.validators.MinValueValidator(1000),
+                            django.core.validators.MaxValueValidator(2025),
+                        ],
+                    ),
+                ),
+                ("closure_year_approximate", models.BooleanField(default=False)),
+                ("pre_1948_status_info", models.TextField(blank=True, null=True)),
+                ("post_1948_status_info", models.TextField(blank=True, null=True)),
+                ("pre_1948_type_info", models.TextField(blank=True, null=True)),
+                ("post_1948_type_info", models.TextField(blank=True, null=True)),
+                ("other_information", models.TextField(blank=True, null=True)),
+                ("more_research_required", models.BooleanField(default=False)),
+                ("researcher_comment", models.TextField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("last_updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='ManagementCommittee',
+            name="ManagementCommittee",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Post1948Status',
+            name="Post1948Status",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Post1948Type',
+            name="Post1948Type",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Post1974County',
+            name="Post1974County",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Post1982DistrictAuthority',
+            name="Post1982DistrictAuthority",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Post1982RegionalAuthority',
+            name="Post1982RegionalAuthority",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Post1996County',
+            name="Post1996County",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Pre1948Status',
+            name="Pre1948Status",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Pre1948Type',
+            name="Pre1948Type",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Pre1974County',
+            name="Pre1974County",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Pre1982DistrictAuthority',
+            name="Pre1982DistrictAuthority",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Pre1982RegionalAuthority',
+            name="Pre1982RegionalAuthority",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='RegionalBoard',
+            name="RegionalBoard",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Repository',
+            name="Repository",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=90)),
-                ('archon_code', models.IntegerField(blank=True, null=True)),
-                ('repository_code', models.CharField(blank=True, max_length=6, null=True)),
-                ('street_1', models.CharField(blank=True, max_length=100, null=True)),
-                ('street_2', models.CharField(blank=True, max_length=100, null=True)),
-                ('town', models.CharField(blank=True, max_length=30, null=True)),
-                ('postcode', models.CharField(blank=True, max_length=8, null=True)),
-                ('county', models.CharField(blank=True, max_length=30, null=True)),
-                ('contact_details', models.CharField(blank=True, max_length=250, null=True)),
-                ('mailshot', models.BooleanField(default=False)),
-                ('more_research_required', models.BooleanField(default=False)),
-                ('researcher_comment', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('last_updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=90)),
+                ("archon_code", models.IntegerField(blank=True, null=True)),
+                (
+                    "repository_code",
+                    models.CharField(blank=True, max_length=6, null=True),
+                ),
+                ("street_1", models.CharField(blank=True, max_length=100, null=True)),
+                ("street_2", models.CharField(blank=True, max_length=100, null=True)),
+                ("town", models.CharField(blank=True, max_length=30, null=True)),
+                ("postcode", models.CharField(blank=True, max_length=8, null=True)),
+                ("county", models.CharField(blank=True, max_length=30, null=True)),
+                (
+                    "contact_details",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                ("mailshot", models.BooleanField(default=False)),
+                ("more_research_required", models.BooleanField(default=False)),
+                ("researcher_comment", models.TextField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("last_updated_at", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

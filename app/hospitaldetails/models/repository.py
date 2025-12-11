@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Repository(models.Model):
     name = models.CharField(max_length=90)
     archon_code = models.IntegerField(null=True, blank=True)

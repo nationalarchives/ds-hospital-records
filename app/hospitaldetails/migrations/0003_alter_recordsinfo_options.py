@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('hospitaldetails', '0002_findingaids_findingaidslocation_and_more'),
+        ("hospitaldetails", "0002_findingaids_findingaidslocation_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='recordsinfo',
-            options={'ordering': ['hospital__name', 'repository__name']},
+            name="recordsinfo",
+            options={"ordering": ["hospital__name", "repository__name"]},
         ),
         migrations.AlterField(
             model_name="hospital",
