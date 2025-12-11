@@ -12,8 +12,8 @@ class Hospital(models.Model):
         help_text="Year the hospital has had this name since (YYYY)"
     )
     previous_names = models.TextField(null=True, blank=True)
-    street_1 = models.CharField(max_length=45, null=True, blank=True)
-    street_2 = models.CharField(max_length=45, null=True, blank=True)
+    street_1 = models.CharField(max_length=100, null=True, blank=True)
+    street_2 = models.CharField(max_length=100, null=True, blank=True)
     town = models.CharField(max_length=30, null=True, blank=True)
     postcode = models.CharField(max_length=8, null=True, blank=True)
     address_since = models.IntegerField(
