@@ -43,3 +43,9 @@ services:
       - .:/docs
     ports:
       - 1082:8000
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 83:8080
