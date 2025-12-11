@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class RecordsInfo(models.Model):
     hospital = models.ForeignKey('hospitaldetails.Hospital', on_delete=models.CASCADE, related_name='records_info')
     repository = models.ForeignKey('hospitaldetails.Repository', on_delete=models.CASCADE, related_name='records_info')
+    repository_code = models.CharField(max_length=6, null=True, blank=True)
     administrative_start = models.IntegerField(
         null=True, blank=True,
         validators=[MinValueValidator(1000), MaxValueValidator(datetime.date.today().year)],

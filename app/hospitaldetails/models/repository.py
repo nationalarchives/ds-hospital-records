@@ -3,7 +3,6 @@ from django.db import models
 class Repository(models.Model):
     name = models.CharField(max_length=90)
     archon_code = models.IntegerField(null=True, blank=True)
-    repository_code = models.CharField(max_length=6, null=True, blank=True)
     street_1 = models.CharField(max_length=100, null=True, blank=True)
     street_2 = models.CharField(max_length=100, null=True, blank=True)
     town = models.CharField(max_length=30, null=True, blank=True)

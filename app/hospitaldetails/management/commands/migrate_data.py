@@ -175,53 +175,25 @@ class Command(BaseCommand):
     def clear_data(self):
         """Clear existing data from all tables in reverse order of dependencies"""
         # Clear in reverse order of dependencies
-        count = RecordsInfo.objects.count()
-        RecordsInfo.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from RecordsInfo'))
+        models_to_clear = [
+            ('RecordsInfo', RecordsInfo),
+            ('Hospital', Hospital),
+            ('Repository', Repository),
+            ('Post1982DistrictAuthority', Post1982DistrictAuthority),
+            ('Pre1982DistrictAuthority', Pre1982DistrictAuthority),
+            ('Post1982RegionalAuthority', Post1982RegionalAuthority),
+            ('Pre1982RegionalAuthority', Pre1982RegionalAuthority),
+            ('ManagementCommittee', ManagementCommittee),
+            ('RegionalBoard', RegionalBoard),
+            ('Post1996County', Post1996County),
+            ('Post1974County', Post1974County),
+            ('Pre1974County', Pre1974County),
+        ]
         
-        count = Hospital.objects.count()
-        Hospital.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Hospital'))
-        
-        count = Repository.objects.count()
-        Repository.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Repository'))
-        
-        count = Post1982DistrictAuthority.objects.count()
-        Post1982DistrictAuthority.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1982DistrictAuthority'))
-        
-        count = Pre1982DistrictAuthority.objects.count()
-        Pre1982DistrictAuthority.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Pre1982DistrictAuthority'))
-        
-        count = Post1982RegionalAuthority.objects.count()
-        Post1982RegionalAuthority.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1982RegionalAuthority'))
-        
-        count = Pre1982RegionalAuthority.objects.count()
-        Pre1982RegionalAuthority.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Pre1982RegionalAuthority'))
-        
-        count = ManagementCommittee.objects.count()
-        ManagementCommittee.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from ManagementCommittee'))
-        
-        count = RegionalBoard.objects.count()
-        RegionalBoard.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from RegionalBoard'))
-        
-        count = Post1996County.objects.count()
-        Post1996County.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1996County'))
-        
-        count = Post1974County.objects.count()
-        Post1974County.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1974County'))
-        
-        count = Pre1974County.objects.count()
-        Pre1974County.objects.all().delete()
-        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Pre1974County'))
+        for name, model in models_to_clear:
+            count = model.objects.count()
+            model.objects.all().delete()
+            self.stdout.write(self.style.WARNING(f'Deleted {count} records from {name}'))
     
     def make_timezone_aware(self, dt):
         """Make a datetime timezone-aware if it's naive"""
@@ -264,8 +236,15 @@ class Command(BaseCommand):
     def add_m2m_if_true(self, obj, m2m_field, condition, model_class, value):
         """Add many-to-many relationship if condition is true"""
         if condition:
-            item = model_class.objects.get(value=value)
-            m2m_field.add(item)
+            # Use cache to avoid repeated queries
+            cache_key = f'{model_class.__name__}_{value}'
+            if not hasattr(self, '_m2m_cache'):
+                self._m2m_cache = {}
+            
+            if cache_key not in self._m2m_cache:
+                self._m2m_cache[cache_key] = model_class.objects.get(value=value)
+            
+            m2m_field.add(self._m2m_cache[cache_key])
     
     @transaction.atomic
     def migrate_lookup_table(self, cursor, dry_run, config):
@@ -596,29 +575,8 @@ class Command(BaseCommand):
                     
                     hospital.save()
                     
-                    # Update created_at and last_updated_at with original values
-                    # Using update() to bypass auto_now and auto_now_add
-                    update_fields = {}
-                    if row.get('InputDate'):
-                        # Make datetime timezone-aware
-                        input_date = row.get('InputDate')
-                        if input_date and timezone.is_naive(input_date):
-                            input_date = timezone.make_aware(input_date)
-                        update_fields['created_at'] = input_date
-                    
-                    if row.get('LastUpdatedDate'):
-                        # Make datetime timezone-aware
-                        last_updated = row.get('LastUpdatedDate')
-                        if last_updated and timezone.is_naive(last_updated):
-                            last_updated = timezone.make_aware(last_updated)
-                        update_fields['last_updated_at'] = last_updated
-                    elif row.get('InputDate'):
-                        # Use InputDate as fallback if LastUpdatedDate is not present
-                        input_date = row.get('InputDate')
-                        if input_date and timezone.is_naive(input_date):
-                            input_date = timezone.make_aware(input_date)
-                        update_fields['last_updated_at'] = input_date
-                    
+                    # Update created_at and last_updated_at with original values using helper
+                    update_fields = self.prepare_timestamps(row.get('InputDate'), row.get('LastUpdatedDate'))
                     if update_fields:
                         Hospital.objects.filter(id=hospital.id).update(**update_fields)
                     
@@ -660,7 +618,6 @@ class Command(BaseCommand):
                 ,ResearcherInstruction
                 ,ContactDetails
                 ,Mailshot
-                ,RepositoryCode
                 ,InputDate
                 ,LastUpdatedDate
             FROM dbo.tblRepository
@@ -676,20 +633,10 @@ class Command(BaseCommand):
         
         for row in rows:
             try:
-                # Make datetime values timezone-aware
-                input_date = row.get('InputDate')
-                if input_date and timezone.is_naive(input_date):
-                    input_date = timezone.make_aware(input_date)
-                
-                last_updated_date = row.get('LastUpdatedDate')
-                if last_updated_date and timezone.is_naive(last_updated_date):
-                    last_updated_date = timezone.make_aware(last_updated_date)
-                
                 # Map MSSQL fields to Django model fields
                 repository_data = {
                     'name': row.get('Name', ''),
                     'archon_code': row.get('NRARepCode'),
-                    'repository_code': row.get('RepositoryCode'),
                     'street_1': row.get('Street1'),
                     'street_2': row.get('Street2'),
                     'town': row.get('Town'),
@@ -715,17 +662,7 @@ class Command(BaseCommand):
                     )
                     
                     # Update created_at and last_updated_at with original values
-                    # Using update() to bypass auto_now and auto_now_add
-                    update_fields = {}
-                    if input_date:
-                        update_fields['created_at'] = input_date
-                    
-                    if last_updated_date:
-                        update_fields['last_updated_at'] = last_updated_date
-                    elif input_date:
-                        # Use InputDate as fallback if LastUpdatedDate is not present
-                        update_fields['last_updated_at'] = input_date
-                    
+                    update_fields = self.prepare_timestamps(row.get('InputDate'), row.get('LastUpdatedDate'))
                     if update_fields:
                         Repository.objects.filter(id=repository.id).update(**update_fields)
                     
@@ -850,15 +787,16 @@ class Command(BaseCommand):
                     skipped_count += 1
                     continue
                 
-                # Update repository_code on the Repository if provided
+                # Handle BLANK repository code
                 repository_code = row.get('RepositoryCode')
-                if repository_code and not dry_run:
-                    Repository.objects.filter(id=repository_id).update(repository_code=repository_code)
+                if repository_code == 'BLANK':
+                    repository_code = None
                 
                 # Map MSSQL fields to Django model fields
                 records_data = {
                     'hospital_id': hospital_id,
                     'repository_id': repository_id,
+                    'repository_code': repository_code,
                     'administrative_start': row.get('AdministrativeStart'),
                     'administrative_finish': row.get('AdministrativeFinish'),
                     'general_start': row.get('GeneralStart'),

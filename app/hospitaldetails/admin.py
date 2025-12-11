@@ -49,7 +49,7 @@ class RepositoryAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'archon_code', 'repository_code')
+            'fields': ('name', 'archon_code')
         }),
         ('Address', {
             'fields': ('street_1', 'street_2', 'town', 'postcode', 'county', 'contact_details')
@@ -68,7 +68,7 @@ class RecordsInfoAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Associations', {
-            'fields': ('hospital', 'repository')
+            'fields': ('hospital', 'repository', 'repository_code')
         }),
         ('Records Information', {
             'fields': ('finding_aids', 'finding_aids_location', 'finding_aids_details')
