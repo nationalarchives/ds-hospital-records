@@ -1,8 +1,8 @@
 import os
 
-from .base import *
-from .base import BASE_DIR, INSTALLED_APPS
 from .features import *
+from .production import *
+from .production import BASE_DIR, INSTALLED_APPS
 
 ENVIRONMENT_NAME = "test"
 
