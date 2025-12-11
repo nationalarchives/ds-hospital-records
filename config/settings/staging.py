@@ -1,4 +1,8 @@
-from .base import *
-from .features import *
+import os
 
-pass
+from config.util import strtobool
+
+from .features import *
+from .production import *
+
+DEBUG: bool = strtobool(os.getenv("DEBUG", "False"))

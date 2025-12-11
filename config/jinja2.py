@@ -2,10 +2,34 @@ import json
 import re
 from datetime import datetime
 
+from django import template
 from django.conf import settings
-from django.templatetags.static import static
+from django.templatetags.static import StaticNode
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from jinja2 import Environment
+
+register = template.Library()
+
+
+class StaticNodeWithVersion(StaticNode):
+    @classmethod
+    def handle_simple(cls, path, **kwargs):
+        url = super().handle_simple(path)
+        if kwargs:
+            url += "?" + "&".join(
+                [f"{parameter}={kwargs[parameter]}" for parameter in kwargs]
+            )
+        return mark_safe(url)
+
+
+@register.tag("static")
+def do_static_with_version(parser, token):
+    return StaticNodeWithVersion.handle_token(parser, token)
+
+
+def static_with_version(path, **kwargs):
+    return StaticNodeWithVersion.handle_simple(path, **kwargs)
 
 
 def slugify(s):
@@ -42,7 +66,7 @@ def environment(**options):
 
     env.globals.update(
         {
-            "static": static,
+            "static": static_with_version,
             "app_config": {
                 "ENVIRONMENT_NAME": settings.ENVIRONMENT_NAME,
                 "GA4_ID": settings.GA4_ID,
@@ -51,7 +75,7 @@ def environment(**options):
                 "TNA_FRONTEND_VERSION": TNA_FRONTEND_VERSION,
                 "COOKIE_DOMAIN": settings.COOKIE_DOMAIN,
             },
-            "url": reverse,
+            "url_for": reverse,
             "now_iso_8601": now_iso_8601,
         }
     )
