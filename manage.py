@@ -1,22 +1,10 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
-import os
 import sys
-
-# THIS FILE IS ONLY USED FOR LOCAL DEVELOPMENT - IN PRODUCTION, THIS FILE IS USED:
-# https://github.com/nationalarchives/docker/blob/main/docker/tna-python-django/lib/manage.py
 
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault(
-        "DJANGO_SETTINGS_MODULE",
-        (
-            "config.settings.test"
-            if sys.argv[1] == "test"
-            else "config.settings.production"
-        ),
-    )
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

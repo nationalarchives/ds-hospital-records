@@ -9,7 +9,7 @@ packages = [{include = "app"}]
 [tool.poetry.dependencies]
 python = "^3.13"
 requests = "^2.31.0"
-tna-frontend-jinja = "0.28.0"
+tna-frontend-jinja = "0.29.1"
 django = "^5.0.7"
 psycopg2-binary = "^2.9.9"
 django-csp = "^4.0"
@@ -19,8 +19,8 @@ whitenoise = "^6.7.0"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.1.1"
 requests-mock = "^1.12.1"
+pytest-django = "^4.11.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -33,3 +33,4 @@ include = '\.pyi?$'
 testpaths = [
     "test",
 ]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
