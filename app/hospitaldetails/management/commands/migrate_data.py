@@ -53,6 +53,11 @@ class Command(BaseCommand):
             action='store_true',
             help='Run without saving to database'
         )
+        parser.add_argument(
+            '--clear',
+            action='store_true',
+            help='Clear existing data before migration (WARNING: This will delete all existing records)'
+        )
     
     def get_mssql_connection(self, host, port, database, user, password):
         """Establish connection to MSSQL database"""
@@ -88,9 +93,14 @@ class Command(BaseCommand):
         
         cursor = conn.cursor()
         dry_run = options['dry_run']
+        clear_data = options['clear']
         
         if dry_run:
             self.stdout.write(self.style.WARNING('Running in DRY-RUN mode - no data will be saved'))
+        
+        if clear_data and not dry_run:
+            self.stdout.write(self.style.WARNING('CLEARING EXISTING DATA...'))
+            self.clear_data()
         
         try:
             # First, ensure lookup tables are populated
@@ -161,6 +171,57 @@ class Command(BaseCommand):
             FindingAidsLocation.objects.get_or_create(value=location)
         
         self.stdout.write(self.style.SUCCESS('Lookup tables populated'))
+    
+    def clear_data(self):
+        """Clear existing data from all tables in reverse order of dependencies"""
+        # Clear in reverse order of dependencies
+        count = RecordsInfo.objects.count()
+        RecordsInfo.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from RecordsInfo'))
+        
+        count = Hospital.objects.count()
+        Hospital.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Hospital'))
+        
+        count = Repository.objects.count()
+        Repository.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Repository'))
+        
+        count = Post1982DistrictAuthority.objects.count()
+        Post1982DistrictAuthority.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1982DistrictAuthority'))
+        
+        count = Pre1982DistrictAuthority.objects.count()
+        Pre1982DistrictAuthority.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Pre1982DistrictAuthority'))
+        
+        count = Post1982RegionalAuthority.objects.count()
+        Post1982RegionalAuthority.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1982RegionalAuthority'))
+        
+        count = Pre1982RegionalAuthority.objects.count()
+        Pre1982RegionalAuthority.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Pre1982RegionalAuthority'))
+        
+        count = ManagementCommittee.objects.count()
+        ManagementCommittee.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from ManagementCommittee'))
+        
+        count = RegionalBoard.objects.count()
+        RegionalBoard.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from RegionalBoard'))
+        
+        count = Post1996County.objects.count()
+        Post1996County.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1996County'))
+        
+        count = Post1974County.objects.count()
+        Post1974County.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Post1974County'))
+        
+        count = Pre1974County.objects.count()
+        Pre1974County.objects.all().delete()
+        self.stdout.write(self.style.WARNING(f'Deleted {count} records from Pre1974County'))
     
     @transaction.atomic
     def migrate_pre_1974_counties(self, cursor, dry_run=False):
