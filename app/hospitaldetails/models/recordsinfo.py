@@ -137,8 +137,8 @@ class RecordsInfo(models.Model):
         help_text="Year the clinical records finish (YYYY)"
     )
     records_notes = models.TextField(null=True, blank=True)
-    finding_aids = models.ForeignKey('hospitaldetails.FindingAids', null=True, blank=True, on_delete=models.SET_NULL, related_name='records_info')
-    finding_aids_location = models.ForeignKey('hospitaldetails.FindingAidsLocation', null=True, blank=True, on_delete=models.SET_NULL, related_name='records_info')
+    finding_aids = models.ManyToManyField('hospitaldetails.FindingAids', blank=True, related_name='records_info')
+    finding_aids_location = models.ManyToManyField('hospitaldetails.FindingAidsLocation', blank=True, related_name='records_info')
     finding_aids_details = models.TextField(null=True, blank=True)
     more_research_required = models.BooleanField(default=False)
     researcher_comment = models.TextField(null=True, blank=True)
