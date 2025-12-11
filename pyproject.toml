@@ -14,6 +14,7 @@ django = "^5.0.7"
 psycopg2-binary = "^2.9.9"
 django-csp = "^4.0"
 whitenoise = "^6.7.0"
+pymssql = "^2.3.10"
 
 [tool.poetry.group.dev]
 optional = true
