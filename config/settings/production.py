@@ -1,10 +1,11 @@
 import json
 import os
-from pathlib import Path
 from sysconfig import get_path
 
 from config.util import strtobool
 from csp.constants import NONE, SELF
+
+from .features import *
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
@@ -14,6 +15,7 @@ USE_X_FORWARDED_HOST = strtobool(os.getenv("USE_X_FORWARDED_HOST", "False"))
 
 # Application definition
 INSTALLED_APPS = [
+    "app.hospitaldetails",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
