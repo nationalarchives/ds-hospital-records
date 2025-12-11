@@ -1,11 +1,16 @@
 import datetime
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Hospital(models.Model):
     name = models.CharField(max_length=100)
-    name_since = models.CharField(max_length=100, null=True, blank=True)
+    name_since = models.IntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(1000), MaxValueValidator(datetime.date.today().year)],
+        help_text="Year the hospital has had this name since (YYYY)"
+    )
     previous_names = models.TextField(null=True, blank=True)
     street_1 = models.CharField(max_length=45, null=True, blank=True)
     street_2 = models.CharField(max_length=45, null=True, blank=True)
