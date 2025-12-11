@@ -23,7 +23,8 @@ services:
       - CSP_STYLE_SRC='self',fonts.googleapis.com,p.typekit.net,use.typekit.net
       - CSP_FONT_SRC='self',fonts.gstatic.com,use.typekit.net
     env_file:
-      - ./.env
+      - path: ./.env
+        required: false
     ports:
       - 82:8080
     depends_on:
