@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Hospital
+
+from app.hospitaldetails.models import Repository, Hospital, RecordsInfo
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
@@ -39,3 +40,42 @@ class HospitalAdmin(admin.ModelAdmin):
     )
     
     filter_horizontal = ['pre_1948_status', 'post_1948_status', 'pre_1948_type', 'post_1948_type']
+
+@admin.register(Repository)
+class RepositoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'town', 'postcode', 'archon_code', 'last_updated_at']
+    search_fields = ['name', 'town', 'postcode']
+    readonly_fields = ['created_at', 'last_updated_at']
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'archon_code', 'repository_code')
+        }),
+        ('Address', {
+            'fields': ('street_1', 'street_2', 'town', 'postcode', 'county', 'contact_details')
+        }),
+        ('Additional Info', {
+            'fields': ('mailshot', 'more_research_required', 'researcher_comment', 'created_at', 'last_updated_at')
+        }),
+    )
+
+@admin.register(RecordsInfo)
+class RecordsInfoAdmin(admin.ModelAdmin):
+    list_display = ['hospital', 'repository', 'last_updated_at']
+    list_filter = ['more_research_required']
+    search_fields = ['hospital__name', 'repository__name', 'finding_aids_details']
+    readonly_fields = ['created_at', 'last_updated_at']
+    
+    fieldsets = (
+        ('Associations', {
+            'fields': ('hospital', 'repository')
+        }),
+        ('Records Information', {
+            'fields': ('finding_aids', 'finding_aids_location', 'finding_aids_details')
+        }),
+        ('Additional Info', {
+            'fields': ('more_research_required', 'researcher_comment', 'created_at', 'last_updated_at')
+        }),
+    )
+
+    filter_horizontal = ['finding_aids', 'finding_aids_location']
