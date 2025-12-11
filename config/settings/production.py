@@ -14,6 +14,7 @@ USE_X_FORWARDED_HOST = strtobool(os.getenv("USE_X_FORWARDED_HOST", "False"))
 
 # Application definition
 INSTALLED_APPS = [
+    "app.hospitaldetails",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
