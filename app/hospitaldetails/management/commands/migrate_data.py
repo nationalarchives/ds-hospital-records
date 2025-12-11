@@ -658,10 +658,13 @@ class Command(BaseCommand):
                     'post_1982_district_authority_id': row.get('DistrictAuthority1982ID'),
                 }
                 
+                # Get the original hospital ID from MSSQL
+                hospital_id = row.get('Hospital_No')
+                
                 if not dry_run:
-                    # Use update_or_create to handle duplicates
+                    # Use update_or_create with the original ID
                     hospital, created = Hospital.objects.update_or_create(
-                        name=hospital_data['name'],
+                        id=hospital_id,
                         defaults=hospital_data
                     )
                     
