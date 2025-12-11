@@ -2,6 +2,7 @@ import os
 import pymssql
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import timezone
 from app.hospitaldetails.models import (
     RegionalBoard, ManagementCommittee, 
     Pre1982RegionalAuthority, Post1982RegionalAuthority,
@@ -106,12 +107,14 @@ class Command(BaseCommand):
             self.migrate_pre_1982_district_authorities(cursor, dry_run)
             self.migrate_post_1982_district_authorities(cursor, dry_run)
             
+            # Migrate repositories before hospitals (since hospitals may reference them)
+            self.migrate_repositories(cursor, dry_run)
+            
             # Then migrate hospitals
             self.migrate_hospitals(cursor, dry_run)
             
-            # Add more migration methods here for other tables
-            # self.migrate_records_info(cursor, dry_run)
-            # self.migrate_repositories(cursor, dry_run)
+            # Migrate records info (requires hospitals and repositories)
+            self.migrate_records_info(cursor, dry_run)
             
             self.stdout.write(self.style.SUCCESS('Migration completed successfully'))
             
@@ -147,6 +150,16 @@ class Command(BaseCommand):
         for type_val in post_1948_types:
             Post1948Type.objects.get_or_create(value=type_val)
         
+        # Finding Aids options
+        finding_aids = ['Brief guide (BG)', 'Catalogue', 'Card index', 'Computerised']
+        for aid in finding_aids:
+            FindingAids.objects.get_or_create(value=aid)
+        
+        # Finding Aids Location options
+        finding_aids_locations = ['Repository (AR)', 'Local Record Office (LRO)', 'National Register of Archives (NRA)', 'Wellcome Library (WIHM)', 'The National Archives (TNA)', 'Other']
+        for location in finding_aids_locations:
+            FindingAidsLocation.objects.get_or_create(value=location)
+        
         self.stdout.write(self.style.SUCCESS('Lookup tables populated'))
     
     @transaction.atomic
@@ -156,8 +169,8 @@ class Command(BaseCommand):
         
         query = """
         SELECT 
-        [CountyPre74ID]
-        ,[CountyPre74] 
+        CountyPre74ID
+        ,CountyPre74
         FROM dbo.tblRefCountyPre74
         """
         cursor.execute(query)
@@ -202,8 +215,8 @@ class Command(BaseCommand):
         
         query = """
         SELECT 
-        [CountyPost74ID]
-        ,[CountyPost74] 
+        CountyPost74ID
+        ,CountyPost74
         FROM dbo.tblRefCountyPost74
         """
         cursor.execute(query)
@@ -248,8 +261,8 @@ class Command(BaseCommand):
         
         query = """
         SELECT 
-        [CountyPost96ID]
-        ,[CountyPost96] 
+        CountyPost96ID
+        ,CountyPost96
         FROM dbo.tblRefCountyPost96
         """
         cursor.execute(query)
@@ -543,67 +556,67 @@ class Command(BaseCommand):
         
         query = """
             SELECT 
-                [Hospital_No]
-                ,[PresentName]
-                ,[PresentNameDate]
-                ,[PreviousNames]
-                ,[Street1]
-                ,[Street2]
-                ,[Town]
-                ,[PostCode]
-                ,[AddressFrom]
-                ,[PreviousLocations]
-                ,[PresentTrust]
-                ,[PresentTrustDate]
-                ,[PreviousTrusts]
-                ,[FoundationDate]
-                ,[FoundationDateApproximate]
-                ,[Closed]
-                ,[ClosureDate]
-                ,[ClosureDateApproximate]
-                ,[Pre1948Voluntary]
-                ,[Pre1948PoorLaw]
-                ,[Pre1948LocalAuthority]
-                ,[Pre1948Private]
-                ,[Pre1948OtherStatus]
-                ,[Pre1948StatusInfo]
-                ,[Post1948NHS]
-                ,[Post1948Private]
-                ,[Post1948Trust]
-                ,[Post1948OtherStatus]
-                ,[Post1948StatusInfo]
-                ,[Pre1948General]
-                ,[Pre1948Isolation]
-                ,[Pre1948Maternity]
-                ,[Pre1948Mental]
-                ,[Pre1948Tuberculosis]
-                ,[Pre1948Women]
-                ,[Pre1948Children]
-                ,[Pre1948Military]
-                ,[Pre1948OtherType]
-                ,[Pre1948TypeInfo]
-                ,[Post1948Acute]
-                ,[Post1948Geriatric]
-                ,[Post1948Maternity]
-                ,[Post1948Mental]
-                ,[Post1948Hospice]
-                ,[Post1948Military]
-                ,[Post1948OtherType]
-                ,[Post1948TypeInfo]
-                ,[OtherInfoHistory]
-                ,[MoreResearchReqd]
-                ,[ResearcherInstruction]
-                ,[InputDate]
-                ,[LastUpdatedDate]
-                ,[CountyPre74ID]
-                ,[CountyPost74ID]
-                ,[CountyPost96ID]
-                ,[RegionalBoard1948ID]
-                ,[ManagementCommittee1948ID]
-                ,[RegionalAuthority1974ID]
-                ,[DistrictAuthority1974ID]
-                ,[RegionalAuthority1982ID]
-                ,[DistrictAuthority1982ID]
+                Hospital_No
+                ,PresentName
+                ,PresentNameDate
+                ,PreviousNames
+                ,Street1
+                ,Street2
+                ,Town
+                ,PostCode
+                ,AddressFrom
+                ,PreviousLocations
+                ,PresentTrust
+                ,PresentTrustDate
+                ,PreviousTrusts
+                ,FoundationDate
+                ,FoundationDateApproximate
+                ,Closed
+                ,ClosureDate
+                ,ClosureDateApproximate
+                ,Pre1948Voluntary
+                ,Pre1948PoorLaw
+                ,Pre1948LocalAuthority
+                ,Pre1948Private
+                ,Pre1948OtherStatus
+                ,Pre1948StatusInfo
+                ,Post1948NHS
+                ,Post1948Private
+                ,Post1948Trust
+                ,Post1948OtherStatus
+                ,Post1948StatusInfo
+                ,Pre1948General
+                ,Pre1948Isolation
+                ,Pre1948Maternity
+                ,Pre1948Mental
+                ,Pre1948Tuberculosis
+                ,Pre1948Women
+                ,Pre1948Children
+                ,Pre1948Military
+                ,Pre1948OtherType
+                ,Pre1948TypeInfo
+                ,Post1948Acute
+                ,Post1948Geriatric
+                ,Post1948Maternity
+                ,Post1948Mental
+                ,Post1948Hospice
+                ,Post1948Military
+                ,Post1948OtherType
+                ,Post1948TypeInfo
+                ,OtherInfoHistory
+                ,MoreResearchReqd
+                ,ResearcherInstruction
+                ,InputDate
+                ,LastUpdatedDate
+                ,CountyPre74ID
+                ,CountyPost74ID
+                ,CountyPost96ID
+                ,RegionalBoard1948ID
+                ,ManagementCommittee1948ID
+                ,RegionalAuthority1974ID
+                ,DistrictAuthority1974ID
+                ,RegionalAuthority1982ID
+                ,DistrictAuthority1982ID
             FROM dbo.tblHospital
         """
         
@@ -617,6 +630,15 @@ class Command(BaseCommand):
         
         for row in rows:
             try:
+                # Make datetime values timezone-aware
+                input_date = row.get('InputDate')
+                if input_date and timezone.is_naive(input_date):
+                    input_date = timezone.make_aware(input_date)
+                
+                last_updated_date = row.get('LastUpdatedDate')
+                if last_updated_date and timezone.is_naive(last_updated_date):
+                    last_updated_date = timezone.make_aware(last_updated_date)
+                
                 # Map MSSQL fields to Django model fields
                 hospital_data = {
                     'name': row.get('PresentName', ''),
@@ -644,6 +666,17 @@ class Command(BaseCommand):
                     'more_research_required': bool(row.get('MoreResearchReqd', False)),
                     'researcher_comment': row.get('ResearcherInstruction'),
                 }
+                
+                # Only include timestamps if they exist (otherwise let Django auto fields handle them)
+                if input_date:
+                    hospital_data['created_at'] = input_date
+                elif last_updated_date:
+                    hospital_data['created_at'] = last_updated_date
+                    
+                if last_updated_date:
+                    hospital_data['last_updated_at'] = last_updated_date
+                elif input_date:
+                    hospital_data['last_updated_at'] = input_date
                 
                 # Store foreign key IDs for later lookup
                 fk_data = {
@@ -876,6 +909,32 @@ class Command(BaseCommand):
                     
                     hospital.save()
                     
+                    # Update created_at and last_updated_at with original values
+                    # Using update() to bypass auto_now and auto_now_add
+                    update_fields = {}
+                    if row.get('InputDate'):
+                        # Make datetime timezone-aware
+                        input_date = row.get('InputDate')
+                        if input_date and timezone.is_naive(input_date):
+                            input_date = timezone.make_aware(input_date)
+                        update_fields['created_at'] = input_date
+                    
+                    if row.get('LastUpdatedDate'):
+                        # Make datetime timezone-aware
+                        last_updated = row.get('LastUpdatedDate')
+                        if last_updated and timezone.is_naive(last_updated):
+                            last_updated = timezone.make_aware(last_updated)
+                        update_fields['last_updated_at'] = last_updated
+                    elif row.get('InputDate'):
+                        # Use InputDate as fallback if LastUpdatedDate is not present
+                        input_date = row.get('InputDate')
+                        if input_date and timezone.is_naive(input_date):
+                            input_date = timezone.make_aware(input_date)
+                        update_fields['last_updated_at'] = input_date
+                    
+                    if update_fields:
+                        Hospital.objects.filter(id=hospital.id).update(**update_fields)
+                    
                     if created:
                         created_count += 1
                     else:
@@ -895,12 +954,359 @@ class Command(BaseCommand):
             )
         )
     
-    # Add more migration methods for other models
-    # Example template:
-    # @transaction.atomic
-    # def migrate_records_info(self, cursor, dry_run=False):
-    #     self.stdout.write('Migrating records info...')
-    #     query = "SELECT * FROM records_info_table"
-    #     cursor.execute(query)
-    #     rows = cursor.fetchall()
-    #     # Process rows...
+    @transaction.atomic
+    def migrate_repositories(self, cursor, dry_run=False):
+        """Migrate repository records from MSSQL to Postgres"""
+        self.stdout.write('Migrating repositories...')
+        
+        query = """
+            SELECT 
+                Repository_No
+                ,NRARepCode
+                ,Name
+                ,Street1
+                ,Street2
+                ,Town
+                ,PostCode
+                ,County
+                ,MoreResearchReqd
+                ,ResearcherInstruction
+                ,ContactDetails
+                ,Mailshot
+                ,RepositoryCode
+                ,InputDate
+                ,LastUpdatedDate
+            FROM dbo.tblRepository
+        """
+        
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} repositories to migrate')
+        
+        created_count = 0
+        updated_count = 0
+        
+        for row in rows:
+            try:
+                # Make datetime values timezone-aware
+                input_date = row.get('InputDate')
+                if input_date and timezone.is_naive(input_date):
+                    input_date = timezone.make_aware(input_date)
+                
+                last_updated_date = row.get('LastUpdatedDate')
+                if last_updated_date and timezone.is_naive(last_updated_date):
+                    last_updated_date = timezone.make_aware(last_updated_date)
+                
+                # Map MSSQL fields to Django model fields
+                repository_data = {
+                    'name': row.get('Name', ''),
+                    'archon_code': row.get('NRARepCode'),
+                    'repository_code': row.get('RepositoryCode'),
+                    'street_1': row.get('Street1'),
+                    'street_2': row.get('Street2'),
+                    'town': row.get('Town'),
+                    'postcode': row.get('PostCode'),
+                    'county': row.get('County'),
+                    'contact_details': row.get('ContactDetails'),
+                    'mailshot': bool(row.get('Mailshot', False)),
+                    'more_research_required': bool(row.get('MoreResearchReqd', False)),
+                    'researcher_comment': row.get('ResearcherInstruction'),
+                }
+                
+                # Only include timestamps if they exist (otherwise let Django auto fields handle them)
+                if input_date:
+                    repository_data['created_at'] = input_date
+                elif last_updated_date:
+                    repository_data['created_at'] = last_updated_date
+                    
+                if last_updated_date:
+                    repository_data['last_updated_at'] = last_updated_date
+                elif input_date:
+                    repository_data['last_updated_at'] = input_date
+                
+                # Get the original repository ID from MSSQL
+                repository_id = row.get('Repository_No')
+                
+                if not dry_run:
+                    # Use update_or_create with the original ID
+                    repository, created = Repository.objects.update_or_create(
+                        id=repository_id,
+                        defaults=repository_data
+                    )
+                    
+                    # Update created_at and last_updated_at with original values
+                    # Using update() to bypass auto_now and auto_now_add
+                    update_fields = {}
+                    if input_date:
+                        update_fields['created_at'] = input_date
+                    
+                    if last_updated_date:
+                        update_fields['last_updated_at'] = last_updated_date
+                    elif input_date:
+                        # Use InputDate as fallback if LastUpdatedDate is not present
+                        update_fields['last_updated_at'] = input_date
+                    
+                    if update_fields:
+                        Repository.objects.filter(id=repository.id).update(**update_fields)
+                    
+                    if created:
+                        created_count += 1
+                    else:
+                        updated_count += 1
+                else:
+                    self.stdout.write(f"Would create/update: {repository_data['name']}")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing repository {row.get('Name')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Repositories: {created_count} created, {updated_count} updated'
+            )
+        )
+    
+    @transaction.atomic
+    def migrate_records_info(self, cursor, dry_run=False):
+        """Migrate records info from MSSQL to Postgres"""
+        self.stdout.write('Migrating records info...')
+        
+        query = """
+            SELECT 
+                [Folder_No]
+                ,[Hospital_No]
+                ,[Repository_No]
+                ,[RepositoryCode]
+                ,[AdministrativeRecords]
+                ,[AdministrativeStart]
+                ,[AdministrativeFinish]
+                ,[GeneralRecords]
+                ,[GeneralStart]
+                ,[GeneralFinish]
+                ,[FinanceRecords]
+                ,[FinanceStart]
+                ,[FinanceFinish]
+                ,[EstatesRecords]
+                ,[EstatesStart]
+                ,[EstatesFinish]
+                ,[NursingRecords]
+                ,[NursingStart]
+                ,[NursingFinish]
+                ,[StaffRecords]
+                ,[StaffStart]
+                ,[StaffFinish]
+                ,[EphemeraRecords]
+                ,[EphemeraStart]
+                ,[EphemeraFinish]
+                ,[PictorialRecords]
+                ,[PictorialStart]
+                ,[PictorialFinish]
+                ,[PrivatePapersRecords]
+                ,[PrivatePapersStart]
+                ,[PrivatePapersFinish]
+                ,[OtherRecords]
+                ,[OtherStart]
+                ,[OtherFinish]
+                ,[PatientsRecords]
+                ,[PatientsStart]
+                ,[PatientsFinish]
+                ,[AdmissionRecords]
+                ,[AdmissionStart]
+                ,[AdmissionFinish]
+                ,[ClinicalRecords]
+                ,[ClinicalStart]
+                ,[ClinicalFinish]
+                ,[RecordsNotes]
+                ,[BriefGuideAids]
+                ,[CatalogueAids]
+                ,[CardIndexAids]
+                ,[ComputerisedAids]
+                ,[AidsWithRecords]
+                ,[AidsAtLRO]
+                ,[AidsAtNRA]
+                ,[AidsAtWIHM]
+                ,[AidsAtPRO]
+                ,[AidsAtOther]
+                ,[AidsDetails]
+                ,[MoreResearchReqd]
+                ,[ResearcherInstruction]
+                ,[InputDate]
+                ,[LastUpdatedDate]
+            FROM dbo.tblFolder
+        """
+        
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        self.stdout.write(f'Found {len(rows)} records info to migrate')
+        
+        created_count = 0
+        updated_count = 0
+        skipped_count = 0
+        
+        for row in rows:
+            try:
+                hospital_id = row.get('Hospital_No')
+                repository_id = row.get('Repository_No')
+                
+                # Skip if hospital or repository doesn't exist
+                if not hospital_id or not repository_id:
+                    skipped_count += 1
+                    continue
+                
+                if not Hospital.objects.filter(id=hospital_id).exists():
+                    self.stdout.write(
+                        self.style.WARNING(f"Hospital {hospital_id} not found, skipping folder {row.get('Folder_No')}")
+                    )
+                    skipped_count += 1
+                    continue
+                
+                if not Repository.objects.filter(id=repository_id).exists():
+                    self.stdout.write(
+                        self.style.WARNING(f"Repository {repository_id} not found, skipping folder {row.get('Folder_No')}")
+                    )
+                    skipped_count += 1
+                    continue
+                
+                # Update repository_code on the Repository if provided
+                repository_code = row.get('RepositoryCode')
+                if repository_code and not dry_run:
+                    Repository.objects.filter(id=repository_id).update(repository_code=repository_code)
+                
+                # Make datetime values timezone-aware
+                input_date = row.get('InputDate')
+                if input_date and timezone.is_naive(input_date):
+                    input_date = timezone.make_aware(input_date)
+                
+                last_updated_date = row.get('LastUpdatedDate')
+                if last_updated_date and timezone.is_naive(last_updated_date):
+                    last_updated_date = timezone.make_aware(last_updated_date)
+                
+                # Map MSSQL fields to Django model fields
+                records_data = {
+                    'hospital_id': hospital_id,
+                    'repository_id': repository_id,
+                    'administrative_start': row.get('AdministrativeStart'),
+                    'administrative_finish': row.get('AdministrativeFinish'),
+                    'general_start': row.get('GeneralStart'),
+                    'general_finish': row.get('GeneralFinish'),
+                    'finance_start': row.get('FinanceStart'),
+                    'finance_finish': row.get('FinanceFinish'),
+                    'estates_start': row.get('EstatesStart'),
+                    'estates_finish': row.get('EstatesFinish'),
+                    'nursing_start': row.get('NursingStart'),
+                    'nursing_finish': row.get('NursingFinish'),
+                    'staff_start': row.get('StaffStart'),
+                    'staff_finish': row.get('StaffFinish'),
+                    'ephemera_start': row.get('EphemeraStart'),
+                    'ephemera_finish': row.get('EphemeraFinish'),
+                    'pictorial_start': row.get('PictorialStart'),
+                    'pictorial_finish': row.get('PictorialFinish'),
+                    'private_papers_start': row.get('PrivatePapersStart'),
+                    'private_papers_finish': row.get('PrivatePapersFinish'),
+                    'other_start': row.get('OtherStart'),
+                    'other_finish': row.get('OtherFinish'),
+                    'patients_start': row.get('PatientsStart'),
+                    'patients_finish': row.get('PatientsFinish'),
+                    'admission_start': row.get('AdmissionStart'),
+                    'admission_finish': row.get('AdmissionFinish'),
+                    'clinical_start': row.get('ClinicalStart'),
+                    'clinical_finish': row.get('ClinicalFinish'),
+                    'records_notes': row.get('RecordsNotes'),
+                    'finding_aids_details': row.get('AidsDetails'),
+                    'more_research_required': bool(row.get('MoreResearchReqd', False)),
+                    'researcher_comment': row.get('ResearcherInstruction'),
+                }
+                
+                # Only include timestamps if they exist (otherwise let Django auto fields handle them)
+                if input_date:
+                    records_data['created_at'] = input_date
+                elif last_updated_date:
+                    records_data['created_at'] = last_updated_date
+                    
+                if last_updated_date:
+                    records_data['last_updated_at'] = last_updated_date
+                elif input_date:
+                    records_data['last_updated_at'] = input_date
+                
+                # Get the original folder ID from MSSQL
+                folder_id = row.get('Folder_No')
+                
+                if not dry_run:
+                    # Use update_or_create with the original ID
+                    records_info, created = RecordsInfo.objects.update_or_create(
+                        id=folder_id,
+                        defaults=records_data
+                    )
+                    
+                    # Handle finding aids many-to-many relationships
+                    records_info.finding_aids.clear()
+                    if row.get('BriefGuideAids'):
+                        finding_aid = FindingAids.objects.get(value='Brief guide (BG)')
+                        records_info.finding_aids.add(finding_aid)
+                    if row.get('CatalogueAids'):
+                        finding_aid = FindingAids.objects.get(value='Catalogue')
+                        records_info.finding_aids.add(finding_aid)
+                    if row.get('CardIndexAids'):
+                        finding_aid = FindingAids.objects.get(value='Card index')
+                        records_info.finding_aids.add(finding_aid)
+                    if row.get('ComputerisedAids'):
+                        finding_aid = FindingAids.objects.get(value='Computerised')
+                        records_info.finding_aids.add(finding_aid)
+                    
+                    # Handle finding aids location many-to-many relationships
+                    records_info.finding_aids_location.clear()
+                    if row.get('AidsWithRecords'):
+                        location = FindingAidsLocation.objects.get(value='Repository (AR)')
+                        records_info.finding_aids_location.add(location)
+                    if row.get('AidsAtLRO'):
+                        location = FindingAidsLocation.objects.get(value='Local Record Office (LRO)')
+                        records_info.finding_aids_location.add(location)
+                    if row.get('AidsAtNRA'):
+                        location = FindingAidsLocation.objects.get(value='National Register of Archives (NRA)')
+                        records_info.finding_aids_location.add(location)
+                    if row.get('AidsAtWIHM'):
+                        location = FindingAidsLocation.objects.get(value='Wellcome Library (WIHM)')
+                        records_info.finding_aids_location.add(location)
+                    if row.get('AidsAtPRO'):
+                        location = FindingAidsLocation.objects.get(value='The National Archives (TNA)')
+                        records_info.finding_aids_location.add(location)
+                    if row.get('AidsAtOther'):
+                        location = FindingAidsLocation.objects.get(value='Other')
+                        records_info.finding_aids_location.add(location)
+                    
+                    # Update created_at and last_updated_at with original values
+                    update_fields = {}
+                    if input_date:
+                        update_fields['created_at'] = input_date
+                    
+                    if last_updated_date:
+                        update_fields['last_updated_at'] = last_updated_date
+                    elif input_date:
+                        update_fields['last_updated_at'] = input_date
+                    
+                    if update_fields:
+                        RecordsInfo.objects.filter(id=records_info.id).update(**update_fields)
+                    
+                    if created:
+                        created_count += 1
+                    else:
+                        updated_count += 1
+                else:
+                    self.stdout.write(f"Would create/update records info for Hospital {hospital_id} / Repository {repository_id}")
+                    
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(f"Error processing folder {row.get('Folder_No')}: {str(e)}")
+                )
+                continue
+        
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Records Info: {created_count} created, {updated_count} updated, {skipped_count} skipped'
+            )
+        )
+
