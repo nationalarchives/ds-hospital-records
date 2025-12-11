@@ -1,10 +1,11 @@
 import json
 import os
-from pathlib import Path
 from sysconfig import get_path
 
 from config.util import strtobool
 from csp.constants import NONE, SELF
+
+from .features import *
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
