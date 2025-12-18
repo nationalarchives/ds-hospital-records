@@ -63,29 +63,24 @@
     <div class="tna-section">
       <h2 class="tna-heading-l">Status</h2>
       
-      {% if hospital.pre_1948_status.exists() %}
-      <h3 class="tna-heading-m">Pre-1948</h3>
-      <ul class="tna-ul">
-        {% for status in hospital.pre_1948_status.all() %}
-        <li>{{ status.value }}</li>
-        {% endfor %}
-      </ul>
-      {% if hospital.pre_1948_status_info %}
-      <p>{{ hospital.pre_1948_status_info }}</p>
-      {% endif %}
-      {% endif %}
-      
-      {% if hospital.post_1948_status.exists() %}
-      <h3 class="tna-heading-m">Post-1948</h3>
-      <ul class="tna-ul">
-        {% for status in hospital.post_1948_status.all() %}
-        <li>{{ status.value }}</li>
-        {% endfor %}
-      </ul>
-      {% if hospital.post_1948_status_info %}
-      <p>{{ hospital.post_1948_status_info }}</p>
-      {% endif %}
-      {% endif %}
+      <dl class="tna-dl">
+        {% if hospital.pre_1948_status.exists() %}
+        <dt>Pre-1948</dt>
+        <dd>{% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        {% endif %}
+        {% if hospital.pre_1948_status_info %}
+        <dt>Pre-1948 information</dt>
+        <dd>{{ hospital.pre_1948_status_info|linebreaksbr }}</dd>
+        {% endif %}
+        {% if hospital.post_1948_status.exists() %}
+        <dt>Post-1948</dt>
+        <dd>{% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        {% endif %}
+        {% if hospital.post_1948_status_info %}
+        <dt>Post-1948 information</dt>
+        <dd>{{ hospital.post_1948_status_info|linebreaksbr }}</dd>
+        {% endif %}
+      </dl>
     </div>
     {% endif %}
     
