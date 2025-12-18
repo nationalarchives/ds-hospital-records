@@ -1,0 +1,36 @@
+{% from 'hospitaldetails/macros/block_heading.html' import block_heading %}
+
+{% macro split_detail_list(heading=None) %}
+<div class="tna-container">
+    <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny">
+        {% if heading %}
+            {{ block_heading(heading) }}
+        {% endif %}
+        <dl class="tna-dl">
+            {{ caller() }}
+        </dl>
+    </div>
+
+{% endmacro %}
+
+
+{% macro detail_list(heading=None) %}
+{% if heading %}
+    {{ block_heading(heading) }}
+{% endif %}
+
+<div class="tna-container">
+    <div class="tna-column tna-column--full tna-!--margin-top-s">
+        <dl class="tna-dl">
+            {{ caller() }}
+        </dl>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro detail_item(label, value=None, condition=True) %}
+    {% if condition and (value or caller is defined) %}
+        <dt>{{ label }}</dt>
+        <dd>{% if caller is defined %}{{ caller() }}{% else %}{{ value }}{% endif %}</dd>
+    {% endif %}
+{% endmacro %}

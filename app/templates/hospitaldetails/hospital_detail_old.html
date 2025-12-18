@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block pageTitle %}{{ hospital.name }}{% endblock %}
+
+{% block content %}
+<div class="tna-section tna-!-padding-top-l">
+  <div class="tna-container">
+    <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny">
+      <hgroup class="tna-hgroup-xl">
+        <p class="tna-hgroup__supertitle">Hospital</p>
+        <h1 class="tna-hgroup__title">{{ hospital.name }}</h1>
+      </hgroup>
+    </div>
+  </div>
+
+  <div class="tna-column tna-column--full">
+
+    <div class="tna-container tna-!--margin-top-m">
+      <div class="tna-column tna-column--full-small tna-column--full-tiny">
+        <h2 class="tna-heading-l">Details</h2>
+      </div>
+
+      <div class="tna-container">
+        <div class="tna-column tna-column--full tna-!--margin-top-s">
+          <dl class="tna-dl">
+            {% if hospital.previous_names %}
+            <dt>Previous Names</dt>
+            <dd>{{ hospital.previous_names|linebreaksbr }}</dd>
+            {% endif %}
+
+            {% if hospital.street_1 or hospital.street_2 or hospital.town or hospital.postcode %}
+            <dt>Address</dt>
+            <dd>
+              {% if hospital.street_1 %}{{ hospital.street_1 }}{% endif %}{% if hospital.street_2 %}{% if hospital.street_1 %}, {% endif %}{{ hospital.street_2 }}{% endif %}{% if hospital.town %}{% if hospital.street_1 or hospital.street_2 %}, {% endif %}{{ hospital.town }}{% endif %}{% if hospital.postcode %}{% if hospital.street_1 or hospital.street_2 or hospital.town %}, {% endif %}{{ hospital.postcode }}{% endif %}{% if hospital.address_since %} (since {{ hospital.address_since }}){% endif %}
+            </dd>
+            {% endif %}
+            
+            {% if hospital.previous_locations %}
+            <dt>Previous Locations</dt>
+            <dd>{{ hospital.previous_locations|linebreaksbr }}</dd>
+            {% endif %}
+            
+            {% if hospital.trust %}
+            <dt>Current Trust</dt>
+            <dd>{{ hospital.trust }}{% if hospital.trust_since %} (since {{ hospital.trust_since }}){% endif %}</dd>
+            {% endif %}
+            
+            {% if hospital.previous_trusts %}
+            <dt>Previous Trusts</dt>
+            <dd>{{ hospital.previous_trusts|linebreaksbr }}</dd>
+            {% endif %}
+
+            {% if hospital.foundation_year %}
+            <dt>Foundation Year</dt>
+            <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
+            {% endif %}
+
+            <dt>Status</dt>
+            <dd>{% if hospital.closed %}Closed {% if hospital.closure_date %}(since {{ hospital.closure_date }}){% endif %}{% else %}Open{% endif %}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+      
+
+        {% if hospital.pre_1974_county or hospital.post_1974_county or hospital.post_1996_county or hospital.regional_board or hospital.management_committee or hospital.pre_1982_regional_authority or hospital.post_1982_regional_authority or hospital.pre_1982_district_authority or hospital.post_1982_district_authority %}
+    <div class="tna-container tna-!--margin-top-m">
+      <h2 class="tna-heading-l">Administrative Authorities</h2>
+      
+      <dl class="tna-dl">
+        {% if hospital.regional_board %}
+        <dt>Regional Board (1948)</dt>
+        <dd>{{ hospital.regional_board.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.management_committee %}
+        <dt>Management Committee (1948)</dt>
+        <dd>{{ hospital.management_committee.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.pre_1982_regional_authority %}
+        <dt>Regional Authority (1974-1982)</dt>
+        <dd>{{ hospital.pre_1982_regional_authority.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.post_1982_regional_authority %}
+        <dt>Regional Authority (Post-1982)</dt>
+        <dd>{{ hospital.post_1982_regional_authority.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.pre_1982_district_authority %}
+        <dt>District Authority (1974-1982)</dt>
+        <dd>{{ hospital.pre_1982_district_authority.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.post_1982_district_authority %}
+        <dt>District Authority (Post-1982)</dt>
+        <dd>{{ hospital.post_1982_district_authority.name }}</dd>
+        {% endif %}
+
+        {% if hospital.pre_1974_county %}
+        <dt>Pre-1974 County</dt>
+        <dd>{{ hospital.pre_1974_county.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.post_1974_county %}
+        <dt>Post-1974 County</dt>
+        <dd>{{ hospital.post_1974_county.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.post_1996_county %}
+        <dt>Post-1996 County</dt>
+        <dd>{{ hospital.post_1996_county.name }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+    {% endif %}
+    
+    {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
+    <div class="tna-container">
+      <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny">
+        <h2 class="tna-heading-l">Status</h2>
+              
+        <dl class="tna-dl">
+          {% if hospital.pre_1948_status.exists() %}
+          <dt>Pre-1948</dt>
+          <dd>{% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if hospital.pre_1948_status_info %}
+          <dt>Pre-1948 information</dt>
+          <dd>{{ hospital.pre_1948_status_info|linebreaksbr }}</dd>
+          {% endif %}
+          {% if hospital.post_1948_status.exists() %}
+          <dt>Post-1948</dt>
+          <dd>{% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if hospital.post_1948_status_info %}
+          <dt>Post-1948 information</dt>
+          <dd>{{ hospital.post_1948_status_info|linebreaksbr }}</dd>
+          {% endif %}
+        </dl>
+      </div>
+
+      <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny">
+        <h2 class="tna-heading-l">Type</h2>
+        
+        <dl class="tna-dl">
+          {% if hospital.pre_1948_type.exists() %}
+          <dt>Pre-1948</dt>
+          <dd>{% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if hospital.pre_1948_type_info %}
+          <dt>Pre-1948 information</dt>
+          <dd>{{ hospital.pre_1948_type_info|linebreaksbr }}</dd>
+          {% endif %}
+          {% if hospital.post_1948_type.exists() %}
+          <dt>Post-1948</dt>
+          <dd>{% for type in hospital.post_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if hospital.post_1948_type_info %}
+          <dt>Post-1948 information</dt>
+          <dd>{{ hospital.post_1948_type_info|linebreaksbr }}</dd>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+    {% endif %}
+    
+
+    
+    {% if records %}
+    <div class="tna-container">
+      <h2 class="tna-heading-l">Records</h2>
+      
+      {% for record in records %}
+      <div class="tna-card">
+        <h3 class="tna-heading-m">
+            <a href="{{ url_for('hospitaldetails:repository_detail', kwargs={'id': record.repository.id}) }}">{{ record.repository.name }}</a>
+        </h3>
+        
+        {% if record.repository_code %}
+        <p><strong>Repository Code:</strong> {{ record.repository_code }}</p>
+        {% endif %}
+
+        {% if record.repository.archon_code %}
+        <p><strong>ARCHON Code:</strong> {{ record.repository.archon_code }}</p>
+        {% endif %}
+        
+        <h4 class="tna-heading-s">Record Coverage</h4>
+        <dl class="tna-dl tna-dl--small">
+          {% if record.administrative_start or record.administrative_finish %}
+          <dt>Administrative</dt>
+          <dd>{% if record.administrative_start %}{{ record.administrative_start }}{% endif %}{% if record.administrative_finish %} - {{ record.administrative_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.general_start or record.general_finish %}
+          <dt>General</dt>
+          <dd>{% if record.general_start %}{{ record.general_start }}{% endif %}{% if record.general_finish %} - {{ record.general_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.finance_start or record.finance_finish %}
+          <dt>Finance</dt>
+          <dd>{% if record.finance_start %}{{ record.finance_start }}{% endif %}{% if record.finance_finish %} - {{ record.finance_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.patients_start or record.patients_finish %}
+          <dt>Patients</dt>
+          <dd>{% if record.patients_start %}{{ record.patients_start }}{% endif %}{% if record.patients_finish %} - {{ record.patients_finish }}{% endif %}</dd>
+          {% endif %}
+        </dl>
+        
+        {% if record.finding_aids.exists() %}
+        <p><strong>Finding Aids:</strong> 
+          {% for aid in record.finding_aids.all() %}
+            {{ aid.value }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+        {% endif %}
+        
+        {% if record.records_notes %}
+        <p>{{ record.records_notes }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if hospital.other_information %}
+    <div class="tna-container">
+      <h2 class="tna-heading-l">Additional Information</h2>
+      <p>{{ hospital.other_information }}</p>
+    </div>
+    {% endif %}
+    
+    {% if hospital.researcher_comment %}
+    <div class="tna-container">
+      <h2 class="tna-heading-l">Research Notes</h2>
+      <p>{{ hospital.researcher_comment }}</p>
+      {% if hospital.more_research_required %}
+      <p><em>More research required.</em></p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}

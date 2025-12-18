@@ -1,0 +1,25 @@
+{% from 'hospitaldetails/macros/detail_list.html' import detail_list, detail_item %}
+
+{% call detail_list(heading="Hospital Details") %}
+    {{ detail_item('Previous Names', hospital.previous_names|linebreaksbr) }}
+
+    {% call(label, value) detail_item('Address', condition=hospital.street_1 or hospital.street_2 or hospital.town or hospital.postcode) %}
+        {% if hospital.street_1 %}{{ hospital.street_1 }}{% endif %}{% if hospital.street_2 %}{% if hospital.street_1 %}, {% endif %}{{ hospital.street_2 }}{% endif %}{% if hospital.town %}{% if hospital.street_1 or hospital.street_2 %}, {% endif %}{{ hospital.town }}{% endif %}{% if hospital.postcode %}{% if hospital.street_1 or hospital.street_2 or hospital.town %}, {% endif %}{{ hospital.postcode }}{% endif %}{% if hospital.address_since %} (since {{ hospital.address_since }}){% endif %}
+    {% endcall %}
+    
+    {{ detail_item('Previous Locations', hospital.previous_locations|linebreaksbr) }}
+    
+    {% call(label, value) detail_item('Current Trust', hospital.trust) %}
+        {{ hospital.trust }}{% if hospital.trust_since %} (since {{ hospital.trust_since }}){% endif %}
+    {% endcall %}
+    
+    {{ detail_item('Previous Trusts', hospital.previous_trusts|linebreaksbr) }}
+
+    {% call(label, value) detail_item('Foundation Year', hospital.foundation_year) %}
+        {{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}
+    {% endcall %}
+
+    {% call(label, value) detail_item('Status', value=True, condition=True) %}
+        {% if hospital.closed %}Closed {% if hospital.closure_date %}(since {{ hospital.closure_date }}){% endif %}{% else %}Open{% endif %}
+    {% endcall %}
+{% endcall %}
