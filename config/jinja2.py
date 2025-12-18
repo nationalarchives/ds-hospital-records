@@ -48,6 +48,13 @@ def now_iso_8601():
     return now_date
 
 
+def linebreaksbr(text):
+    """Convert newlines to <br> tags."""
+    if not text:
+        return text
+    return mark_safe(text.replace('\n', '<br>'))
+
+
 def environment(**options):
     env = Environment(**options)
 
@@ -79,5 +86,5 @@ def environment(**options):
             "now_iso_8601": now_iso_8601,
         }
     )
-    env.filters.update({"slugify": slugify})
+    env.filters.update({"slugify": slugify, "linebreaksbr": linebreaksbr})
     return env
