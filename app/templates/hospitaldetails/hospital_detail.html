@@ -39,12 +39,12 @@
         
         {% if hospital.previous_names %}
         <dt>Previous Names</dt>
-        <dd>{{ hospital.previous_names }}</dd>
+        <dd>{{ hospital.previous_names|linebreaksbr }}</dd>
         {% endif %}
         
         {% if hospital.previous_locations %}
         <dt>Previous Locations</dt>
-        <dd>{{ hospital.previous_locations }}</dd>
+        <dd>{{ hospital.previous_locations|linebreaksbr }}</dd>
         {% endif %}
         
         {% if hospital.trust %}
@@ -54,90 +54,12 @@
         
         {% if hospital.previous_trusts %}
         <dt>Previous Trusts</dt>
-        <dd>{{ hospital.previous_trusts }}</dd>
+        <dd>{{ hospital.previous_trusts|linebreaksbr }}</dd>
         {% endif %}
       </dl>
     </div>
-    
-    {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
-    <div class="tna-section">
-      <h2 class="tna-heading-l">Status</h2>
-      
-      <dl class="tna-dl">
-        {% if hospital.pre_1948_status.exists() %}
-        <dt>Pre-1948</dt>
-        <dd>{% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
-        {% endif %}
-        {% if hospital.pre_1948_status_info %}
-        <dt>Pre-1948 information</dt>
-        <dd>{{ hospital.pre_1948_status_info|linebreaksbr }}</dd>
-        {% endif %}
-        {% if hospital.post_1948_status.exists() %}
-        <dt>Post-1948</dt>
-        <dd>{% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
-        {% endif %}
-        {% if hospital.post_1948_status_info %}
-        <dt>Post-1948 information</dt>
-        <dd>{{ hospital.post_1948_status_info|linebreaksbr }}</dd>
-        {% endif %}
-      </dl>
-    </div>
-    {% endif %}
-    
-    {% if hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
-    <div class="tna-section">
-      <h2 class="tna-heading-l">Type</h2>
-      
-      {% if hospital.pre_1948_type.exists() %}
-      <h3 class="tna-heading-m">Pre-1948</h3>
-      <ul class="tna-ul">
-        {% for type in hospital.pre_1948_type.all() %}
-        <li>{{ type.value }}</li>
-        {% endfor %}
-      </ul>
-      {% if hospital.pre_1948_type_info %}
-      <p>{{ hospital.pre_1948_type_info }}</p>
-      {% endif %}
-      {% endif %}
-      
-      {% if hospital.post_1948_type.exists() %}
-      <h3 class="tna-heading-m">Post-1948</h3>
-      <ul class="tna-ul">
-        {% for type in hospital.post_1948_type.all() %}
-        <li>{{ type.value }}</li>
-        {% endfor %}
-      </ul>
-      {% if hospital.post_1948_type_info %}
-      <p>{{ hospital.post_1948_type_info }}</p>
-      {% endif %}
-      {% endif %}
-    </div>
-    {% endif %}
-    
-    {% if hospital.pre_1974_county or hospital.post_1974_county or hospital.post_1996_county %}
-    <div class="tna-section">
-      <h2 class="tna-heading-l">Administrative Location</h2>
-      
-      <dl class="tna-dl">
-        {% if hospital.pre_1974_county %}
-        <dt>Pre-1974 County</dt>
-        <dd>{{ hospital.pre_1974_county.name }}</dd>
-        {% endif %}
-        
-        {% if hospital.post_1974_county %}
-        <dt>Post-1974 County</dt>
-        <dd>{{ hospital.post_1974_county.name }}</dd>
-        {% endif %}
-        
-        {% if hospital.post_1996_county %}
-        <dt>Post-1996 County</dt>
-        <dd>{{ hospital.post_1996_county.name }}</dd>
-        {% endif %}
-      </dl>
-    </div>
-    {% endif %}
-    
-    {% if hospital.regional_board or hospital.management_committee or hospital.pre_1982_regional_authority or hospital.post_1982_regional_authority or hospital.pre_1982_district_authority or hospital.post_1982_district_authority %}
+
+        {% if hospital.pre_1974_county or hospital.post_1974_county or hospital.post_1996_county or hospital.regional_board or hospital.management_committee or hospital.pre_1982_regional_authority or hospital.post_1982_regional_authority or hospital.pre_1982_district_authority or hospital.post_1982_district_authority %}
     <div class="tna-section">
       <h2 class="tna-heading-l">Administrative Authorities</h2>
       
@@ -171,9 +93,72 @@
         <dt>District Authority (Post-1982)</dt>
         <dd>{{ hospital.post_1982_district_authority.name }}</dd>
         {% endif %}
+
+        {% if hospital.pre_1974_county %}
+        <dt>Pre-1974 County</dt>
+        <dd>{{ hospital.pre_1974_county.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.post_1974_county %}
+        <dt>Post-1974 County</dt>
+        <dd>{{ hospital.post_1974_county.name }}</dd>
+        {% endif %}
+        
+        {% if hospital.post_1996_county %}
+        <dt>Post-1996 County</dt>
+        <dd>{{ hospital.post_1996_county.name }}</dd>
+        {% endif %}
       </dl>
     </div>
     {% endif %}
+    
+    {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
+    <div class="tna-section">
+      <h2 class="tna-heading-l">Status</h2>
+      
+      <dl class="tna-dl">
+        {% if hospital.pre_1948_status.exists() %}
+        <dt>Pre-1948</dt>
+        <dd>{% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        {% endif %}
+        {% if hospital.pre_1948_status_info %}
+        <dt>Pre-1948 information</dt>
+        <dd>{{ hospital.pre_1948_status_info|linebreaksbr }}</dd>
+        {% endif %}
+        {% if hospital.post_1948_status.exists() %}
+        <dt>Post-1948</dt>
+        <dd>{% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        {% endif %}
+        {% if hospital.post_1948_status_info %}
+        <dt>Post-1948 information</dt>
+        <dd>{{ hospital.post_1948_status_info|linebreaksbr }}</dd>
+        {% endif %}
+      </dl>
+
+      <h2 class="tna-heading-l">Type</h2>
+      
+      <dl class="tna-dl">
+        {% if hospital.pre_1948_type.exists() %}
+        <dt>Pre-1948</dt>
+        <dd>{% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        {% endif %}
+        {% if hospital.pre_1948_type_info %}
+        <dt>Pre-1948 information</dt>
+        <dd>{{ hospital.pre_1948_type_info|linebreaksbr }}</dd>
+        {% endif %}
+        {% if hospital.post_1948_type.exists() %}
+        <dt>Post-1948</dt>
+        <dd>{% for type in hospital.post_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        {% endif %}
+        {% if hospital.post_1948_type_info %}
+        <dt>Post-1948 information</dt>
+        <dd>{{ hospital.post_1948_type_info|linebreaksbr }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+    {% endif %}
+    
+
     
     {% if records %}
     <div class="tna-section">
