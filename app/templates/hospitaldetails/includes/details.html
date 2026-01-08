@@ -9,7 +9,7 @@
     
     {{ detail_item('Previous Locations', hospital.previous_locations|linebreaksbr) }}
     
-    {% call(label, value) detail_item('Current Trust', hospital.trust) %}
+    {% call(label, value) detail_item('Current Trust', condition=hospital.trust) %}
         {{ hospital.trust }}{% if hospital.trust_since %} (since {{ hospital.trust_since }}){% endif %}
     {% endcall %}
     
