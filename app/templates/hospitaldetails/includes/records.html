@@ -8,16 +8,17 @@
 <div class="tna-container">
     <div class="tna-column tna-column--full tna-!--margin-top-m tna-card">
             <hgroup class="tna-hgroup-m tna-!--margin-top-m">
-                <p class="tna-hgroup__supertitle">{{ record.repository_code }}{% if record.repository.archon_code %} (ARCHON CODE: {{  record.repository.archon_code }}){% endif %}</p>
                 <h3 class="tna-heading-m tna-hgroup__title">
                     <a href="{{ url_for('hospitaldetails:repository_detail', kwargs={'id': record.repository.id}) }}">{{ record.repository.name }}</a>
                 </h3>
+                {% if record.repository_code %}<p class="tna-hgroup__supertitle tna-hgroup__supertitle--plain tna-!--margin-top-s">REPOSITORY CODE: {{ record.repository_code }}</p>{% endif %}
+                {% if record.repository.archon_code %}<p class="tna-hgroup__supertitle tna-hgroup__supertitle--plain tna-!--margin-top-s">ARCHON CODE: {{  record.repository.archon_code }}</p>{% endif %}
             </hgroup>
             
             {% set has_record_types = record.administrative_start or record.administrative_finish or record.general_start or record.general_finish or record.finance_start or record.finance_finish or record.estates_start or record.estates_finish or record.nursing_start or record.nursing_finish or record.staff_start or record.staff_finish or record.patients_start or record.patients_finish or record.admission_start or record.admission_finish or record.clinical_start or record.clinical_finish or record.ephemera_start or record.ephemera_finish or record.pictorial_start or record.pictorial_finish or record.private_papers_start or record.private_papers_finish or record.other_start or record.other_finish %}
             {% set has_finding_aids = record.finding_aids.exists() or record.finding_aids_location.exists() or record.finding_aids_details %}
 
-            <div class="tna-container--extend tna-!--margin-top-m">
+            <div class="tna-container--extend tna-!--margin-top-s">
                 {% if has_record_types %}
                     <h4 class="tna-heading-s">Record type</h4>
                     <dl class="tna-dl tna-dl--small">
