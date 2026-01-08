@@ -1,10 +1,9 @@
 {% from 'hospitaldetails/macros/detail_list.html' import detail_item %}
-{% from 'hospitaldetails/macros/block_heading.html' import block_heading %}
 
 {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() or hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
 
 <div class="tna-container">
-    <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny tna-!--margin-top-s">
+    <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-s">
         <h3 class="tna-heading-m">Status</h3>
         <dl class="tna-dl">
             {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_status.exists()) %}
@@ -21,7 +20,7 @@
         </dl>
     </div>
 
-    <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny tna-!--margin-top-s">
+    <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-s">
         <h3 class="tna-heading-m">Type</h3>
         <dl class="tna-dl">
             {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_type.exists()) %}
