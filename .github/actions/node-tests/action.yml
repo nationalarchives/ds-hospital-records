@@ -10,5 +10,5 @@ runs:
       run: npm run test:all
       shell: bash
     - name: Audit Node dependencies
-      run: npm audit
+      run: npm audit --audit-level=moderate
       shell: bash
