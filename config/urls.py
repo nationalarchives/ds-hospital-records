@@ -23,7 +23,12 @@ from django.urls import include, path
 
 urlpatterns = [
     path("", include(("app.main.urls", "main"), namespace="main")),
-    path("", include(("app.hospitaldetails.urls", "hospitaldetails"), namespace="hospitaldetails")),
+    path(
+        "",
+        include(
+            ("app.hospitaldetails.urls", "hospitaldetails"), namespace="hospitaldetails"
+        ),
+    ),
     path("healthcheck/", include("app.healthcheck.urls")),
     path("admin/", admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -52,7 +52,7 @@ def linebreaksbr(text):
     """Convert newlines to <br> tags."""
     if not text:
         return text
-    return mark_safe(text.replace('\n', '<br>'))
+    return mark_safe(text.replace("\n", "<br>"))
 
 
 def environment(**options):
