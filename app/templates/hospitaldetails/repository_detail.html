@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block pageTitle %}{{ repository.name }}{% endblock %}
+
+{% block content %}
+<div class="tna-container">
+  <div class="tna-column tna-column--full">
+    <h1 class="tna-heading-xl">{{ repository.name }}</h1>
+    
+    <div class="tna-section">
+      <h2 class="tna-heading-l">Details</h2>
+      
+      <dl class="tna-dl">
+        {% if repository.archon_code %}
+        <dt>ARCHON Code</dt>
+        <dd>{{ repository.archon_code }}</dd>
+        {% endif %}
+        
+        {% if repository.street_1 or repository.street_2 or repository.town or repository.postcode %}
+        <dt>Address</dt>
+        <dd>
+          {% if repository.street_1 %}{{ repository.street_1 }}<br>{% endif %}
+          {% if repository.street_2 %}{{ repository.street_2 }}<br>{% endif %}
+          {% if repository.town %}{{ repository.town }}<br>{% endif %}
+          {% if repository.postcode %}{{ repository.postcode }}{% endif %}
+        </dd>
+        {% endif %}
+        
+        {% if repository.county %}
+        <dt>County</dt>
+        <dd>{{ repository.county }}</dd>
+        {% endif %}
+        
+        {% if repository.contact_details %}
+        <dt>Contact Details</dt>
+        <dd>{{ repository.contact_details }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+    
+    {% if records %}
+    <div class="tna-section">
+      <h2 class="tna-heading-l">Hospital Records Held</h2>
+      
+      {% for record in records %}
+      <div class="tna-card">
+        <h3 class="tna-heading-m">
+          <a href="{{ url_for('hospitaldetails:hospital_detail', kwargs={'id': record.hospital.id}) }}">{{ record.hospital.name }}</a>
+        </h3>
+        
+        {% if record.repository_code %}
+        <p><strong>Repository Code:</strong> {{ record.repository_code }}</p>
+        {% endif %}
+        
+        <h4 class="tna-heading-s">Record Coverage</h4>
+        <dl class="tna-dl tna-dl--small">
+          {% if record.administrative_start or record.administrative_finish %}
+          <dt>Administrative</dt>
+          <dd>{% if record.administrative_start %}{{ record.administrative_start }}{% endif %}{% if record.administrative_finish %} - {{ record.administrative_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.general_start or record.general_finish %}
+          <dt>General</dt>
+          <dd>{% if record.general_start %}{{ record.general_start }}{% endif %}{% if record.general_finish %} - {{ record.general_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.finance_start or record.finance_finish %}
+          <dt>Finance</dt>
+          <dd>{% if record.finance_start %}{{ record.finance_start }}{% endif %}{% if record.finance_finish %} - {{ record.finance_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.estates_start or record.estates_finish %}
+          <dt>Estates</dt>
+          <dd>{% if record.estates_start %}{{ record.estates_start }}{% endif %}{% if record.estates_finish %} - {{ record.estates_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.nursing_start or record.nursing_finish %}
+          <dt>Nursing</dt>
+          <dd>{% if record.nursing_start %}{{ record.nursing_start }}{% endif %}{% if record.nursing_finish %} - {{ record.nursing_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.staff_start or record.staff_finish %}
+          <dt>Staff</dt>
+          <dd>{% if record.staff_start %}{{ record.staff_start }}{% endif %}{% if record.staff_finish %} - {{ record.staff_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.ephemera_start or record.ephemera_finish %}
+          <dt>Ephemera</dt>
+          <dd>{% if record.ephemera_start %}{{ record.ephemera_start }}{% endif %}{% if record.ephemera_finish %} - {{ record.ephemera_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.pictorial_start or record.pictorial_finish %}
+          <dt>Pictorial</dt>
+          <dd>{% if record.pictorial_start %}{{ record.pictorial_start }}{% endif %}{% if record.pictorial_finish %} - {{ record.pictorial_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.private_papers_start or record.private_papers_finish %}
+          <dt>Private Papers</dt>
+          <dd>{% if record.private_papers_start %}{{ record.private_papers_start }}{% endif %}{% if record.private_papers_finish %} - {{ record.private_papers_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.patients_start or record.patients_finish %}
+          <dt>Patients</dt>
+          <dd>{% if record.patients_start %}{{ record.patients_start }}{% endif %}{% if record.patients_finish %} - {{ record.patients_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.admission_start or record.admission_finish %}
+          <dt>Admission</dt>
+          <dd>{% if record.admission_start %}{{ record.admission_start }}{% endif %}{% if record.admission_finish %} - {{ record.admission_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.clinical_start or record.clinical_finish %}
+          <dt>Clinical</dt>
+          <dd>{% if record.clinical_start %}{{ record.clinical_start }}{% endif %}{% if record.clinical_finish %} - {{ record.clinical_finish }}{% endif %}</dd>
+          {% endif %}
+          
+          {% if record.other_start or record.other_finish %}
+          <dt>Other</dt>
+          <dd>{% if record.other_start %}{{ record.other_start }}{% endif %}{% if record.other_finish %} - {{ record.other_finish }}{% endif %}</dd>
+          {% endif %}
+        </dl>
+        
+        {% if record.finding_aids.exists() %}
+        <p><strong>Finding Aids:</strong> 
+          {% for aid in record.finding_aids.all() %}
+            {{ aid.value }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+        {% endif %}
+        
+        {% if record.finding_aids_location.exists() %}
+        <p><strong>Finding Aids Location:</strong> 
+          {% for location in record.finding_aids_location.all() %}
+            {{ location.value }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+        {% endif %}
+        
+        {% if record.finding_aids_details %}
+        <p><strong>Finding Aids Details:</strong> {{ record.finding_aids_details }}</p>
+        {% endif %}
+        
+        {% if record.records_notes %}
+        <p>{{ record.records_notes }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if repository.researcher_comment %}
+    <div class="tna-section">
+      <h2 class="tna-heading-l">Research Notes</h2>
+      <p>{{ repository.researcher_comment }}</p>
+      {% if repository.more_research_required %}
+      <p><em>More research required.</em></p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

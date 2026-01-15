@@ -1,0 +1,40 @@
+{% from 'hospitaldetails/macros/detail_list.html' import detail_item %}
+
+{% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() or hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
+
+<div class="tna-container">
+    <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
+        <h3 class="tna-heading-m">Status</h3>
+        <dl class="tna-dl">
+            {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_status.exists()) %}
+                {% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% endcall %}
+            
+            {{ detail_item('Pre-1948 information', hospital.pre_1948_status_info|linebreaksbr) }}
+            
+            {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_status.exists()) %}
+                {% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% endcall %}
+            
+            {{ detail_item('Post-1948 information', hospital.post_1948_status_info|linebreaksbr) }}
+        </dl>
+    </div>
+
+    <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
+        <h3 class="tna-heading-m">Type</h3>
+        <dl class="tna-dl">
+            {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_type.exists()) %}
+                {% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% endcall %}
+            
+            {{ detail_item('Pre-1948 information', hospital.pre_1948_type_info|linebreaksbr) }}
+            
+            {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_type.exists()) %}
+                {% for type in hospital.post_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% endcall %}
+            
+            {{ detail_item('Post-1948 information', hospital.post_1948_type_info|linebreaksbr) }}
+        </dl>
+    </div>
+</div>
+{% endif %}

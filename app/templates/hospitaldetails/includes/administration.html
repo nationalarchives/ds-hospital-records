@@ -1,0 +1,13 @@
+{% from 'hospitaldetails/macros/detail_list.html' import detail_list, detail_item %}
+
+{% call detail_list(heading="Administrative Authorities") %}
+    {{ detail_item('Regional Board (1948)', hospital.regional_board.name if hospital.regional_board else None) }}
+    {{ detail_item('Management Committee (1948)', hospital.management_committee.name if hospital.management_committee else None) }}
+    {{ detail_item('Regional Authority (1974-1982)', hospital.pre_1982_regional_authority.name if hospital.pre_1982_regional_authority else None) }}
+    {{ detail_item('Regional Authority (Post-1982)', hospital.post_1982_regional_authority.name if hospital.post_1982_regional_authority else None) }}
+    {{ detail_item('District Authority (1974-1982)', hospital.pre_1982_district_authority.name if hospital.pre_1982_district_authority else None) }}
+    {{ detail_item('District Authority (Post-1982)', hospital.post_1982_district_authority.name if hospital.post_1982_district_authority else None) }}
+    {{ detail_item('Pre-1974 County', hospital.pre_1974_county.name if hospital.pre_1974_county else None) }}
+    {{ detail_item('Post-1974 County', hospital.post_1974_county.name if hospital.post_1974_county else None) }}
+    {{ detail_item('Post-1996 County', hospital.post_1996_county.name if hospital.post_1996_county else None) }}
+{% endcall %}

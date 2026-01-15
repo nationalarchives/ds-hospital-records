@@ -26,7 +26,7 @@ services:
       - path: ./.env
         required: false
     ports:
-      - 82:8080
+      - 65000:8080
     depends_on:
       - db
     volumes:
@@ -45,10 +45,10 @@ services:
     volumes:
       - .:/docs
     ports:
-      - 1082:8000
+      - 65001:8000
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - 83:8080
+      - 65002:8080
