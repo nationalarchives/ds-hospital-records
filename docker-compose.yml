@@ -40,7 +40,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
 
   docs:
     image: squidfunk/mkdocs-material
