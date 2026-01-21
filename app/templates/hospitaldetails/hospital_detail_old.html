@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block pageTitle %}{{ hospital.name }}{% endblock %}
+{% block pageTitle %}{{ hospital.name }}{% endblock pageTitle %}
 
 {% block content %}
 <div class="tna-section tna-!-padding-top-l">
@@ -243,5 +243,4 @@
     {% endif %}
   </div>
 </div>
-</div>
-{% endblock %}
+{% endblock content %}

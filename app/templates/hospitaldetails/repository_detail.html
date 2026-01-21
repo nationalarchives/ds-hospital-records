@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block pageTitle %}{{ repository.name }}{% endblock %}
+{% block pageTitle %}{{ repository.name }}{% endblock pageTitle %}
 
 {% block content %}
 <div class="tna-container">
@@ -159,4 +159,4 @@
     {% endif %}
   </div>
 </div>
-{% endblock %}
+{% endblock content %}
