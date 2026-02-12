@@ -21,7 +21,7 @@
             <div class="tna-container--extend tna-!--margin-top-s">
                 {% if has_record_types %}
                     <h4 class="tna-heading-s">Record type</h4>
-                    <dl class="tna-dl tna-dl--small">
+                    <dl class="tna-dl tna-dl--zebra">
                         {% call(label, value) detail_item('Administrative', condition=record.administrative_start or record.administrative_finish) %}
                             {% if record.administrative_start %}{{ record.administrative_start }}{% endif %}{% if record.administrative_finish %} - {{ record.administrative_finish }}{% endif %}
                         {% endcall %}
@@ -78,7 +78,7 @@
 
                 {% if has_finding_aids %}
                     <h4 class="tna-heading-s">Finding aids</h4>
-                    <dl class="tna-dl tna-dl--small">
+                    <dl class="tna-dl tna-dl--zebra">
                         {% call(label, value) detail_item('Finding aids', condition=record.finding_aids.exists()) %}
                             {% for aid in record.finding_aids.all() %}{{ aid.value }}{% if not loop.last %}, {% endif %}{% endfor %}
                         {% endcall %}

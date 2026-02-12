@@ -10,7 +10,7 @@
     <div class="tna-section">
       <h2 class="tna-heading-l">Details</h2>
       
-      <dl class="tna-dl">
+      <dl class="tna-dl tna-dl--zebra">
         {% if repository.archon_code %}
         <dt>ARCHON Code</dt>
         <dd>{{ repository.archon_code }}</dd>
@@ -53,7 +53,7 @@
         {% endif %}
         
         <h4 class="tna-heading-s">Record Coverage</h4>
-        <dl class="tna-dl tna-dl--small">
+        <dl class="tna-dl tna-dl--zebra">
           {% if record.administrative_start or record.administrative_finish %}
           <dt>Administrative</dt>
           <dd>{% if record.administrative_start %}{{ record.administrative_start }}{% endif %}{% if record.administrative_finish %} - {{ record.administrative_finish }}{% endif %}</dd>
