@@ -69,6 +69,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+SENTRY_SAMPLE_RATE = float(os.getenv("SENTRY_SAMPLE_RATE", "0.1"))
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 

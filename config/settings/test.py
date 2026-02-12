@@ -14,6 +14,8 @@ SECRET_KEY = "abc123"
 
 DEBUG = True
 
+SENTRY_SAMPLE_RATE = 0
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
