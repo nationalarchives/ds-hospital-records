@@ -22,7 +22,7 @@
 
       <div class="tna-container">
         <div class="tna-column tna-column--full tna-!--margin-top-s">
-          <dl class="tna-dl">
+          <dl class="tna-dl tna-dl--zebra">
             {% if hospital.previous_names %}
             <dt>Previous Names</dt>
             <dd>{{ hospital.previous_names|linebreaksbr }}</dd>
@@ -67,7 +67,7 @@
     <div class="tna-container tna-!--margin-top-m">
       <h2 class="tna-heading-l">Administrative Authorities</h2>
       
-      <dl class="tna-dl">
+      <dl class="tna-dl tna-dl--zebra">
         {% if hospital.regional_board %}
         <dt>Regional Board (1948)</dt>
         <dd>{{ hospital.regional_board.name }}</dd>
@@ -121,7 +121,7 @@
       <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny">
         <h2 class="tna-heading-l">Status</h2>
               
-        <dl class="tna-dl">
+        <dl class="tna-dl tna-dl--zebra">
           {% if hospital.pre_1948_status.exists() %}
           <dt>Pre-1948</dt>
           <dd>{% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
@@ -144,7 +144,7 @@
       <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny">
         <h2 class="tna-heading-l">Type</h2>
         
-        <dl class="tna-dl">
+        <dl class="tna-dl tna-dl--zebra">
           {% if hospital.pre_1948_type.exists() %}
           <dt>Pre-1948</dt>
           <dd>{% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
@@ -187,7 +187,7 @@
         {% endif %}
         
         <h4 class="tna-heading-s">Record Coverage</h4>
-        <dl class="tna-dl tna-dl--small">
+        <dl class="tna-dl tna-dl--zebra">
           {% if record.administrative_start or record.administrative_finish %}
           <dt>Administrative</dt>
           <dd>{% if record.administrative_start %}{{ record.administrative_start }}{% endif %}{% if record.administrative_finish %} - {{ record.administrative_finish }}{% endif %}</dd>

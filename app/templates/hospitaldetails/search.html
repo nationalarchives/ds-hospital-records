@@ -40,7 +40,7 @@
             <a href="{{ url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}) }}">{{ hospital.name }}</a>
           </h3>
           
-          <dl class="tna-dl tna-dl--small">
+          <dl class="tna-dl tna-dl--zebra">
             {% if hospital.town %}
             <dt>Location</dt>
             <dd>{{ hospital.town }}{% if hospital.postcode %}, {{ hospital.postcode }}{% endif %}</dd>
