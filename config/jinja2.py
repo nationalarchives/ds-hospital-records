@@ -73,18 +73,14 @@ def abbr(value):
             suffix = ""
             if "suffix_group" in rule:
                 suffix = match.group(rule["suffix_group"])
-            return Markup('<abbr title="{}">{}</abbr>{}').format(
-                rule["title"],
-                abbreviation,
-                suffix,
-            )
+            return f'<abbr title="{rule["title"]}">{abbreviation}</abbr>{suffix}'
 
         text, replacements = re.subn(rule["pattern"], replacer, text)
         if replacements:
             changed = True
 
     if changed:
-        return Markup(text)
+        return mark_safe(text)
     if isinstance(value, Markup):
         return value
     return text
