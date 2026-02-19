@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "components/search-field/macro.html" import tnaSearchField %}
+{% from "components/card/macro.html" import tnaCard %}
 
 {% block pageTitle %}Search Hospitals{% endblock pageTitle %}
 
@@ -30,37 +31,44 @@
       
       {% if results %}
       <p>Found {{ results|length }} hospital{% if results|length != 1 %}s{% endif %}:</p>
-      
-      <div class="tna-results">
-        {% for hospital in results %}
-        <div class="tna-card">
-          <h3 class="tna-heading-m">
-            <a href="{{ url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}) }}">{{ hospital.name }}</a>
-          </h3>
-          
-          <dl class="tna-dl tna-dl--zebra">
-            {% if hospital.town %}
-            <dt>Location</dt>
-            <dd>{{ hospital.town }}{% if hospital.postcode %}, {{ hospital.postcode }}{% endif %}</dd>
-            {% endif %}
-            
-            {% if hospital.foundation_year %}
-            <dt>Founded</dt>
-            <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
-            {% endif %}
-            
-            {% if hospital.closed %}
-            <dt>Status</dt>
-            <dd>Closed{% if hospital.closure_date %} ({{ hospital.closure_date }}){% endif %}</dd>
-            {% endif %}
-            
-            {% if hospital.trust %}
-            <dt>Trust</dt>
-            <dd>{{ hospital.trust }}</dd>
-            {% endif %}
-          </dl>
-        </div>
-        {% endfor %}
+
+      <div class="tna-section tna-!--no-padding-bottom">
+        <ul class="tna-container">
+          {% for hospital in results %}
+          <li class="tna-column tna-column--width-1-3 tna-column--width-1-2-medium tna-column--width-1-2-small tna-column--full-tiny tna-!--margin-bottom-l">
+            {% set body %}
+            <dl class="tna-dl tna-dl--zebra">
+              {% if hospital.town %}
+              <dt>Location</dt>
+              <dd>{{ hospital.town }}{% if hospital.postcode %}, {{ hospital.postcode }}{% endif %}</dd>
+              {% endif %}
+
+              {% if hospital.foundation_year %}
+              <dt>Founded</dt>
+              <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
+              {% endif %}
+
+              {% if hospital.closed %}
+              <dt>Status</dt>
+              <dd>Closed{% if hospital.closure_date %} ({{ hospital.closure_date }}){% endif %}</dd>
+              {% endif %}
+
+              {% if hospital.trust %}
+              <dt>Trust</dt>
+              <dd>{{ hospital.trust }}</dd>
+              {% endif %}
+            </dl>
+            {% endset %}
+            {{ tnaCard({
+              "title": hospital.name,
+              "headingLevel": 3,
+              "headingSize": "m",
+              "href": url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}),
+              "body": body | trim | safe
+            }) }}
+          </li>
+          {% endfor -%}
+        </ul>
       </div>
       {% else %}
       <p>No hospitals found matching "{{ query }}".</p>
