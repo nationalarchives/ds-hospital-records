@@ -59,7 +59,7 @@ def linebreaksdl(text):
         return ""
 
     items = "".join(f"<dd>{line}</dd>" for line in lines)
-    return mark_safe(f'<dl class="tna-dl">{items}</dl>')
+    return Markup(f'<dl class="tna-dl">{items}</dl>')
 
 
 def _abbr_replacer(rule, match):
@@ -86,7 +86,7 @@ def abbr(value):
 
     if text == original and not isinstance(value, Markup):
         return text
-    return mark_safe(text)
+    return Markup(text)
 
 
 def environment(**options):
