@@ -2,6 +2,7 @@ import json
 import re
 from datetime import datetime
 
+from app.lib.constants import ABBR_PATTERNS
 from django import template
 from django.conf import settings
 from django.templatetags.static import StaticNode
@@ -9,7 +10,6 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from jinja2 import Environment
 from markupsafe import Markup
-from app.lib.constants import ABBR_PATTERNS
 
 register = template.Library()
 
@@ -73,14 +73,18 @@ def abbr(value):
             suffix = ""
             if "suffix_group" in rule:
                 suffix = match.group(rule["suffix_group"])
-            return f'<abbr title="{rule["title"]}">{abbreviation}</abbr>{suffix}'
+            return Markup('<abbr title="{}">{}</abbr>{}').format(
+                rule["title"],
+                abbreviation,
+                suffix,
+            )
 
         text, replacements = re.subn(rule["pattern"], replacer, text)
         if replacements:
             changed = True
 
     if changed:
-        return mark_safe(text)
+        return Markup(text)
     if isinstance(value, Markup):
         return value
     return text
