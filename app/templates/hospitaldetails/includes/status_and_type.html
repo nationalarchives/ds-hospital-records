@@ -10,13 +10,13 @@
                 {% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
             {% endcall %}
             
-            {{ detail_item('Pre-1948 information', hospital.pre_1948_status_info|linebreaksbr) }}
+            {{ detail_item('Pre-1948 information', hospital.pre_1948_status_info|linebreaksdl) }}
             
             {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_status.exists()) %}
                 {% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
             {% endcall %}
             
-            {{ detail_item('Post-1948 information', hospital.post_1948_status_info|linebreaksbr) }}
+            {{ detail_item('Post-1948 information', hospital.post_1948_status_info|linebreaksdl) }}
         </dl>
     </div>
 
@@ -27,13 +27,13 @@
                 {% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
             {% endcall %}
             
-            {{ detail_item('Pre-1948 information', hospital.pre_1948_type_info|linebreaksbr) }}
+            {{ detail_item('Pre-1948 information', hospital.pre_1948_type_info|linebreaksdl) }}
             
             {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_type.exists()) %}
                 {% for type in hospital.post_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
             {% endcall %}
             
-            {{ detail_item('Post-1948 information', hospital.post_1948_type_info|linebreaksbr) }}
+            {{ detail_item('Post-1948 information', hospital.post_1948_type_info|linebreaksdl) }}
         </dl>
     </div>
 </div>

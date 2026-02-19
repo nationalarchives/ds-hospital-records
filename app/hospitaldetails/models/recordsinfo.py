@@ -1,10 +1,11 @@
 import datetime
 
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
-class RecordsInfo(models.Model):
+class RecordsInfo(NH3CleanSaveMixin, models.Model):
     hospital = models.ForeignKey(
         "hospitaldetails.Hospital",
         on_delete=models.CASCADE,

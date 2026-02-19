@@ -23,7 +23,7 @@ class TestAbbr(TestCase):
             '<abbr title="Acute">AC</abbr>: '
             '<abbr title="Geriatric">GER</abbr>: '
             '<abbr title="Local Record Office">LRO</abbr>: '
-            '<abbr title="Repository">AR</abbr>: '
+            '<abbr title="At Repository">AR</abbr>: '
             '<abbr title="National Register of Archives">NRA</abbr>: '
             '<abbr title="Children">C</abbr>: '
             '<abbr title="Catalogue">CAT</abbr>: '

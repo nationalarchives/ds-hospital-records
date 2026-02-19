@@ -1,21 +1,22 @@
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.db import models
 
 
-class Pre1974County(models.Model):
+class Pre1974County(NH3CleanSaveMixin, models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
 
-class Post1974County(models.Model):
+class Post1974County(NH3CleanSaveMixin, models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
 
-class Post1996County(models.Model):
+class Post1996County(NH3CleanSaveMixin, models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):

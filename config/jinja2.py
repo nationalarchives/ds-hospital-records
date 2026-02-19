@@ -2,7 +2,6 @@ import json
 import re
 from datetime import datetime
 
-import nh3
 from app.lib.constants import ABBR_PATTERNS
 from django import template
 from django.conf import settings
@@ -51,11 +50,16 @@ def now_iso_8601():
     return now_date
 
 
-def linebreaksbr(text):
-    """Convert newlines to <br> tags."""
+def linebreaksdl(text):
+    """Convert newlines to <dd> items inside a nested <dl>."""
     if not text:
         return text
-    return mark_safe(text.replace("\n", "<br>"))
+    lines = [line.strip() for line in str(text).splitlines() if line.strip()]
+    if not lines:
+        return ""
+
+    items = "".join(f"<dd>{line}</dd>" for line in lines)
+    return mark_safe(f'<dl class="tna-dl">{items}</dl>')
 
 
 def _abbr_replacer(rule, match):
@@ -74,19 +78,15 @@ def abbr(value):
         return value
 
     text = str(value)
+    original = text
     for rule in ABBR_PATTERNS:
         text = re.sub(
             rule["pattern"], lambda match, rule=rule: _abbr_replacer(rule, match), text
         )
 
-    cleaned = nh3.clean(
-        text,
-        tags={"abbr", "br"},
-        attributes={"abbr": {"title"}},
-    )
-    if cleaned == text and not isinstance(value, Markup):
-        return cleaned
-    return mark_safe(cleaned)
+    if text == original and not isinstance(value, Markup):
+        return text
+    return mark_safe(text)
 
 
 def environment(**options):
@@ -120,5 +120,5 @@ def environment(**options):
             "now_iso_8601": now_iso_8601,
         }
     )
-    env.filters.update({"slugify": slugify, "linebreaksbr": linebreaksbr, "abbr": abbr})
+    env.filters.update({"slugify": slugify, "linebreaksdl": linebreaksdl, "abbr": abbr})
     return env
