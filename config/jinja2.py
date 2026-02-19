@@ -7,8 +7,8 @@ from django.conf import settings
 from django.templatetags.static import StaticNode
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from markupsafe import Markup
 from jinja2 import Environment
+from markupsafe import Markup
 
 register = template.Library()
 
@@ -57,7 +57,12 @@ def linebreaksbr(text):
 
 
 ABBR_PATTERNS = [
-    {"pattern": r"\bc\.(\s*\d{1,4})", "title": "circa", "abbr": "c.", "suffix_group": 1},
+    {
+        "pattern": r"\bc\.(\s*\d{1,4})",
+        "title": "circa",
+        "abbr": "c.",
+        "suffix_group": 1,
+    },
     {
         "pattern": r"\b(PLI)(\s*:)",
         "title": "Poor Law Institution",
@@ -83,22 +88,42 @@ ABBR_PATTERNS = [
         "abbr_group": 1,
         "suffix_group": 2,
     },
-    {"pattern": r"\b(AR)(\s*:)", "title": "Repository", "abbr_group": 1, "suffix_group": 2},
+    {
+        "pattern": r"\b(AR)(\s*:)",
+        "title": "Repository",
+        "abbr_group": 1,
+        "suffix_group": 2,
+    },
     {
         "pattern": r"\b(NRA)(\s*:)",
         "title": "National Register of Archives",
         "abbr_group": 1,
         "suffix_group": 2,
     },
-    {"pattern": r"\b(C)(\s*:)", "title": "Children", "abbr_group": 1, "suffix_group": 2},
+    {
+        "pattern": r"\b(C)(\s*:)",
+        "title": "Children",
+        "abbr_group": 1,
+        "suffix_group": 2,
+    },
     {
         "pattern": r"\b(CAT)(\s*:)",
         "title": "Catalogue",
         "abbr_group": 1,
         "suffix_group": 2,
     },
-    {"pattern": r"\b(VOL)(\s*:)", "title": "Voluntary", "abbr_group": 1, "suffix_group": 2},
-    {"pattern": r"\b(MNT)(\s*:)", "title": "Mental", "abbr_group": 1, "suffix_group": 2},
+    {
+        "pattern": r"\b(VOL)(\s*:)",
+        "title": "Voluntary",
+        "abbr_group": 1,
+        "suffix_group": 2,
+    },
+    {
+        "pattern": r"\b(MNT)(\s*:)",
+        "title": "Mental",
+        "abbr_group": 1,
+        "suffix_group": 2,
+    },
 ]
 
 
@@ -109,6 +134,7 @@ def abbr(value):
     text = str(value)
     changed = False
     for rule in ABBR_PATTERNS:
+
         def replacer(match):
             if "abbr" in rule:
                 abbreviation = rule["abbr"]
