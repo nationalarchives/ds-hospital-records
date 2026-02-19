@@ -87,14 +87,14 @@
                             {% for location in record.finding_aids_location.all() %}{{ location.value }}{% if not loop.last %}, {% endif %}{% endfor %}
                         {% endcall %}
                         
-                        {{ detail_item('Details', record.finding_aids_details|linebreaksbr) }}
+                        {{ detail_item('Details', record.finding_aids_details|linebreaksdl) }}
                     </dl>
                 {% endif %}
             </div>
             
             {% if record.records_notes %}
             <div class="tna-!--margin-top-m">
-                <p>{{ record.records_notes|linebreaksbr }}</p>
+                {{ record.records_notes|linebreaksdl }}
             </div>
             {% endif %}
         </div>
