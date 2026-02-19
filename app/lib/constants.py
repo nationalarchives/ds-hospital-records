@@ -32,7 +32,7 @@ ABBR_PATTERNS = [
     },
     {
         "pattern": r"\b(AR)(\s*:)",
-        "title": "Repository",
+        "title": "At Repository",
         "abbr_group": 1,
         "suffix_group": 2,
     },
