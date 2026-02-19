@@ -200,7 +200,7 @@ class Command(BaseCommand):
 
         # Finding Aids Location options
         finding_aids_locations = [
-            "Repository (AR)",
+            "At Repository (AR)",
             "Local Record Office (LRO)",
             "National Register of Archives (NRA)",
             "Wellcome Library (WIHM)",
@@ -1202,7 +1202,7 @@ class Command(BaseCommand):
                         records_info.finding_aids_location,
                         row.get("AidsWithRecords"),
                         FindingAidsLocation,
-                        "Repository (AR)",
+                        "At Repository (AR)",
                     )
                     self.add_m2m_if_true(
                         records_info,
