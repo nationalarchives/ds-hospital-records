@@ -1,6 +1,7 @@
 import json
 import re
 from datetime import datetime
+import nh3
 
 from app.lib.constants import ABBR_PATTERNS
 from django import template
@@ -57,33 +58,33 @@ def linebreaksbr(text):
     return mark_safe(text.replace("\n", "<br>"))
 
 
+def _abbr_replacer(rule, match):
+    if "abbr" in rule:
+        abbreviation = rule["abbr"]
+    else:
+        abbreviation = match.group(rule["abbr_group"])
+    suffix = ""
+    if "suffix_group" in rule:
+        suffix = match.group(rule["suffix_group"])
+    return f'<abbr title="{rule["title"]}">{abbreviation}</abbr>{suffix}'
+
+
 def abbr(value):
     if not value:
         return value
 
     text = str(value)
-    changed = False
     for rule in ABBR_PATTERNS:
+        text = re.sub(rule["pattern"], lambda match, rule=rule: _abbr_replacer(rule, match), text)
 
-        def replacer(match):
-            if "abbr" in rule:
-                abbreviation = rule["abbr"]
-            else:
-                abbreviation = match.group(rule["abbr_group"])
-            suffix = ""
-            if "suffix_group" in rule:
-                suffix = match.group(rule["suffix_group"])
-            return f'<abbr title="{rule["title"]}">{abbreviation}</abbr>{suffix}'
-
-        text, replacements = re.subn(rule["pattern"], replacer, text)
-        if replacements:
-            changed = True
-
-    if changed:
-        return mark_safe(text)
-    if isinstance(value, Markup):
-        return value
-    return text
+    cleaned = nh3.clean(
+        text,
+        tags={"abbr", "br"},
+        attributes={"abbr": {"title"}},
+    )
+    if cleaned == text and not isinstance(value, Markup):
+        return cleaned
+    return mark_safe(cleaned)
 
 
 def environment(**options):
