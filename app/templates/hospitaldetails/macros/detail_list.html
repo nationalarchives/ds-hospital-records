@@ -17,6 +17,6 @@
 {% macro detail_item(label, value=None, condition=True) %}
     {% if condition and (value or caller is defined) %}
         <dt>{{ label }}</dt>
-        <dd>{% if caller is defined %}{{ caller() }}{% else %}{{ value }}{% endif %}</dd>
+        <dd>{% if caller is defined %}{{ caller()|abbr }}{% else %}{{ value|abbr }}{% endif %}</dd>
     {% endif %}
 {% endmacro %}
