@@ -56,3 +56,18 @@ def repository_detail(request, id):
         "records": records,
     }
     return render(request, "hospitaldetails/repository_detail.html", context)
+
+
+def repository_list(request):
+    """Display a list of repositories."""
+    repositories = Repository.objects.order_by("name").all()
+
+    context = {
+        "repositories": repositories,
+    }
+    return render(request, "hospitaldetails/repositories.html", context)
+
+
+def home_page(request):
+    """Display the home page."""
+    return render(request, "hospitaldetails/home.html")

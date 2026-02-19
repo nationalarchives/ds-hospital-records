@@ -22,11 +22,15 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path("", include(("app.main.urls", "main"), namespace="main")),
     path(
         "",
+        include(("app.main.urls", "main"), namespace="main"),
+    ),
+    path(
+        "hospital-records/",
         include(
-            ("app.hospitaldetails.urls", "hospitaldetails"), namespace="hospitaldetails"
+            ("app.hospitaldetails.urls", "hospitaldetails"),
+            namespace="hospitaldetails",
         ),
     ),
     path("healthcheck/", include("app.healthcheck.urls")),
