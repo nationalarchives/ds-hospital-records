@@ -16,6 +16,7 @@ django-csp = "^4.0"
 whitenoise = "^6.7.0"
 pymssql = "^2.3.10"
 sentry-sdk = "^2.51.0"
+nh3 = "^0.3.3"
 
 [tool.poetry.group.dev]
 optional = true

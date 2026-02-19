@@ -2,12 +2,15 @@ import json
 import re
 from datetime import datetime
 
+import nh3
+from app.lib.constants import ABBR_PATTERNS
 from django import template
 from django.conf import settings
 from django.templatetags.static import StaticNode
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from jinja2 import Environment
+from markupsafe import Markup
 
 register = template.Library()
 
@@ -55,6 +58,37 @@ def linebreaksbr(text):
     return mark_safe(text.replace("\n", "<br>"))
 
 
+def _abbr_replacer(rule, match):
+    if "abbr" in rule:
+        abbreviation = rule["abbr"]
+    else:
+        abbreviation = match.group(rule["abbr_group"])
+    suffix = ""
+    if "suffix_group" in rule:
+        suffix = match.group(rule["suffix_group"])
+    return f'<abbr title="{rule["title"]}">{abbreviation}</abbr>{suffix}'
+
+
+def abbr(value):
+    if not value:
+        return value
+
+    text = str(value)
+    for rule in ABBR_PATTERNS:
+        text = re.sub(
+            rule["pattern"], lambda match, rule=rule: _abbr_replacer(rule, match), text
+        )
+
+    cleaned = nh3.clean(
+        text,
+        tags={"abbr", "br"},
+        attributes={"abbr": {"title"}},
+    )
+    if cleaned == text and not isinstance(value, Markup):
+        return cleaned
+    return mark_safe(cleaned)
+
+
 def environment(**options):
     env = Environment(**options)
 
@@ -86,5 +120,5 @@ def environment(**options):
             "now_iso_8601": now_iso_8601,
         }
     )
-    env.filters.update({"slugify": slugify, "linebreaksbr": linebreaksbr})
+    env.filters.update({"slugify": slugify, "linebreaksbr": linebreaksbr, "abbr": abbr})
     return env
