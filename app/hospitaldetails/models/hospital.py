@@ -1,11 +1,11 @@
 import datetime
 
-from django.core.exceptions import ValidationError
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
-class Hospital(models.Model):
+class Hospital(NH3CleanSaveMixin, models.Model):
     name = models.CharField(max_length=100)
     name_since = models.IntegerField(
         null=True,

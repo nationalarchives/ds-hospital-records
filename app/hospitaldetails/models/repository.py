@@ -1,7 +1,8 @@
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.db import models
 
 
-class Repository(models.Model):
+class Repository(NH3CleanSaveMixin, models.Model):
     name = models.CharField(max_length=90)
     archon_code = models.IntegerField(null=True, blank=True)
     street_1 = models.CharField(max_length=100, null=True, blank=True)

@@ -1,7 +1,8 @@
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.db import models
 
 
-class FindingAids(models.Model):
+class FindingAids(NH3CleanSaveMixin, models.Model):
     value = models.CharField(max_length=25)
 
     def __str__(self):
@@ -12,7 +13,7 @@ class FindingAids(models.Model):
         verbose_name_plural = "Finding Aids"
 
 
-class FindingAidsLocation(models.Model):
+class FindingAidsLocation(NH3CleanSaveMixin, models.Model):
     value = models.CharField(max_length=50)
 
     def __str__(self):
