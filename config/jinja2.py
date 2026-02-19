@@ -1,8 +1,8 @@
 import json
 import re
 from datetime import datetime
-import nh3
 
+import nh3
 from app.lib.constants import ABBR_PATTERNS
 from django import template
 from django.conf import settings
@@ -75,7 +75,9 @@ def abbr(value):
 
     text = str(value)
     for rule in ABBR_PATTERNS:
-        text = re.sub(rule["pattern"], lambda match, rule=rule: _abbr_replacer(rule, match), text)
+        text = re.sub(
+            rule["pattern"], lambda match, rule=rule: _abbr_replacer(rule, match), text
+        )
 
     cleaned = nh3.clean(
         text,
