@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "components/sidebar/macro.html" import tnaSidebar %}
+
 {% block pageTitle %}{{ hospital.name }}{% endblock pageTitle %}
 
 {% block content %}
@@ -15,14 +17,66 @@
 
     </div>
 
-    {% include "hospitaldetails/includes/details.html" %}
+    {% set has_status = hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
+    {% set has_type = hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
+    {% set has_records = records %}
+    {% set sidebar_items = [
+        {
+            "text": "Hospital details",
+            "href": "#hospital-details"
+        },
+        {
+            "text": "Administrative authorities",
+            "href": "#administrative-authorities"
+        }
+    ] %}
+    {% if has_status %}
+        {% set sidebar_items = sidebar_items + [
+            {
+                "text": "Status",
+                "href": "#status"
+            }
+        ] %}
+    {% endif %}
+    {% if has_type %}
+        {% set sidebar_items = sidebar_items + [
+            {
+                "text": "Type",
+                "href": "#type"
+            }
+        ] %}
+    {% endif %}
+    {% if has_records %}
+        {% set sidebar_items = sidebar_items + [
+            {
+                "text": "Records found at",
+                "href": "#records-found-at"
+            }
+        ] %}
+    {% endif %}
 
-    {% include "hospitaldetails/includes/administration.html" %}
+    <div class="tna-container">
+        <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full tna-column--full-small tna-column--full-tiny">
+            {% include "hospitaldetails/includes/details.html" %}
 
-    {% include "hospitaldetails/includes/status_and_type.html" %}
+            {% include "hospitaldetails/includes/administration.html" %}
 
-    {% include "hospitaldetails/includes/other_information.html" %}
+            {% include "hospitaldetails/includes/status_and_type.html" %}
 
-    {% include "hospitaldetails/includes/records.html" %}
+            {% include "hospitaldetails/includes/other_information.html" %}
+
+            {% include "hospitaldetails/includes/records.html" %}
+        </div>
+
+        <div class="tna-column tna-column--width-1-3 tna-column--width-5-6-medium tna-column--full tna-column--full-small tna-column--full-tiny">
+            {{ tnaSidebar({
+                "title": "On this page",
+                "headingLevel": 2,
+                "items": sidebar_items,
+                "type": "sections",
+                "classes": "tna-sidebar--sticky tna-sidebar--static-on-small tna-sidebar--static-on-tiny"
+            }) }}
+        </div>
+    </div>
 </div>
 {% endblock content %}
