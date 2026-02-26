@@ -9,7 +9,11 @@
     <div class="tna-column tna-column--full tna-!--margin-top-m tna-card">
             <hgroup class="tna-hgroup-m tna-!--margin-top-m">
                 <h3 class="tna-heading-m tna-hgroup__title">
-                    <a href="{{ url_for('hospitaldetails:repository_detail', kwargs={'id': record.repository.id}) }}">{{ record.repository.name }}</a>
+                    {% if record.repository.archon_url %}
+                        <a href="{{ record.repository.archon_url }}" target="_blank" rel="noopener">{{ record.repository.name }}</a>
+                    {% else %}
+                        <a href="{{ url_for('hospitaldetails:repository_detail', kwargs={'id': record.repository.id}) }}">{{ record.repository.name }}</a>
+                    {% endif %}
                 </h3>
                 {% if record.repository_code %}<p class="tna-hgroup__supertitle tna-hgroup__supertitle--plain tna-!--margin-top-s">REPOSITORY CODE: {{ record.repository_code }}</p>{% endif %}
                 {% if record.repository.archon_code %}<p class="tna-hgroup__supertitle tna-hgroup__supertitle--plain tna-!--margin-top-s">ARCHON CODE: {{ record.repository.archon_code }}</p>{% endif %}
