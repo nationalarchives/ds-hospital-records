@@ -18,6 +18,14 @@ class Repository(NH3CleanSaveMixin, models.Model):
     last_updated_at = models.DateTimeField(auto_now=True)
 
     @property
+    def full_address(self):
+        """
+        Returns the full address of the repository as a single string, combining all available address fields.
+        """
+        address_parts = [self.street_1, self.street_2, self.town, self.county, self.postcode]
+        return ", ".join(part for part in address_parts if part)
+
+    @property
     def archon_url(self):
         """
         Returns the URL to the repository's page on Discovery if an ARCHON code is present.
