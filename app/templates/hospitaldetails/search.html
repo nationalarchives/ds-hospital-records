@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% from "components/search-field/macro.html" import tnaSearchField %}
+{% from "components/card/macro.html" import tnaCard %}
+{% from "components/pagination/macro.html" import tnaPagination %}
 
 {% block pageTitle %}Search Hospitals{% endblock pageTitle %}
 
@@ -10,19 +13,16 @@
     <div class="tna-section">
       <form method="get" action="{{ url_for('hospitaldetails:search') }}" class="tna-form">
         <div class="tna-form__group">
-          <label for="search-query" class="tna-label tna-label--m">
-            Search by hospital name or town
-          </label>
-          <input
-            type="text"
-            id="search-query"
-            name="q"
-            value="{{ query }}"
-            class="tna-input"
-            placeholder="Enter hospital name or town..."
-          />
+          {{ tnaSearchField({
+            "label": "Hospital Records search",
+            "headingLevel": 1,
+            "headingSize": "l",
+            "id": "search",
+            "name": "q",
+            "value": query or "",
+            "hint": "Enter hospital name or town to search.",
+          }) }}
         </div>
-        <button type="submit" class="tna-button">Search</button>
       </form>
     </div>
     
@@ -30,40 +30,85 @@
     <div class="tna-section">
       <h2 class="tna-heading-l">Search Results</h2>
       
-      {% if results %}
-      <p>Found {{ results|length }} hospital{% if results|length != 1 %}s{% endif %}:</p>
-      
-      <div class="tna-results">
-        {% for hospital in results %}
-        <div class="tna-card">
-          <h3 class="tna-heading-m">
-            <a href="{{ url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}) }}">{{ hospital.name }}</a>
-          </h3>
-          
-          <dl class="tna-dl tna-dl--zebra">
-            {% if hospital.town %}
-            <dt>Location</dt>
-            <dd>{{ hospital.town }}{% if hospital.postcode %}, {{ hospital.postcode }}{% endif %}</dd>
-            {% endif %}
-            
-            {% if hospital.foundation_year %}
-            <dt>Founded</dt>
-            <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
-            {% endif %}
-            
-            {% if hospital.closed %}
-            <dt>Status</dt>
-            <dd>Closed{% if hospital.closure_date %} ({{ hospital.closure_date }}){% endif %}</dd>
-            {% endif %}
-            
-            {% if hospital.trust %}
-            <dt>Trust</dt>
-            <dd>{{ hospital.trust }}</dd>
-            {% endif %}
-          </dl>
-        </div>
-        {% endfor %}
+      {% if paginator %}
+        {% set total_results = paginator.count %}
+      {% else %}
+        {% set total_results = results|length %}
+      {% endif %}
+
+      {% if total_results > 0 %}
+      <p>Found {{ total_results }} hospital{% if total_results != 1 %}s{% endif %}.</p>
+      {% if page_obj %}
+      <p>Showing {{ page_obj.start_index() }}-{{ page_obj.end_index() }} of {{ total_results }}.</p>
+      {% endif %}
+
+      <div class="tna-section tna-!--no-padding-bottom">
+        <ul class="tna-container">
+          {% for hospital in results %}
+          <li class="tna-column tna-column--full tna-!--margin-bottom-l">
+            {% set body %}
+            <dl class="tna-dl tna-dl--zebra">
+              {% if hospital.full_address %}
+              <dt>Location</dt>
+              <dd>{{ hospital.full_address }}</dd>
+              {% endif %}
+
+              <dt>Founded</dt>
+              {% if hospital.foundation_year %}
+              <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
+              {% else %}
+              <dd>Unknown</dd>
+              {% endif %}
+
+              {% if hospital.closed %}
+              <dt>Status</dt>
+              <dd>Closed{% if hospital.closure_date %} ({{ hospital.closure_date }}){% endif %}</dd>
+              {% else %}
+              <dt>Status</dt>
+              <dd>Open</dd>
+              {% endif %}
+            </dl>
+            {% endset %}
+            {{ tnaCard({
+              "title": hospital.name,
+              "headingLevel": 3,
+              "headingSize": "m",
+              "href": url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}),
+              "body": body | trim | safe
+            }) }}
+          </li>
+          {% endfor -%}
+        </ul>
       </div>
+      {% if page_obj and paginator and paginator.num_pages > 1 %}
+      {% set pagination_items = [] %}
+      {% for page_number in page_numbers %}
+        {% if page_number %}
+          {% set _ = pagination_items.append({
+            "number": page_number,
+            "href": url_for('hospitaldetails:search') ~ "?q=" ~ (query | urlencode) ~ "&page=" ~ page_number,
+            "current": page_number == page_obj.number
+          }) %}
+        {% else %}
+          {% set _ = pagination_items.append({"ellipsis": True}) %}
+        {% endif %}
+      {% endfor %}
+
+      {% set pagination_previous = page_obj.has_previous() and {
+        "href": url_for('hospitaldetails:search') ~ "?q=" ~ (query | urlencode) ~ "&page=" ~ page_obj.previous_page_number()
+      } or None %}
+      {% set pagination_next = page_obj.has_next() and {
+        "href": url_for('hospitaldetails:search') ~ "?q=" ~ (query | urlencode) ~ "&page=" ~ page_obj.next_page_number()
+      } or None %}
+
+      <div class="tna-section">
+        {{ tnaPagination({
+          "previous": pagination_previous,
+          "items": pagination_items,
+          "next": pagination_next
+        }) }}
+      </div>
+      {% endif %}
       {% else %}
       <p>No hospitals found matching "{{ query }}".</p>
       <p>Try searching by:</p>

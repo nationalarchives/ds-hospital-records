@@ -1,13 +1,32 @@
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 
 from .models import Hospital, RecordsInfo, Repository
 
 
+def _build_page_numbers(current_page, total_pages, window=1, edges=1):
+    pages = []
+
+    for page_number in range(1, total_pages + 1):
+        in_edges = page_number <= edges or page_number > total_pages - edges
+        in_window = current_page - window <= page_number <= current_page + window
+
+        if in_edges or in_window:
+            pages.append(page_number)
+        elif pages and pages[-1] is not None:
+            pages.append(None)
+
+    return pages
+
+
 def search(request):
     """Search for hospitals by name or town."""
     query = request.GET.get("q", "").strip()
-    results = []
+    results = Hospital.objects.none()
+    page_obj = None
+    paginator = None
+    page_numbers = []
 
     if query:
         # Search in hospital name, previous names, and town
@@ -17,9 +36,17 @@ def search(request):
             | Q(town__icontains=query)
         ).order_by("name")
 
+        paginator = Paginator(results, 10)
+        page_obj = paginator.get_page(request.GET.get("page"))
+        results = page_obj.object_list
+        page_numbers = _build_page_numbers(page_obj.number, paginator.num_pages)
+
     context = {
         "query": query,
         "results": results,
+        "paginator": paginator,
+        "page_obj": page_obj,
+        "page_numbers": page_numbers,
     }
     return render(request, "hospitaldetails/search.html", context)
 

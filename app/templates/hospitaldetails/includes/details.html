@@ -3,8 +3,12 @@
 {% call detail_list(heading="Hospital Details", heading_id="hospital-details") %}
     {{ detail_item('Previous Names', hospital.previous_names|linebreaksdl) }}
 
-    {% call(label, value) detail_item('Address', condition=hospital.street_1 or hospital.street_2 or hospital.town or hospital.postcode) %}
-        {% if hospital.street_1 %}{{ hospital.street_1 }}{% endif %}{% if hospital.street_2 %}{% if hospital.street_1 %}, {% endif %}{{ hospital.street_2 }}{% endif %}{% if hospital.town %}{% if hospital.street_1 or hospital.street_2 %}, {% endif %}{{ hospital.town }}{% endif %}{% if hospital.postcode %}{% if hospital.street_1 or hospital.street_2 or hospital.town %}, {% endif %}{{ hospital.postcode }}{% endif %}{% if hospital.address_since %} (since {{ hospital.address_since }}){% endif %}
+    {% call(label, value) detail_item('Address', value=True, condition=True) %}
+        {% if hospital.full_address %}
+            {{ hospital.full_address }}
+        {% else %}
+            Unknown
+        {% endif %}
     {% endcall %}
     
     {{ detail_item('Previous Locations', hospital.previous_locations|linebreaksdl) }}
@@ -15,8 +19,12 @@
     
     {{ detail_item('Previous Trusts', hospital.previous_trusts|linebreaksdl) }}
 
-    {% call(label, value) detail_item('Foundation Year', hospital.foundation_year) %}
-        {{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}
+    {% call(label, value) detail_item('Foundation Year', value=True, condition=True) %}
+        {% if hospital.foundation_year %}
+            {{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}
+        {% else %}
+            Unknown
+        {% endif %}
     {% endcall %}
 
     {% call(label, value) detail_item('Status', value=True, condition=True) %}
