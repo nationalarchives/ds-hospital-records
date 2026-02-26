@@ -53,9 +53,11 @@
               <dd>{{ hospital.town }}{% if hospital.postcode %}, {{ hospital.postcode }}{% endif %}</dd>
               {% endif %}
 
-              {% if hospital.foundation_year %}
               <dt>Founded</dt>
+              {% if hospital.foundation_year %}
               <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
+              {% else %}
+              <dd>Unknown</dd>
               {% endif %}
 
               {% if hospital.closed %}
