@@ -22,7 +22,13 @@ class Repository(NH3CleanSaveMixin, models.Model):
         """
         Returns the full address of the repository as a single string, combining all available address fields.
         """
-        address_parts = [self.street_1, self.street_2, self.town, self.county, self.postcode]
+        address_parts = [
+            self.street_1,
+            self.street_2,
+            self.town,
+            self.county,
+            self.postcode,
+        ]
         return ", ".join(part for part in address_parts if part)
 
     @property
