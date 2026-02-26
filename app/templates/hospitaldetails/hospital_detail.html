@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% from "components/sidebar/macro.html" import tnaSidebar %}
+{% from "components/warning/macro.html" import tnaWarning %}
 
 {% block pageTitle %}{{ hospital.name }}{% endblock pageTitle %}
 
@@ -57,6 +58,11 @@
 
     <div class="tna-container">
         <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full tna-column--full-small tna-column--full-tiny">
+            {{ tnaWarning({
+                "headingLevel": 2,
+                "body": "Please note the data on this page may not be current and should be treated as outdated."
+            }) }}
+
             {% include "hospitaldetails/includes/details.html" %}
 
             {% include "hospitaldetails/includes/administration.html" %}
