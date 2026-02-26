@@ -3,6 +3,7 @@
 {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() or hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
 
 <div class="tna-container">
+    {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
     <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
         <h3 class="tna-heading-m">Status</h3>
         <dl class="tna-dl tna-dl--zebra">
@@ -19,7 +20,9 @@
             {{ detail_item('Post-1948 information', hospital.post_1948_status_info|linebreaksdl) }}
         </dl>
     </div>
-
+    {% endif %}
+    
+    {% if hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
     <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
         <h3 class="tna-heading-m">Type</h3>
         <dl class="tna-dl tna-dl--zebra">
@@ -36,5 +39,6 @@
             {{ detail_item('Post-1948 information', hospital.post_1948_type_info|linebreaksdl) }}
         </dl>
     </div>
+    {% endif %}
 </div>
 {% endif %}
