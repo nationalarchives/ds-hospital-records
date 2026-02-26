@@ -17,5 +17,14 @@ class Repository(NH3CleanSaveMixin, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def archon_url(self):
+        """
+        Returns the URL to the repository's page on Discovery if an ARCHON code is present.
+        """
+        if self.archon_code:
+            return f"https://discovery.nationalarchives.gov.uk/details/a?_ref={self.archon_code}"
+        return None
+
     def __str__(self):
         return self.name
