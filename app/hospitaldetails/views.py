@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Hospital, RecordsInfo, Repository
 
@@ -71,7 +71,9 @@ def repository_detail(request, id):
     """Display details for a specific repository."""
     repository = get_object_or_404(Repository, id=id)
 
-    # Get related records info for this repository
+    if repository.archon_url:
+        return redirect(repository.archon_url)
+
     records = (
         RecordsInfo.objects.filter(repository=repository)
         .select_related("hospital")
@@ -83,16 +85,6 @@ def repository_detail(request, id):
         "records": records,
     }
     return render(request, "hospitaldetails/repository_detail.html", context)
-
-
-def repository_list(request):
-    """Display a list of repositories."""
-    repositories = Repository.objects.order_by("name").all()
-
-    context = {
-        "repositories": repositories,
-    }
-    return render(request, "hospitaldetails/repositories.html", context)
 
 
 def home_page(request):
