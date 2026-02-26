@@ -1,6 +1,6 @@
 {% from 'hospitaldetails/macros/detail_list.html' import detail_list, detail_item %}
 
-{% call detail_list(heading="Administrative Authorities") %}
+{% call detail_list(heading="Administrative Authorities", heading_id="administrative-authorities") %}
     {{ detail_item('Regional Board (1948-1974)', hospital.regional_board.name if hospital.regional_board else None) }}
     {{ detail_item('Management Committee (1948-1974)', hospital.management_committee.name if hospital.management_committee else None) }}
     {{ detail_item('Regional Authority (1974-1982)', hospital.pre_1982_regional_authority.name if hospital.pre_1982_regional_authority else None) }}

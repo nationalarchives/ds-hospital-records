@@ -148,6 +148,11 @@ class Hospital(NH3CleanSaveMixin, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def full_address(self):
+        parts = [self.street_1, self.street_2, self.town, self.postcode]
+        return ", ".join(part for part in parts if part)
+
     def __str__(self):
         return self.name
 
