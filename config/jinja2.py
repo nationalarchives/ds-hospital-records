@@ -59,7 +59,7 @@ def linebreaksdl(text):
         return ""
 
     items = "".join(f"<dd>{line}</dd>" for line in lines)
-    return Markup(f'<dl class="tna-dl">{items}</dl>')
+    return Markup(f'<dl>{items}</dl>')
 
 
 def _abbr_replacer(rule, match):
