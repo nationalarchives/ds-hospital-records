@@ -5,7 +5,7 @@
 <div class="tna-container">
     {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
     <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
-        <h3 class="tna-heading-m">Status</h3>
+        <h2 class="tna-heading-l" id="status">Status</h2>
         <dl class="tna-dl tna-dl--zebra">
             {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_status.exists()) %}
                 {% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
@@ -24,7 +24,7 @@
     
     {% if hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
     <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
-        <h3 class="tna-heading-m">Type</h3>
+        <h2 class="tna-heading-l" id="type">Type</h2>
         <dl class="tna-dl tna-dl--zebra">
             {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_type.exists()) %}
                 {% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
