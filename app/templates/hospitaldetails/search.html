@@ -48,9 +48,9 @@
           <li class="tna-column tna-column--full tna-!--margin-bottom-l">
             {% set body %}
             <dl class="tna-dl tna-dl--zebra">
-              {% if hospital.town %}
+              {% if hospital.full_address %}
               <dt>Location</dt>
-              <dd>{{ hospital.town }}{% if hospital.postcode %}, {{ hospital.postcode }}{% endif %}</dd>
+              <dd>{{ hospital.full_address }}</dd>
               {% endif %}
 
               <dt>Founded</dt>
