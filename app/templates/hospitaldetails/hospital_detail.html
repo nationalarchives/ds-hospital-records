@@ -21,6 +21,7 @@
                 <p class="tna-hgroup__supertitle">Hospital</p>
                 <h1 class="tna-hgroup__title">{{ hospital.name }}</h1>
             </hgroup>
+            <p><small>Last updated at {{ hospital.last_updated_at.strftime('%-d %B %Y') }}</small></p>
         </div>
 
     </div>
