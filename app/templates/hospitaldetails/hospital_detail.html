@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% from "components/back-link/macro.html" import tnaBackLink %}
 {% from "components/sidebar/macro.html" import tnaSidebar %}
 {% from "components/warning/macro.html" import tnaWarning %}
 
@@ -8,6 +9,12 @@
 {% block content %}
 <div class="tna-section tna-!-padding-top-l">
     <div class="tna-container">
+        <div class="tna-column tna-column--full">
+            {{ tnaBackLink({
+                "text": "Back to search results page",
+                "href": back_link_href
+            }) }}
+        </div>
 
         <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full tna-column--full-small tna-column--full-tiny">
             <hgroup class="tna-hgroup-xl">

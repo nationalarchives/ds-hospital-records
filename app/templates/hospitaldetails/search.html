@@ -69,11 +69,15 @@
               {% endif %}
             </dl>
             {% endset %}
+            {% set detail_href = url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}) %}
+            {% if search_hash %}
+              {% set detail_href = detail_href ~ '?search=' ~ search_hash %}
+            {% endif %}
             {{ tnaCard({
               "title": hospital.name,
               "headingLevel": 3,
               "headingSize": "m",
-              "href": url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}),
+              "href": detail_href,
               "body": body | trim | safe
             }) }}
           </li>
