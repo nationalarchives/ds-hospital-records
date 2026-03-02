@@ -1,9 +1,9 @@
-from django.core.paginator import Paginator
-from django.db.models import Q
-from urllib.parse import urlencode, parse_qs
 import base64
 import json
+from urllib.parse import urlencode
 
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -36,10 +36,11 @@ def _hospital_records_breadcrumbs():
 
 
 def encode_search_params(params):
-    import base64, json
+    # params: dict of search params (e.g. {'q': 'ashford', 'page': '2'})
     json_str = json.dumps(params, sort_keys=True)
     b64 = base64.urlsafe_b64encode(json_str.encode()).decode()
-    return b64.rstrip('=')
+    return b64.rstrip("=")
+
 
 def search(request):
     """Search for hospitals by name or town."""
@@ -85,20 +86,15 @@ def search(request):
     return render(request, "hospitaldetails/search.html", context)
 
 
-def encode_search_params(params):
-    # params: dict of search params (e.g. {'q': 'ashford', 'page': '2'})
-    json_str = json.dumps(params, sort_keys=True)
-    b64 = base64.urlsafe_b64encode(json_str.encode()).decode()
-    return b64.rstrip('=')
-
 def decode_search_params(hash_str):
     # hash_str: base64 encoded string
-    padded = hash_str + '=' * (-len(hash_str) % 4)
+    padded = hash_str + "=" * (-len(hash_str) % 4)
     try:
         json_str = base64.urlsafe_b64decode(padded.encode()).decode()
         return json.loads(json_str)
     except Exception:
         return {}
+
 
 def hospital_detail(request, id):
     """Display details for a specific hospital."""
