@@ -2,14 +2,14 @@
 
 [[package]]
 name = "asgiref"
-version = "3.11.0"
+version = "3.11.1"
 description = "ASGI specs, helper code, and adapters"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "asgiref-3.11.0-py3-none-any.whl", hash = "sha256:1db9021efadb0d9512ce8ffaf72fcef601c7b73a8807a1bb2ef143dc6b14846d"},
-    {file = "asgiref-3.11.0.tar.gz", hash = "sha256:13acff32519542a1736223fb79a715acdebe24286d98e8b164a73085f40da2c4"},
+    {file = "asgiref-3.11.1-py3-none-any.whl", hash = "sha256:e8667a091e69529631969fd45dc268fa79b99c92c5fcdda727757e52146ec133"},
+    {file = "asgiref-3.11.1.tar.gz", hash = "sha256:5f184dc43b7e763efe848065441eac62229c9f7b0475f41f80e207a114eda4ce"},
 ]
 
 [package.extras]
@@ -17,14 +17,14 @@ tests = ["mypy (>=1.14.0)", "pytest", "pytest-asyncio"]
 
 [[package]]
 name = "certifi"
-version = "2026.1.4"
+version = "2026.2.25"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.7"
 groups = ["main", "dev"]
 files = [
-    {file = "certifi-2026.1.4-py3-none-any.whl", hash = "sha256:9943707519e4add1115f44c2bc244f782c0249876bf51b6599fee1ffbedd685c"},
-    {file = "certifi-2026.1.4.tar.gz", hash = "sha256:ac726dd470482006e014ad384921ed6438c457018f4b3d204aea4281258b2120"},
+    {file = "certifi-2026.2.25-py3-none-any.whl", hash = "sha256:027692e4402ad994f1c42e52a4997a9763c646b73e4096e4d5d6db8af1d6f0fa"},
+    {file = "certifi-2026.2.25.tar.gz", hash = "sha256:e887ab5cee78ea814d3472169153c2d12cd43b14bd03329a39a9c6e2e80bfba7"},
 ]
 
 [[package]]
@@ -165,14 +165,14 @@ files = [
 
 [[package]]
 name = "django"
-version = "5.2.10"
+version = "5.2.12"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "django-5.2.10-py3-none-any.whl", hash = "sha256:cf85067a64250c95d5f9067b056c5eaa80591929f7e16fbcd997746e40d6c45c"},
-    {file = "django-5.2.10.tar.gz", hash = "sha256:74df100784c288c50a2b5cad59631d71214f40f72051d5af3fdf220c20bdbbbe"},
+    {file = "django-5.2.12-py3-none-any.whl", hash = "sha256:4853482f395c3a151937f6991272540fcbf531464f254a347bf7c89f53c8cff7"},
+    {file = "django-5.2.12.tar.gz", hash = "sha256:6b809af7165c73eff5ce1c87fdae75d4da6520d6667f86401ecf55b681eb1eeb"},
 ]
 
 [package.dependencies]
@@ -389,14 +389,14 @@ files = [
 
 [[package]]
 name = "packaging"
-version = "25.0"
+version = "26.0"
 description = "Core utilities for Python packages"
 optional = false
 python-versions = ">=3.8"
 groups = ["main", "dev"]
 files = [
-    {file = "packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484"},
-    {file = "packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f"},
+    {file = "packaging-26.0-py3-none-any.whl", hash = "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529"},
+    {file = "packaging-26.0.tar.gz", hash = "sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4"},
 ]
 
 [[package]]
@@ -509,61 +509,55 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pymssql"
-version = "2.3.11"
+version = "2.3.13"
 description = "DB-API interface to Microsoft SQL Server for Python. (new Cython-based version)"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "pymssql-2.3.11-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:75d2a10501db24e82cfcbad5d749874980b4e4457822f19d911c2464868da6a4"},
-    {file = "pymssql-2.3.11-cp310-cp310-macosx_15_0_x86_64.whl", hash = "sha256:ce49bf401d79f3a4062a5e9d62542f3d54a8a36de78a07b8397aa6d97ceab631"},
-    {file = "pymssql-2.3.11-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:d82c1e73d15b4da01f6df7d9511d962579543c3fe92286edbea66976f0948894"},
-    {file = "pymssql-2.3.11-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:6fcd194d33b512125d392d55049087a533c0523810b8b48d924ab38e1bb141cf"},
-    {file = "pymssql-2.3.11-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:9152eea9473d8f634355f779c848bc963392936822d9b4b270502738499a9249"},
-    {file = "pymssql-2.3.11-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:4e98e0b7f759ef94f2d988939b18a7b8816ad4dad253b2a81cf07bfb6ed47094"},
-    {file = "pymssql-2.3.11-cp310-cp310-win32.whl", hash = "sha256:7503b8fff48c7d12f46541397245f820840ddf298144eab7a606b5cbfbb1756f"},
-    {file = "pymssql-2.3.11-cp310-cp310-win_amd64.whl", hash = "sha256:482e595d9f19ded0ae9b3a0f7b59957fd05fc212b752c5625d9bf95e1d26d46a"},
-    {file = "pymssql-2.3.11-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:aaa59c4a366bdd5670c7c2061947f6b53ab9d22e298ce08f76531acd7019682b"},
-    {file = "pymssql-2.3.11-cp311-cp311-macosx_15_0_x86_64.whl", hash = "sha256:c69ea39f02e0bd851e64806c3a51837335b66534e3d28f60d9bd711aed7fad08"},
-    {file = "pymssql-2.3.11-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:2a9028d180a722e2d564ce8d65b3415bc5e35c2f6d9bff1e851d37ba47bf4d24"},
-    {file = "pymssql-2.3.11-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:b9aebd415122eee53203f7f8801fc22e7399fcb41efda5b962fe5b3b84a7f093"},
-    {file = "pymssql-2.3.11-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:214a46696e0ac5fae8246f09ab90e0441f27fc713e929f3a67e15acd66cc96a9"},
-    {file = "pymssql-2.3.11-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:f2bc011bbce17b513ca96aac0eb865427bcdc25af35e845c0785f6ca6f47fb15"},
-    {file = "pymssql-2.3.11-cp311-cp311-win32.whl", hash = "sha256:9c28d611d333e553c94822949ca6762a66e88ff2c5daf8bb1ee4a5d8fca44325"},
-    {file = "pymssql-2.3.11-cp311-cp311-win_amd64.whl", hash = "sha256:63a93d09c851a22641e80e9eaa00c50a7ee7bc66df892b627305e0b2904800c8"},
-    {file = "pymssql-2.3.11-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:a95b44dc2a5088d971f4acea06cab567ef5ac4ab7dc71884c146fd6c77aaa5d7"},
-    {file = "pymssql-2.3.11-cp312-cp312-macosx_15_0_x86_64.whl", hash = "sha256:8c7b80a10983fbdfa1aba8aee92f3a22ca4ffba722d35fecbc38ac760da676a4"},
-    {file = "pymssql-2.3.11-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:399c89b08a93e151a60a49d45cf937475eee69e39a096a385a0aeefdedb91b89"},
-    {file = "pymssql-2.3.11-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:bddf3ea3fbd543db00effb43db8195f193b09427f9dbf7e0becfe2192c6d8b85"},
-    {file = "pymssql-2.3.11-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:9b8bb90fad7ca636ad6feac54539d0907d0749d5ad05bb87473b925d63233572"},
-    {file = "pymssql-2.3.11-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:ec0c264d4fa0390f147a15b645a79038e382d3d3716294cabf7195a4fdaa5f3c"},
-    {file = "pymssql-2.3.11-cp312-cp312-win32.whl", hash = "sha256:acdedac1d895597020a4c08d1cb82c68674039a45a20c7975103864cfe7ee7bc"},
-    {file = "pymssql-2.3.11-cp312-cp312-win_amd64.whl", hash = "sha256:ac95206f5fdb3f02733727139ab08ea49f7a11a49188fa412deb0299222ac69e"},
-    {file = "pymssql-2.3.11-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:1d52faa55a0a946d58f1f34f0482d46ec1301301311f006dfd1e062cb3f37dcb"},
-    {file = "pymssql-2.3.11-cp313-cp313-macosx_15_0_x86_64.whl", hash = "sha256:d88bdde6b503775b1dd12ddfb297496d3cf20d33b2945e41acfeaa63babe63ab"},
-    {file = "pymssql-2.3.11-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:b02b0040c56543dd5143aede9b3ef40bd65453c82107a3f9fa71e118edb36f37"},
-    {file = "pymssql-2.3.11-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e54e8a3f84820d8d11d52ab541720c17086872da45f5507b3521fcaf51c4514d"},
-    {file = "pymssql-2.3.11-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:8429b1875549ecf207757705755877b331133ff1ef4a99ec5c361aa1fcef8a61"},
-    {file = "pymssql-2.3.11-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:3b186a7b9938473018ac4e10a9a5dbd7ef3dc9579210b203cf6cbcb7b53d1d7f"},
-    {file = "pymssql-2.3.11-cp313-cp313-win32.whl", hash = "sha256:fca814ee088e97db95487568d11317b2a21076ae0c0e90a61bd3512c8bffe7f8"},
-    {file = "pymssql-2.3.11-cp313-cp313-win_amd64.whl", hash = "sha256:ceab31ced6d1a90bfb5b133cde40afa75809c4eadd4adfaafd8d4236428b3024"},
-    {file = "pymssql-2.3.11-cp314-cp314-macosx_14_0_arm64.whl", hash = "sha256:6804d5e45d48c2447375fc389abec423eebe6488a65a4c507b19c22f3c6d001c"},
-    {file = "pymssql-2.3.11-cp314-cp314-macosx_15_0_x86_64.whl", hash = "sha256:b08ebe258134654e54cbc522d41ab8f0473fdc17b21e4a6805d236af28662eb8"},
-    {file = "pymssql-2.3.11-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:ad35b7874964e0c36184719128977e7669a5be01b16852e687f1deb005991291"},
-    {file = "pymssql-2.3.11-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e1cd4eb2913457e6a83e152ff8e0c80a7819ff31b8094a01f95e28d8588e7be7"},
-    {file = "pymssql-2.3.11-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:feb5a5ebe06fc83ac8929b378459752379345c6ed86f8875507e59c27fe76871"},
-    {file = "pymssql-2.3.11-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:be6c17b044148cc45a102147420220a51485d5d802c9e2100d2a8a14e893a477"},
-    {file = "pymssql-2.3.11-cp314-cp314-win32.whl", hash = "sha256:824ba66424d8ae424249c4c803678247cf019872836f7138c67a104030b430e7"},
-    {file = "pymssql-2.3.11-cp314-cp314-win_amd64.whl", hash = "sha256:85353c5ba60797a68afa5ffe1f395c7fa12f8aaa03fa81f43e0969f607638303"},
-    {file = "pymssql-2.3.11-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:4901019f692ada5911f6a62378e739943fdd53b7e771b64c0ba05e4c7aad3980"},
-    {file = "pymssql-2.3.11-cp39-cp39-macosx_15_0_x86_64.whl", hash = "sha256:7e819c3d8a1a83d2ab274da6b07ecff040f01dab30fef240347f6cc6487753b1"},
-    {file = "pymssql-2.3.11-cp39-cp39-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:52f3b036351c16c0bb88f936dbcbb5be74bcabfdb925e6f4c79602cfa5ba471a"},
-    {file = "pymssql-2.3.11-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:3152ebc335faa1e71191d8b3be4d05bdcb729a355c391b1e9b2cceb3e5d99328"},
-    {file = "pymssql-2.3.11-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:2b321265f578f65910ef4fb5841f4b19cf5adb0b68dd79d3862ad07a6531375c"},
-    {file = "pymssql-2.3.11-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:ffd964024d4c8368f5830aac8ceed540fac22ae48a6290ea4be30ab3af816b06"},
-    {file = "pymssql-2.3.11-cp39-cp39-win32.whl", hash = "sha256:0b56c22ebc4f540c0c106e5a58100c9e893d2ef5f7a7cfc7812037c8b180e732"},
-    {file = "pymssql-2.3.11-cp39-cp39-win_amd64.whl", hash = "sha256:d79b2dc5e8291e728734224b9d581d99f71b843dd68c438d2748fef6ea55f2bd"},
-    {file = "pymssql-2.3.11.tar.gz", hash = "sha256:47ee71d9c37880dd82b830a5a7fc69374d04945c27043116b4c693858c60af66"},
+    {file = "pymssql-2.3.13-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:476f6f06b2ae5dfbfa0b169a6ecdd0d9ddfedb07f2d6dc97d2dd630ff2d6789a"},
+    {file = "pymssql-2.3.13-cp310-cp310-macosx_15_0_x86_64.whl", hash = "sha256:17942dc9474693ab2229a8a6013e5b9cb1312a5251207552141bb85fcce8c131"},
+    {file = "pymssql-2.3.13-cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:4d87237500def5f743a52e415cd369d632907212154fcc7b4e13f264b4e30021"},
+    {file = "pymssql-2.3.13-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:612ac062027d2118879f11a5986e9d9d82d07ca3545bb98c93200b68826ea687"},
+    {file = "pymssql-2.3.13-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:f1897c1b767cc143e77d285123ae5fd4fa7379a1bfec5c515d38826caf084eb6"},
+    {file = "pymssql-2.3.13-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:48631c7b9fd14a1bd5675c521b6082590bf700b7961c65638d237817b3fde735"},
+    {file = "pymssql-2.3.13-cp310-cp310-win_amd64.whl", hash = "sha256:79c759db6e991eeae473b000c2e0a7fb8da799b2da469fe5a10d30916315e0b5"},
+    {file = "pymssql-2.3.13-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:152be40c0d7f5e4b1323f7728b0a01f3ee0082190cfbadf84b2c2e930d57e00e"},
+    {file = "pymssql-2.3.13-cp311-cp311-macosx_15_0_x86_64.whl", hash = "sha256:d94da3a55545c5b6926cb4d1c6469396f0ae32ad5d6932c513f7a0bf569b4799"},
+    {file = "pymssql-2.3.13-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:51e42c5defc3667f0803c7ade85db0e6f24b9a1c5a18fcdfa2d09c36bff9b065"},
+    {file = "pymssql-2.3.13-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:4aa18944a121f996178e26cadc598abdbf73759f03dc3cd74263fdab1b28cd96"},
+    {file = "pymssql-2.3.13-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:910404e0ec85c4cc7c633ec3df9b04a35f23bb74a844dd377a387026ae635e3a"},
+    {file = "pymssql-2.3.13-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:4b834c34e7600369eee7bc877948b53eb0fe6f3689f0888d005ae47dd53c0a66"},
+    {file = "pymssql-2.3.13-cp311-cp311-win_amd64.whl", hash = "sha256:5c2e55b6513f9c5a2f58543233ed40baaa7f91c79e64a5f961ea3fc57a700b80"},
+    {file = "pymssql-2.3.13-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:cf4f32b4a05b66f02cb7d55a0f3bcb0574a6f8cf0bee4bea6f7b104038364733"},
+    {file = "pymssql-2.3.13-cp312-cp312-macosx_15_0_x86_64.whl", hash = "sha256:2b056eb175955f7fb715b60dc1c0c624969f4d24dbdcf804b41ab1e640a2b131"},
+    {file = "pymssql-2.3.13-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:319810b89aa64b99d9c5c01518752c813938df230496fa2c4c6dda0603f04c4c"},
+    {file = "pymssql-2.3.13-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:c0ea72641cb0f8bce7ad8565dbdbda4a7437aa58bce045f2a3a788d71af2e4be"},
+    {file = "pymssql-2.3.13-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:1493f63d213607f708a5722aa230776ada726ccdb94097fab090a1717a2534e0"},
+    {file = "pymssql-2.3.13-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:eb3275985c23479e952d6462ae6c8b2b6993ab6b99a92805a9c17942cf3d5b3d"},
+    {file = "pymssql-2.3.13-cp312-cp312-win_amd64.whl", hash = "sha256:a930adda87bdd8351a5637cf73d6491936f34e525a5e513068a6eac742f69cdb"},
+    {file = "pymssql-2.3.13-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:30918bb044242865c01838909777ef5e0f1b9ecd7f5882346aefa57f4414b29c"},
+    {file = "pymssql-2.3.13-cp313-cp313-macosx_15_0_x86_64.whl", hash = "sha256:1c6d0b2d7961f159a07e4f0d8cc81f70ceab83f5e7fd1e832a2d069e1d67ee4e"},
+    {file = "pymssql-2.3.13-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:16c5957a3c9e51a03276bfd76a22431e2bc4c565e2e95f2cbb3559312edda230"},
+    {file = "pymssql-2.3.13-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:0fddd24efe9d18bbf174fab7c6745b0927773718387f5517cf8082241f721a68"},
+    {file = "pymssql-2.3.13-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:123c55ee41bc7a82c76db12e2eb189b50d0d7a11222b4f8789206d1cda3b33b9"},
+    {file = "pymssql-2.3.13-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:e053b443e842f9e1698fcb2b23a4bff1ff3d410894d880064e754ad823d541e5"},
+    {file = "pymssql-2.3.13-cp313-cp313-win_amd64.whl", hash = "sha256:5c045c0f1977a679cc30d5acd9da3f8aeb2dc6e744895b26444b4a2f20dad9a0"},
+    {file = "pymssql-2.3.13-cp314-cp314-macosx_14_0_arm64.whl", hash = "sha256:fc5482969c813b0a45ce51c41844ae5bfa8044ad5ef8b4820ef6de7d4545b7f2"},
+    {file = "pymssql-2.3.13-cp314-cp314-macosx_15_0_x86_64.whl", hash = "sha256:ff5be7ab1d643dbce2ee3424d2ef9ae8e4146cf75bd20946bc7a6108e3ad1e47"},
+    {file = "pymssql-2.3.13-cp314-cp314-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:8d66ce0a249d2e3b57369048d71e1f00d08dfb90a758d134da0250ae7bc739c1"},
+    {file = "pymssql-2.3.13-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d663c908414a6a032f04d17628138b1782af916afc0df9fefac4751fa394c3ac"},
+    {file = "pymssql-2.3.13-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:aa5e07eff7e6e8bd4ba22c30e4cb8dd073e138cd272090603609a15cc5dbc75b"},
+    {file = "pymssql-2.3.13-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:db77da1a3fc9b5b5c5400639d79d7658ba7ad620957100c5b025be608b562193"},
+    {file = "pymssql-2.3.13-cp314-cp314-win_amd64.whl", hash = "sha256:7d7037d2b5b907acc7906d0479924db2935a70c720450c41339146a4ada2b93d"},
+    {file = "pymssql-2.3.13-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:b0af51904764811da0bfe4b057b1d72dee11a399ce9ed5770875162772740c8a"},
+    {file = "pymssql-2.3.13-cp39-cp39-macosx_15_0_x86_64.whl", hash = "sha256:0a7e6431925572bc75fb47929ae8ca5b0aac26abfe8b98d4c08daf117b5657f1"},
+    {file = "pymssql-2.3.13-cp39-cp39-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:7f9b1d5aef2b5f47a7f9d9733caee4d66772681e8f798a0f5e4739a8bdab408c"},
+    {file = "pymssql-2.3.13-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:c690f1869dadbf4201b7f51317fceff6e5d8f5175cec6a4a813e06b0dca2d6ed"},
+    {file = "pymssql-2.3.13-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:e7c31f192da9d30f0e03ad99e548120a8740a675302e2f04fa8c929f7cbee771"},
+    {file = "pymssql-2.3.13-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:f5d995a80996235ed32102a93067ce6a7143cce3bfd4e5042bf600020fc08456"},
+    {file = "pymssql-2.3.13-cp39-cp39-win_amd64.whl", hash = "sha256:6a6c0783d97f57133573a03aad3017917dbdf7831a65e0d84ccf2a85e183ca66"},
+    {file = "pymssql-2.3.13.tar.gz", hash = "sha256:2137e904b1a65546be4ccb96730a391fcd5a85aab8a0632721feb5d7e39cfbce"},
 ]
 
 [[package]]
@@ -590,22 +584,18 @@ dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests
 
 [[package]]
 name = "pytest-django"
-version = "4.11.1"
+version = "4.12.0"
 description = "A Django plugin for pytest."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest_django-4.11.1-py3-none-any.whl", hash = "sha256:1b63773f648aa3d8541000c26929c1ea63934be1cfa674c76436966d73fe6a10"},
-    {file = "pytest_django-4.11.1.tar.gz", hash = "sha256:a949141a1ee103cb0e7a20f1451d355f83f5e4a5d07bdd4dcfdd1fd0ff227991"},
+    {file = "pytest_django-4.12.0-py3-none-any.whl", hash = "sha256:3ff300c49f8350ba2953b90297d23bf5f589db69545f56f1ec5f8cff5da83e85"},
+    {file = "pytest_django-4.12.0.tar.gz", hash = "sha256:df94ec819a83c8979c8f6de13d9cdfbe76e8c21d39473cfe2b40c9fc9be3c758"},
 ]
 
 [package.dependencies]
 pytest = ">=7.0.0"
-
-[package.extras]
-docs = ["sphinx", "sphinx_rtd_theme"]
-testing = ["Django", "django-configurations (>=2.0)"]
 
 [[package]]
 name = "requests"
@@ -649,14 +639,14 @@ fixture = ["fixtures"]
 
 [[package]]
 name = "sentry-sdk"
-version = "2.52.0"
+version = "2.54.0"
 description = "Python client for Sentry (https://sentry.io)"
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "sentry_sdk-2.52.0-py2.py3-none-any.whl", hash = "sha256:931c8f86169fc6f2752cb5c4e6480f0d516112e78750c312e081ababecbaf2ed"},
-    {file = "sentry_sdk-2.52.0.tar.gz", hash = "sha256:fa0bec872cfec0302970b2996825723d67390cdd5f0229fb9efed93bd5384899"},
+    {file = "sentry_sdk-2.54.0-py2.py3-none-any.whl", hash = "sha256:fd74e0e281dcda63afff095d23ebcd6e97006102cdc8e78a29f19ecdf796a0de"},
+    {file = "sentry_sdk-2.54.0.tar.gz", hash = "sha256:2620c2575128d009b11b20f7feb81e4e4e8ae08ec1d36cbc845705060b45cc1b"},
 ]
 
 [package.dependencies]
@@ -728,18 +718,21 @@ doc = ["sphinx"]
 
 [[package]]
 name = "tna-frontend-jinja"
-version = "0.35.1"
+version = "0.36.0"
 description = "TNA Frontend Jinja templates"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tna_frontend_jinja-0.35.1-py3-none-any.whl", hash = "sha256:260d21ccf6abb95e7ae200ea7133932b19f8c325221fbdbb6bc2af12cdc47fa2"},
-    {file = "tna_frontend_jinja-0.35.1.tar.gz", hash = "sha256:950612a777171b166806fcd853d1099d3935630d006300019d34218c95e4c3b1"},
+    {file = "tna_frontend_jinja-0.36.0-py3-none-any.whl", hash = "sha256:a3ee3a41f15f93de37fa91bfd3a4e2eef7411a6b785947e222794686aa19aa26"},
+    {file = "tna_frontend_jinja-0.36.0.tar.gz", hash = "sha256:5472c44090add0a1d508a4038a6b1041c9b8330face1603bf73e2ee82d4fbd45"},
 ]
 
 [package.dependencies]
-jinja2 = "*"
+jinja2 = ">=3"
+
+[package.extras]
+wtforms = ["flask-wtf[email]"]
 
 [[package]]
 name = "tzdata"
@@ -774,14 +767,14 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 
 [[package]]
 name = "whitenoise"
-version = "6.11.0"
+version = "6.12.0"
 description = "Radically simplified static file serving for WSGI applications"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "whitenoise-6.11.0-py3-none-any.whl", hash = "sha256:b2aeb45950597236f53b5342b3121c5de69c8da0109362aee506ce88e022d258"},
-    {file = "whitenoise-6.11.0.tar.gz", hash = "sha256:0f5bfce6061ae6611cd9396a8231e088722e4fc67bc13a111be74c738d99375f"},
+    {file = "whitenoise-6.12.0-py3-none-any.whl", hash = "sha256:fc5e8c572e33ebf24795b47b6a7da8da3c00cff2349f5b04c02f28d0cc5a3cc2"},
+    {file = "whitenoise-6.12.0.tar.gz", hash = "sha256:f723ebb76a112e98816ff80fcea0a6c9b8ecde835f8ddda25df7a30a3c2db6ad"},
 ]
 
 [package.extras]
@@ -790,4 +783,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "9b9ae2c29c21816454f0b1dadb2b6f00dab483aa0a47b45f28acc46a4d23faf3"
+content-hash = "00569b06f727e1a177ca86a0f0cf00aab68b44610158e34d0511c369bf84caa2"
