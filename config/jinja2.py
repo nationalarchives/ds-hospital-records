@@ -51,7 +51,7 @@ def now_iso_8601():
 
 
 def linebreaksdl(text):
-    """Convert newlines to <dd> items inside a nested <dl>."""
+    """Convert newlines to <dd> items."""
     if not text:
         return text
     lines = [line.strip() for line in str(text).splitlines() if line.strip()]
@@ -59,7 +59,7 @@ def linebreaksdl(text):
         return ""
 
     items = "".join(f"<dd>{line}</dd>" for line in lines)
-    return Markup(f"<dl>{items}</dl>")
+    return Markup(items)
 
 
 def _abbr_replacer(rule, match):
