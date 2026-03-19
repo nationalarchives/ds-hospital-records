@@ -3,8 +3,8 @@ import os
 from sysconfig import get_path
 
 from config.util import strtobool
-from django.utils.csp import CSP
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.csp import CSP
 
 from .features import *
 
