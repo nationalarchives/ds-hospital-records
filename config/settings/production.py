@@ -3,7 +3,7 @@ import os
 from sysconfig import get_path
 
 from config.util import strtobool
-from csp.constants import NONE, SELF
+from django.utils.csp import CSP
 from django.core.exceptions import ImproperlyConfigured
 
 from .features import *
@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "csp",
 ]
 
 MIDDLEWARE = [
@@ -35,7 +34,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "csp.middleware.CSPMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -164,21 +163,19 @@ COOKIE_DOMAIN: str = os.environ.get("COOKIE_DOMAIN", "")
 CSP_REPORT_URL: str = os.environ.get("CSP_REPORT_URL", "")
 if CSP_REPORT_URL:
     CSP_REPORT_URL += f"&sentry_release={BUILD_VERSION}" if BUILD_VERSION else ""
-CONTENT_SECURITY_POLICY = {
-    "DIRECTIVES": {
-        "default-src": [SELF],
-        "base-uri": [NONE],
-        "object-src": [NONE],
-        "img-src": os.environ.get("CSP_IMG_SRC", SELF).split(","),
-        "script-src": os.environ.get("CSP_SCRIPT_SRC", SELF).split(","),
-        "style-src": os.environ.get("CSP_STYLE_SRC", SELF).split(","),
-        "font-src": os.environ.get("CSP_FONT_SRC", SELF).split(","),
-        "connect-src": os.environ.get("CSP_CONNECT_SRC", SELF).split(","),
-        "media-src": os.environ.get("CSP_MEDIA_SRC", SELF).split(","),
-        "worker-src": os.environ.get("CSP_WORKER_SRC", SELF).split(","),
-        "frame-src": os.environ.get("CSP_FRAME_SRC", SELF).split(","),
-        "report-uri": CSP_REPORT_URL or None,
-    }
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "base-uri": [CSP.NONE],
+    "object-src": [CSP.NONE],
+    "img-src": os.environ.get("CSP_IMG_SRC", CSP.SELF).split(","),
+    "script-src": os.environ.get("CSP_SCRIPT_SRC", CSP.SELF).split(","),
+    "style-src": os.environ.get("CSP_STYLE_SRC", CSP.SELF).split(","),
+    "font-src": os.environ.get("CSP_FONT_SRC", CSP.SELF).split(","),
+    "connect-src": os.environ.get("CSP_CONNECT_SRC", CSP.SELF).split(","),
+    "media-src": os.environ.get("CSP_MEDIA_SRC", CSP.SELF).split(","),
+    "worker-src": os.environ.get("CSP_WORKER_SRC", CSP.SELF).split(","),
+    "frame-src": os.environ.get("CSP_FRAME_SRC", CSP.SELF).split(","),
+    "report-uri": CSP_REPORT_URL or None,
 }
 
 GA4_ID = os.environ.get("GA4_ID", "")
