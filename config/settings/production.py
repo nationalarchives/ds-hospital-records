@@ -4,6 +4,7 @@ from sysconfig import get_path
 
 from config.util import strtobool
 from csp.constants import NONE, SELF
+from django.core.exceptions import ImproperlyConfigured
 
 from .features import *
 
@@ -151,6 +152,10 @@ except FileNotFoundError:
     pass
 
 SECRET_KEY: str = os.environ.get("SECRET_KEY", "")
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "SECRET_KEY environment variable must be set and cannot be empty."
+    )
 
 DEBUG: bool = False
 
