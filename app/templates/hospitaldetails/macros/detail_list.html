@@ -20,7 +20,7 @@
         {% if caller is defined %}
             <dd>{{ caller()|abbr }}</dd>
         {% else %}
-            {% if value and '<dd>' in value %}
+            {% if value and ('<' ~ 'dd>') in value %}
                 {{ value|abbr }}
             {% else %}
                 <dd>{{ value|abbr }}</dd>
