@@ -9,7 +9,7 @@ packages = [{include = "app"}]
 [tool.poetry.dependencies]
 python = "^3.13"
 requests = "^2.32.0"
-tna-frontend-jinja = "0.37.0"
+tna-frontend-jinja = "0.38.0"
 django = "^6.0"
 psycopg2-binary = "^2.9.9"
 whitenoise = "^6.12.0"
