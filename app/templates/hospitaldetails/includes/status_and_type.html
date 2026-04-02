@@ -1,44 +1,35 @@
-{% from 'hospitaldetails/macros/detail_list.html' import detail_item %}
+{% from 'hospitaldetails/macros/detail_list.html' import detail_item, detail_list %}
 
-{% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() or hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
-
-<div class="tna-container">
-    {% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
-    <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
-        <h2 class="tna-heading-l" id="status">Status</h2>
-        <dl class="tna-dl tna-dl--zebra">
-            {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_status.exists()) %}
-                {% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
-            {% endcall %}
+{% if hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
+    {% call detail_list(heading="Status", heading_id="status") %}
+        {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_status.exists()) %}
+            {% for status in hospital.pre_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+        {% endcall %}
+        
+        {{ detail_item('Regional Board (1948-1974)', hospital.regional_board.name if hospital.regional_board else None) }}
+        
+        {{ detail_item('Pre-1948 information', hospital.pre_1948_status_info|linebreaksdl) }}
             
-            {{ detail_item('Pre-1948 information', hospital.pre_1948_status_info|linebreaksdl) }}
-            
-            {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_status.exists()) %}
-                {% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
-            {% endcall %}
-            
-            {{ detail_item('Post-1948 information', hospital.post_1948_status_info|linebreaksdl) }}
-        </dl>
-    </div>
-    {% endif %}
+        {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_status.exists()) %}
+            {% for status in hospital.post_1948_status.all() %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+        {% endcall %}
+        
+        {{ detail_item('Post-1948 information', hospital.post_1948_status_info|linebreaksdl) }}
+    {% endcall %}
+{% endif %}
     
-    {% if hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
-    <div class="tna-column tna-column--full tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
-        <h2 class="tna-heading-l" id="type">Type</h2>
-        <dl class="tna-dl tna-dl--zebra">
-            {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_type.exists()) %}
-                {% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
-            {% endcall %}
-            
-            {{ detail_item('Pre-1948 information', hospital.pre_1948_type_info|linebreaksdl) }}
-            
-            {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_type.exists()) %}
-                {% for type in hospital.post_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
-            {% endcall %}
-            
-            {{ detail_item('Post-1948 information', hospital.post_1948_type_info|linebreaksdl) }}
-        </dl>
-    </div>
-    {% endif %}
-</div>
+{% if hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
+    {% call detail_list(heading="Type", heading_id="type") %}
+        {% call(label, value) detail_item('Pre-1948', condition=hospital.pre_1948_type.exists()) %}
+            {% for type in hospital.pre_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+        {% endcall %}
+        
+        {{ detail_item('Pre-1948 information', hospital.pre_1948_type_info|linebreaksdl) }}
+        
+        {% call(label, value) detail_item('Post-1948', condition=hospital.post_1948_type.exists()) %}
+            {% for type in hospital.post_1948_type.all() %}{{ type.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+        {% endcall %}
+        
+        {{ detail_item('Post-1948 information', hospital.post_1948_type_info|linebreaksdl) }}
+    {% endcall %}
 {% endif %}
