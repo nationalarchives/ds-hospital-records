@@ -8,26 +8,23 @@
 {% block content %}
 <div class="tna-container">
   <div class="tna-column tna-column--full">
-    <h1 class="tna-heading-xl">Search Hospitals</h1>
+    <h1 class="tna-heading-xl tna-!--margin-bottom-m">Search Hospitals</h1>
     
-    <div class="tna-section">
-      <form method="get" action="{{ url_for('hospitaldetails:search') }}" class="tna-form">
-        <div class="tna-form__group">
-          {{ tnaSearchField({
-            "label": "Hospital Records search",
-            "headingLevel": 1,
-            "headingSize": "l",
-            "id": "search",
-            "name": "q",
-            "value": query or "",
-            "hint": "Enter hospital name or town to search.",
-          }) }}
-        </div>
-      </form>
-    </div>
+    <form method="get" action="{{ url_for('hospitaldetails:search') }}" class="tna-form">
+      <div class="tna-form__group">
+        {{ tnaSearchField({
+          "label": "Hospital Records search",
+          "headingLevel": 1,
+          "headingSize": "l",
+          "id": "search",
+          "name": "q",
+          "value": query or "",
+          "hint": "Enter hospital name or town to search.",
+        }) }}
+      </div>
+    </form>
     
     {% if query %}
-    <div class="tna-section">
       <h2 class="tna-heading-l">Search Results</h2>
       
       {% if paginator %}
@@ -42,10 +39,9 @@
       <p>Showing {{ page_obj.start_index() }}-{{ page_obj.end_index() }} of {{ total_results }}.</p>
       {% endif %}
 
-      <div class="tna-section tna-!--no-padding-bottom">
-        <ul class="tna-container">
+        <ul class="tna-ul tna-ul--plain">
           {% for hospital in results %}
-          <li class="tna-column tna-column--full tna-!--margin-bottom-l">
+          <li class="tna-!--margin-bottom-l">
             {% set body %}
             <dl class="tna-dl tna-dl--zebra tna-dl--right-weighted">
               {% if hospital.full_address %}
@@ -85,20 +81,19 @@
           </li>
           {% endfor -%}
         </ul>
-      </div>
       {% if page_obj and paginator and paginator.num_pages > 1 %}
-      {% set pagination_items = [] %}
-      {% for page_number in page_numbers %}
-        {% if page_number %}
-          {% set _ = pagination_items.append({
-            "number": page_number,
-            "href": url_for('hospitaldetails:search') ~ "?q=" ~ (query | urlencode) ~ "&page=" ~ page_number,
-            "current": page_number == page_obj.number
-          }) %}
-        {% else %}
-          {% set _ = pagination_items.append({"ellipsis": True}) %}
-        {% endif %}
-      {% endfor %}
+        {% set pagination_items = [] %}
+        {% for page_number in page_numbers %}
+          {% if page_number %}
+            {% set _ = pagination_items.append({
+              "number": page_number,
+              "href": url_for('hospitaldetails:search') ~ "?q=" ~ (query | urlencode) ~ "&page=" ~ page_number,
+              "current": page_number == page_obj.number
+            }) %}
+          {% else %}
+            {% set _ = pagination_items.append({"ellipsis": True}) %}
+          {% endif %}
+        {% endfor %}
 
       {% set pagination_previous = page_obj.has_previous() and {
         "href": url_for('hospitaldetails:search') ~ "?q=" ~ (query | urlencode) ~ "&page=" ~ page_obj.previous_page_number()
@@ -107,13 +102,13 @@
         "href": url_for('hospitaldetails:search') ~ "?q=" ~ (query | urlencode) ~ "&page=" ~ page_obj.next_page_number()
       } or None %}
 
-      <div class="tna-section">
-        {{ tnaPagination({
-          "previous": pagination_previous,
-          "items": pagination_items,
-          "next": pagination_next
-        }) }}
-      </div>
+        <div class="tna-section">
+          {{ tnaPagination({
+            "previous": pagination_previous,
+            "items": pagination_items,
+            "next": pagination_next
+          }) }}
+        </div>
       {% endif %}
       {% else %}
       <p>No hospitals found matching "{{ query }}".</p>
@@ -123,7 +118,6 @@
         <li>Town or city</li>
       </ul>
       {% endif %}
-    </div>
     {% endif %}
   </div>
 </div>
