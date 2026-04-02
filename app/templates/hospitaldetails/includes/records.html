@@ -1,98 +1,110 @@
 {% from 'hospitaldetails/macros/detail_list.html' import detail_item, detail_list %}
 {% from 'hospitaldetails/macros/block_heading.html' import block_heading %}
+{% from "components/card/macro.html" import tnaCard %}
+
 
 {% if records %}
     {{ block_heading("Record locations", "record-locations") }}
     <ul class="tna-ul tna-ul--plain">
         {% for record in records %}
         <li class="tna-!--margin-top-m">
-            <article class="tna-card tna-card--padded tna-background-tint tna-card--full-click tna-card--small-body">
-                <h3 class="tna-heading-m tna-card__heading">
-                    {% if record.repository.archon_url %}<a href="{{ record.repository.archon_url }}" rel="noopener" class="tna-card__heading-link">{% endif %}{{ record.repository.name }}{% if record.repository.archon_url %}</a>{% endif %}
-                </h3>
-                {% set has_record_types = record.administrative_start or record.administrative_finish or record.general_start or record.general_finish or record.finance_start or record.finance_finish or record.estates_start or record.estates_finish or record.nursing_start or record.nursing_finish or record.staff_start or record.staff_finish or record.patients_start or record.patients_finish or record.admission_start or record.admission_finish or record.clinical_start or record.clinical_finish or record.ephemera_start or record.ephemera_finish or record.pictorial_start or record.pictorial_finish or record.private_papers_start or record.private_papers_finish or record.other_start or record.other_finish %}
-                {% set has_finding_aids = record.finding_aids.exists() or record.finding_aids_location.exists() or record.finding_aids_details %}
-                    
-                <div class="tna-card__body">
-                    {% if has_record_types %}
-                        <h4 class="tna-heading-s">Record types</h4>
-                        <dl class="tna-dl tna-dl--lined">
-                            {% call(label, value) detail_item('Administrative', condition=record.administrative_start or record.administrative_finish) %}
-                                {% if record.administrative_start %}{{ record.administrative_start }}{% endif %}{% if record.administrative_finish %} - {{ record.administrative_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('General', condition=record.general_start or record.general_finish) %}
-                                {% if record.general_start %}{{ record.general_start }}{% endif %}{% if record.general_finish %} - {{ record.general_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Finance', condition=record.finance_start or record.finance_finish) %}
-                                {% if record.finance_start %}{{ record.finance_start }}{% endif %}{% if record.finance_finish %} - {{ record.finance_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Estates', condition=record.estates_start or record.estates_finish) %}
-                                {% if record.estates_start %}{{ record.estates_start }}{% endif %}{% if record.estates_finish %} - {{ record.estates_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Nursing', condition=record.nursing_start or record.nursing_finish) %}
-                                {% if record.nursing_start %}{{ record.nursing_start }}{% endif %}{% if record.nursing_finish %} - {{ record.nursing_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Staff', condition=record.staff_start or record.staff_finish) %}
-                                {% if record.staff_start %}{{ record.staff_start }}{% endif %}{% if record.staff_finish %} - {{ record.staff_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Patients', condition=record.patients_start or record.patients_finish) %}
-                                {% if record.patients_start %}{{ record.patients_start }}{% endif %}{% if record.patients_finish %} - {{ record.patients_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Admission', condition=record.admission_start or record.admission_finish) %}
-                                {% if record.admission_start %}{{ record.admission_start }}{% endif %}{% if record.admission_finish %} - {{ record.admission_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Clinical', condition=record.clinical_start or record.clinical_finish) %}
-                                {% if record.clinical_start %}{{ record.clinical_start }}{% endif %}{% if record.clinical_finish %} - {{ record.clinical_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Ephemera', condition=record.ephemera_start or record.ephemera_finish) %}
-                                {% if record.ephemera_start %}{{ record.ephemera_start }}{% endif %}{% if record.ephemera_finish %} - {{ record.ephemera_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Pictorial', condition=record.pictorial_start or record.pictorial_finish) %}
-                                {% if record.pictorial_start %}{{ record.pictorial_start }}{% endif %}{% if record.pictorial_finish %} - {{ record.pictorial_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Private Papers', condition=record.private_papers_start or record.private_papers_finish) %}
-                                {% if record.private_papers_start %}{{ record.private_papers_start }}{% endif %}{% if record.private_papers_finish %} - {{ record.private_papers_finish }}{% endif %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Other', condition=record.other_start or record.other_finish) %}
-                                {% if record.other_start %}{{ record.other_start }}{% endif %}{% if record.other_finish %} - {{ record.other_finish }}{% endif %}
-                            {% endcall %}
-                        </dl>
-                    {% endif %}
+            {% set has_record_types = record.administrative_start or record.administrative_finish or record.general_start or record.general_finish or record.finance_start or record.finance_finish or record.estates_start or record.estates_finish or record.nursing_start or record.nursing_finish or record.staff_start or record.staff_finish or record.patients_start or record.patients_finish or record.admission_start or record.admission_finish or record.clinical_start or record.clinical_finish or record.ephemera_start or record.ephemera_finish or record.pictorial_start or record.pictorial_finish or record.private_papers_start or record.private_papers_finish or record.other_start or record.other_finish %}
+            {% set has_finding_aids = record.finding_aids.exists() or record.finding_aids_location.exists() or record.finding_aids_details %}
+            {% set body %}
+                {% if has_record_types %}
+                    <h4 class="tna-heading-s">Record types</h4>
+                    <dl class="tna-dl tna-dl--lined">
+                        {% call(label, value) detail_item('Administrative', condition=record.administrative_start or record.administrative_finish) %}
+                            {% if record.administrative_start %}{{ record.administrative_start }}{% endif %}{% if record.administrative_finish %} - {{ record.administrative_finish }}{% endif %}
+                        {% endcall %}
 
-                    {% if has_finding_aids %}
-                        <h4 class="tna-heading-s">Finding aids</h4>
-                        <dl class="tna-dl tna-dl--lined">
-                            {% call(label, value) detail_item('Finding aids', condition=record.finding_aids.exists()) %}
-                                {% for aid in record.finding_aids.all() %}{{ aid.value }}{% if not loop.last %}, {% endif %}{% endfor %}
-                            {% endcall %}
-                            
-                            {% call(label, value) detail_item('Location', condition=record.finding_aids_location.exists()) %}
-                                {% for location in record.finding_aids_location.all() %}{{ location.value }}{% if not loop.last %}, {% endif %}{% endfor %}
-                            {% endcall %}
-                            
-                            {{ detail_item('Details', record.finding_aids_details|linebreaksdl) }}
-                        </dl>
-                    {% endif %}
+                        {% call(label, value) detail_item('General', condition=record.general_start or record.general_finish) %}
+                            {% if record.general_start %}{{ record.general_start }}{% endif %}{% if record.general_finish %} - {{ record.general_finish }}{% endif %}
+                        {% endcall %}
 
-                    {% if record.records_notes %}
-                        <div class="tna-!--margin-top-m">
-                            {{ record.records_notes|linebreaksdl }}
-                        </div>
-                    {% endif %}
-                </div>
-            </article>
+                        {% call(label, value) detail_item('Finance', condition=record.finance_start or record.finance_finish) %}
+                            {% if record.finance_start %}{{ record.finance_start }}{% endif %}{% if record.finance_finish %} - {{ record.finance_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Estates', condition=record.estates_start or record.estates_finish) %}
+                            {% if record.estates_start %}{{ record.estates_start }}{% endif %}{% if record.estates_finish %} - {{ record.estates_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Nursing', condition=record.nursing_start or record.nursing_finish) %}
+                            {% if record.nursing_start %}{{ record.nursing_start }}{% endif %}{% if record.nursing_finish %} - {{ record.nursing_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Staff', condition=record.staff_start or record.staff_finish) %}
+                            {% if record.staff_start %}{{ record.staff_start }}{% endif %}{% if record.staff_finish %} - {{ record.staff_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Patients', condition=record.patients_start or record.patients_finish) %}
+                            {% if record.patients_start %}{{ record.patients_start }}{% endif %}{% if record.patients_finish %} - {{ record.patients_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Admission', condition=record.admission_start or record.admission_finish) %}
+                            {% if record.admission_start %}{{ record.admission_start }}{% endif %}{% if record.admission_finish %} - {{ record.admission_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Clinical', condition=record.clinical_start or record.clinical_finish) %}
+                            {% if record.clinical_start %}{{ record.clinical_start }}{% endif %}{% if record.clinical_finish %} - {{ record.clinical_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Ephemera', condition=record.ephemera_start or record.ephemera_finish) %}
+                            {% if record.ephemera_start %}{{ record.ephemera_start }}{% endif %}{% if record.ephemera_finish %} - {{ record.ephemera_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Pictorial', condition=record.pictorial_start or record.pictorial_finish) %}
+                            {% if record.pictorial_start %}{{ record.pictorial_start }}{% endif %}{% if record.pictorial_finish %} - {{ record.pictorial_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Private Papers', condition=record.private_papers_start or record.private_papers_finish) %}
+                            {% if record.private_papers_start %}{{ record.private_papers_start }}{% endif %}{% if record.private_papers_finish %} - {{ record.private_papers_finish }}{% endif %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Other', condition=record.other_start or record.other_finish) %}
+                            {% if record.other_start %}{{ record.other_start }}{% endif %}{% if record.other_finish %} - {{ record.other_finish }}{% endif %}
+                        {% endcall %}
+                    </dl>
+                {% endif %}
+
+                {% if has_finding_aids %}
+                    <h4 class="tna-heading-s">Finding aids</h4>
+                    <dl class="tna-dl tna-dl--lined">
+                        {% call(label, value) detail_item('Finding aids', condition=record.finding_aids.exists()) %}
+                            {% for aid in record.finding_aids.all() %}{{ aid.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+                        {% endcall %}
+
+                        {% call(label, value) detail_item('Location', condition=record.finding_aids_location.exists()) %}
+                            {% for location in record.finding_aids_location.all() %}{{ location.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+                        {% endcall %}
+
+                        {{ detail_item('Details', record.finding_aids_details|linebreaksdl) }}
+                    </dl>
+                {% endif %}
+
+                {% if record.records_notes %}
+                    <div class="tna-!--margin-top-m">
+                        {{ record.records_notes|linebreaksdl }}
+                    </div>
+                {% endif %}
+            {% endset %}
+            {% set detail_href = record.repository.archon_url %}
+
+
+            {{ tnaCard({
+              "title": record.repository.name,
+              "headingLevel": 3,
+              "headingSize": "m",
+              "href": detail_href,
+              "body": body | trim | safe,
+              "style": "tint",
+              "fullAreaClick": true,
+              "classes": "tna-card--small-body",
+              "hrefAttributes": {
+                "rel": "noopener"
+              }
+            }) }}
         </li>
         {% endfor %}
     </ul>
