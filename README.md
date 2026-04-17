@@ -33,7 +33,7 @@ docker compose exec app format
 
 ## Environment variables
 
-In addition to the [base Docker image variables](https://github.com/nationalarchives/docker/blob/main/docker/tna-python-django/README.md#environment-variables), this application has support for:
+In addition to the [base Docker image variables](https://github.com/nationalarchives/docker/blob/main/docker/tna-python/README.md#environment-variables), this application has support for:
 
 | Variable                 | Purpose                                                   | Default                                                   |
 | ------------------------ | --------------------------------------------------------- | --------------------------------------------------------- |
