@@ -115,6 +115,8 @@ def environment(**options):
                 "BUILD_VERSION": settings.BUILD_VERSION,
                 "TNA_FRONTEND_VERSION": TNA_FRONTEND_VERSION,
                 "COOKIE_DOMAIN": settings.COOKIE_DOMAIN,
+                "COOKIE_PREFERENCES_URL": settings.COOKIE_PREFERENCES_URL,
+                "COOKIE_PREFERENCES_KEY": settings.COOKIE_PREFERENCES_KEY,
             },
             "url_for": reverse,
             "now_iso_8601": now_iso_8601,

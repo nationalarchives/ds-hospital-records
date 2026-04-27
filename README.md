@@ -41,7 +41,9 @@ In addition to the [base Docker image variables](https://github.com/nationalarch
 | `ALLOWED_HOSTS`          | A comma-separated list of allowed hosts                   | _none_ on production and staging, `*` on develop and test |
 | `USE_X_FORWARDED_HOST`   | Use the `X-Forwarded-Host` header in preference to `Host` | `False`                                                   |
 | `DEBUG`                  | If true, allow debugging                                  | `False`                                                   |
-| `COOKIE_DOMAIN`          | The domain to save cookie preferences against             | _none_                                                    |
+| `COOKIE_DOMAIN`          | The domain to save cookie preferences against             | `.nationalarchives.gov.uk`                                |
+| `COOKIE_PREFERENCES_URL` | The URL for changing cookie preferences                   | `/cookies/`                                               |
+| `COOKIE_PREFERENCES_KEY` | The URL for changing cookie preferences                   | `dontShowCookieNotice`                                    |
 | `DATABASE_NAME`          | The name of the Postgres database                         | _none_                                                    |
 | `DATABASE_USER`          | The username needed to access the Postgres database       | _none_                                                    |
 | `DATABASE_PASSWORD`      | The password needed to access the Postgres database       | _none_                                                    |

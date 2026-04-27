@@ -158,7 +158,11 @@ if not SECRET_KEY:
 
 DEBUG: bool = False
 
-COOKIE_DOMAIN: str = os.environ.get("COOKIE_DOMAIN", "")
+COOKIE_DOMAIN: str = os.environ.get("COOKIE_DOMAIN", ".nationalarchives.gov.uk")
+COOKIE_PREFERENCES_URL: str = os.environ.get("COOKIE_PREFERENCES_URL", "/cookies/")
+COOKIE_PREFERENCES_KEY: str = os.environ.get(
+    "COOKIE_PREFERENCES_KEY", "dontShowCookieNotice"
+)
 
 CSP_REPORT_URL: str = os.environ.get("CSP_REPORT_URL", "")
 if CSP_REPORT_URL:
