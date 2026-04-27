@@ -102,13 +102,11 @@
 {% endblock stylesheets %}
 
 {% block cookies %}
-  {% if 'cookie_preferences_set' not in request.COOKIES or not request.COOKIES['cookie_preferences_set'] %}
-    {{ tnaCookieBanner({
+  {{ tnaCookieBanner({
     'serviceName': 'The National Archives',
-    'cookiesUrl': url_for('main:cookies') ,
-    'cookiesDomain': app_config.COOKIE_DOMAIN
-    }) | indent(6) }}
-  {% endif %}
+    'cookiesUrl': app_config.COOKIE_PREFERENCES_URL,
+    'preferencesSetKey': app_config.COOKIE_PREFERENCES_KEY
+  }) | indent(6) }}
 {% endblock cookies %}
 
 {% block header %}
