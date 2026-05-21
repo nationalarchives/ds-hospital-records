@@ -1,5 +1,6 @@
-from app.hospitaldetails.models import Hospital, RecordsInfo, Repository
 from django.contrib import admin
+
+from app.hospitaldetails.models import Hospital, RecordsInfo, Repository
 
 
 @admin.register(Hospital)

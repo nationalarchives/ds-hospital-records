@@ -3,8 +3,8 @@ import sys
 
 from config.util import strtobool
 
-from .features import *
-from .production import *
+from .features import *  # noqa: F403
+from .production import *  # noqa: F403
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
@@ -17,7 +17,7 @@ IS_TESTING = any(
 )  # Bypass debug toolbar when running tests, DJDT can't be used with tests (debug_toolbar.E001)
 if DEBUG and not IS_TESTING:
     try:
-        import debug_toolbar
+        import debug_toolbar  # noqa: F401
 
         INSTALLED_APPS += [  # noqa: F405
             "debug_toolbar",

@@ -1,8 +1,9 @@
 import datetime
 
-from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 
 
 class RecordsInfo(NH3CleanSaveMixin, models.Model):

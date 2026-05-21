@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hospitaldetails", "0003_alter_recordsinfo_options"),
     ]

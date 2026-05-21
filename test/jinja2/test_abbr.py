@@ -1,5 +1,6 @@
-from config.jinja2 import abbr
 from django.test import TestCase
+
+from config.jinja2 import abbr
 
 
 class TestAbbr(TestCase):

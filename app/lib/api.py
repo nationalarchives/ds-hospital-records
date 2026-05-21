@@ -14,9 +14,9 @@ class JSONAPIClient:
     api_url = ""
     params = {}
 
-    def __init__(self, api_url, params={}):
+    def __init__(self, api_url, params=None):
         self.api_url = api_url
-        self.params = params
+        self.params = params if params is not None else {}
 
     def add_parameter(self, key, value):
         self.params[key] = value
@@ -36,25 +36,25 @@ class JSONAPIClient:
                 params=self.params,
                 headers=headers,
             )
-        except ConnectionError:
+        except ConnectionError as err:
             current_app.logger.error("JSON API connection error")
-            raise Exception("A connection error occured")
-        except Timeout:
+            raise Exception("A connection error occured") from err
+        except Timeout as err:
             current_app.logger.error("JSON API timeout")
-            raise Exception("The request timed out")
-        except TooManyRedirects:
+            raise Exception("The request timed out") from err
+        except TooManyRedirects as err:
             current_app.logger.error("JSON API had too many redirects")
-            raise Exception("Too many redirects")
+            raise Exception("Too many redirects") from err
         except Exception as e:
             current_app.logger.error(f"Unknown JSON API exception: {e}")
-            raise Exception(e)
+            raise Exception(str(e)) from e
         current_app.logger.debug(response.url)
         if response.status_code == codes.ok:
             try:
                 return response.json()
-            except JSONDecodeError:
+            except JSONDecodeError as err:
                 current_app.logger.error("JSON API provided non-JSON response")
-                raise Exception("Non-JSON response provided")
+                raise Exception("Non-JSON response provided") from err
         if response.status_code == 400:
             current_app.logger.error(f"Bad request: {response.url}")
             raise Exception("Bad request")
