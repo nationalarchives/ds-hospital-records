@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hospitaldetails", "0004_remove_recordsinfo_finding_aids_and_more"),
     ]
