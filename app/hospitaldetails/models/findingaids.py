@@ -1,5 +1,6 @@
-from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.db import models
+
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 
 
 class FindingAids(NH3CleanSaveMixin, models.Model):

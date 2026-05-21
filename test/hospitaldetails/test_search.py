@@ -1,6 +1,7 @@
-from app.hospitaldetails.models.hospital import Hospital
 from django.test import TestCase
 from django.urls import reverse
+
+from app.hospitaldetails.models.hospital import Hospital
 
 
 class SearchBackendTestCase(TestCase):

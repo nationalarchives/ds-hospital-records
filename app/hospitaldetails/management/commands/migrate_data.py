@@ -1,6 +1,10 @@
 import os
 
 import pymssql
+from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
+from django.utils import timezone
+
 from app.hospitaldetails.models import (
     FindingAids,
     FindingAidsLocation,
@@ -21,9 +25,6 @@ from app.hospitaldetails.models import (
     RegionalBoard,
     Repository,
 )
-from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
-from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -82,14 +83,14 @@ class Command(BaseCommand):
             )
             return conn
         except Exception as e:
-            raise CommandError(f"Failed to connect to MSSQL: {str(e)}")
+            raise CommandError(f"Failed to connect to MSSQL: {str(e)}") from e
 
     def handle(self, *args, **options):
         # Validate required connection parameters
         required = ["host", "database", "user", "password"]
         missing = [param for param in required if not options.get(param)]
         if missing:
-            raise CommandError(f'Missing required parameters: {", ".join(missing)}')
+            raise CommandError(f"Missing required parameters: {', '.join(missing)}")
 
         # Connect to MSSQL
         conn = self.get_mssql_connection(
@@ -140,7 +141,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Migration completed successfully"))
 
         except Exception as e:
-            raise CommandError(f"Migration failed: {str(e)}")
+            raise CommandError(f"Migration failed: {str(e)}") from e
         finally:
             cursor.close()
             conn.close()

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hospitaldetails", "0005_remove_repository_repository_code_and_more"),
     ]

@@ -1,7 +1,7 @@
 import os
 
-from .features import *
-from .production import *
+from .features import *  # noqa: F403
+from .production import *  # noqa: F403
 from .production import BASE_DIR, INSTALLED_APPS
 
 ENVIRONMENT_NAME = "test"
