@@ -15,6 +15,13 @@
           <a class="tna-button" href="{{ url_for('hospitaldetails:search') }}">Search hospitals</a>
         </div>
 
+        <h2 class="tna-heading-l tna-!--margin-top-l">What is this service?</h2>
+        <p>
+          This service provides information about the location and coverage of hospital records across the UK.
+          It was developed by The National Archives in partnership with the Wellcome Trust.
+          For more information about the project, see <a href="{{ url_for('hospitaldetails:about') }}">About this project</a>.
+        </p>
+
         <h2 class="tna-heading-l tna-!--margin-top-l">How to use this service</h2>
         <ol class="tna-ol">
           <li>Search for a hospital by name, previous names, or town.</li>
@@ -24,9 +31,10 @@
 
         <h2 class="tna-heading-l tna-!--margin-top-l">What you will find</h2>
         <ul class="tna-ul">
-          <li>Admissions, registers, and administrative records (where known).</li>
-          <li>Repository codes and Archon references to support enquiries.</li>
-          <li>Notes on access or research requirements when available.</li>
+          <li>The administrative details of the hospitals, and their status or type.</li>
+          <li>The location and covering dates of administrative and clinical records.</li>
+          <li>The existence of lists, catalogues or other finding aids.</li>
+          <li>Links to some online catalogues on <a href="https://www.nationalarchives.gov.uk/help-with-your-research/discovery-help/what-is-discovery/">Discovery</a>.</li>
         </ul>
 
         <h2 class="tna-heading-l tna-!--margin-top-l">Need help?</h2>

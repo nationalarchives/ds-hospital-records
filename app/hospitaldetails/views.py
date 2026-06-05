@@ -154,6 +154,18 @@ def repository_detail(request, id):
     return render(request, "hospitaldetails/repository_detail.html", context)
 
 
+def about(request):
+    """Display the about page."""
+    breadcrumbs = _hospital_records_breadcrumbs() + [
+        {"text": "About", "href": reverse("hospitaldetails:about")}
+    ]
+    return render(
+        request,
+        "hospitaldetails/about.html",
+        {"breadcrumbs": breadcrumbs},
+    )
+
+
 def home_page(request):
     """Display the home page."""
     breadcrumbs = [{"text": "Home", "href": reverse("main:index")}]
