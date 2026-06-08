@@ -36,3 +36,6 @@ testpaths = [
     "test",
 ]
 DJANGO_SETTINGS_MODULE = "config.settings.test"
+
+[solver]
+min-release-age = 7
