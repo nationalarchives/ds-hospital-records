@@ -159,3 +159,5 @@ class Hospital(NH3CleanSaveMixin, models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = "Hospital"
+        verbose_name_plural = "Hospitals"

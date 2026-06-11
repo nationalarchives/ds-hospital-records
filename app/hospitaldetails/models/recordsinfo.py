@@ -270,3 +270,5 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
 
     class Meta:
         ordering = ["hospital__name", "repository__name"]
+        verbose_name = "Records Information"
+        verbose_name_plural = "Records Information"
