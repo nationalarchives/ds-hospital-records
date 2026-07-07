@@ -91,6 +91,15 @@ def _ordered_filter_options(queryset):
 
 def _parse_search_filters(request):
     query = request.GET.get("q", "").strip()
+    sort = request.GET.get("sort", "name_asc")
+    if sort not in {
+        "name_asc",
+        "name_desc",
+        "foundation_year_asc",
+        "foundation_year_desc",
+        "last_updated_desc",
+    }:
+        sort = "name_asc"
 
     open_closed_status = request.GET.get("open_closed_status", "all")
     if open_closed_status not in {"all", "open", "closed"}:
@@ -128,6 +137,7 @@ def _parse_search_filters(request):
 
     return {
         "query": query,
+        "sort": sort,
         "open_closed_status": open_closed_status,
         "foundation_year_from": foundation_year_from,
         "foundation_year_to": foundation_year_to,
@@ -178,7 +188,33 @@ def _filter_hospitals(filters):
     if filters["post_1948_type_ids"]:
         results = results.filter(post_1948_type__id__in=filters["post_1948_type_ids"])
 
-    return results.distinct().order_by("name")
+    results = results.distinct()
+
+    if filters["sort"] == "name_desc":
+        return results.order_by(Lower("name").desc(), "-name")
+
+    if filters["sort"] == "foundation_year_asc":
+        return results.annotate(
+            sort_foundation_year_unknown=Case(
+                When(foundation_year__isnull=True, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+        ).order_by("sort_foundation_year_unknown", "foundation_year", Lower("name"))
+
+    if filters["sort"] == "foundation_year_desc":
+        return results.annotate(
+            sort_foundation_year_unknown=Case(
+                When(foundation_year__isnull=True, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+        ).order_by("sort_foundation_year_unknown", "-foundation_year", Lower("name"))
+
+    if filters["sort"] == "last_updated_desc":
+        return results.order_by("-last_updated_at", Lower("name"))
+
+    return results.order_by(Lower("name"), "name")
 
 
 def _build_search_params(filters):
@@ -186,6 +222,8 @@ def _build_search_params(filters):
 
     if filters["query"]:
         search_params["q"] = filters["query"]
+    if filters["sort"] != "name_asc":
+        search_params["sort"] = filters["sort"]
     if filters["open_closed_status"] != "all":
         search_params["open_closed_status"] = filters["open_closed_status"]
     if filters["foundation_year_from"] is not None:
@@ -255,6 +293,7 @@ def search(request):
         "has_active_search": True,
         "breadcrumbs": breadcrumbs,
         "search_hash": search_hash,
+        "sort": filters["sort"],
         "open_closed_status": filters["open_closed_status"],
         "foundation_year_from": filters["foundation_year_from"],
         "foundation_year_to": filters["foundation_year_to"],

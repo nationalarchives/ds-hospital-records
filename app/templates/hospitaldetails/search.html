@@ -5,6 +5,7 @@
 {% from "components/radios/macro.html" import tnaRadios %}
 {% from "components/checkboxes/macro.html" import tnaCheckboxes %}
 {% from "components/button/macro.html" import tnaButton %}
+{% from "components/select/macro.html" import tnaSelect %}
 
 {% block pageTitle %}Search Hospitals{% endblock pageTitle %}
 
@@ -29,6 +30,38 @@
       </div>
       <div id="filter-panel" class="tna-column tna-column--width-1-4 tna-column--width-1-3-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
         <h2 class="tna-heading-l tna-!--margin-top-xs">Filters</h2>
+
+        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
+          {{ tnaSelect({
+            "label": "Sort by",
+            "headingSize": "m",
+            "id": "sort",
+            "name": "sort",
+            "items": [
+              {
+                "text": "Hospital name (A-Z)",
+                "value": "name_asc"
+              },
+              {
+                "text": "Hospital name (Z-A)",
+                "value": "name_desc"
+              },
+              {
+                "text": "Foundation year (asc)",
+                "value": "foundation_year_asc"
+              },
+              {
+                "text": "Foundation year (desc)",
+                "value": "foundation_year_desc"
+              },
+              {
+                "text": "Last updated",
+                "value": "last_updated_desc"
+              }
+            ],
+            "selected": sort
+          }) }}
+        </div>
 
         <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
           {{ tnaRadios({

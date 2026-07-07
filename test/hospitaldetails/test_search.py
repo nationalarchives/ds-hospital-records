@@ -1,3 +1,5 @@
+import datetime
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -10,10 +12,13 @@ class SearchBackendTestCase(TestCase):
     def setUp(self):
         self.search_url = reverse("hospitaldetails:search")
 
-    def test_empty_query_returns_no_results(self):
+    def test_empty_query_returns_all_results(self):
+        Hospital.objects.create(name="Alpha Hospital")
+
         response = self.client.get(self.search_url)
         self.assertContains(response, "Search Hospitals", status_code=200)
-        self.assertNotContains(response, "Search Results")
+        self.assertContains(response, "Search Results")
+        self.assertContains(response, "Alpha Hospital")
 
     def test_search_matches_name_previous_name_and_town(self):
         Hospital.objects.create(name="St Marys", town="York")
@@ -44,6 +49,49 @@ class SearchBackendTestCase(TestCase):
             content.index("Beta Hospital"),
             content.index("Zeta Hospital"),
         )
+
+    def test_sort_name_desc(self):
+        Hospital.objects.create(name="Zeta Hospital")
+        Hospital.objects.create(name="Alpha Hospital")
+        Hospital.objects.create(name="Beta Hospital")
+
+        response = self.client.get(self.search_url, {"sort": "name_desc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Zeta Hospital"), content.index("Beta Hospital"))
+        self.assertLess(content.index("Beta Hospital"), content.index("Alpha Hospital"))
+
+    def test_sort_foundation_year_asc_puts_unknown_last(self):
+        Hospital.objects.create(name="Unknown Year", foundation_year=None)
+        Hospital.objects.create(name="Older", foundation_year=1900)
+        Hospital.objects.create(name="Newer", foundation_year=1950)
+
+        response = self.client.get(self.search_url, {"sort": "foundation_year_asc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Older"), content.index("Newer"))
+        self.assertLess(content.index("Newer"), content.index("Unknown Year"))
+
+    def test_sort_foundation_year_desc_puts_unknown_last(self):
+        Hospital.objects.create(name="Unknown Year", foundation_year=None)
+        Hospital.objects.create(name="Older", foundation_year=1900)
+        Hospital.objects.create(name="Newer", foundation_year=1950)
+
+        response = self.client.get(self.search_url, {"sort": "foundation_year_desc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Newer"), content.index("Older"))
+        self.assertLess(content.index("Older"), content.index("Unknown Year"))
+
+    def test_sort_last_updated_desc(self):
+        older = Hospital.objects.create(name="Older Updated")
+        newer = Hospital.objects.create(name="Newer Updated")
+
+        older.last_updated_at = datetime.datetime(2020, 1, 1, 12, 0, 0)
+        older.save(update_fields=["last_updated_at"])
+        newer.last_updated_at = datetime.datetime(2021, 1, 1, 12, 0, 0)
+        newer.save(update_fields=["last_updated_at"])
+
+        response = self.client.get(self.search_url, {"sort": "last_updated_desc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Newer Updated"), content.index("Older Updated"))
 
     def test_filter_open_closed_status(self):
         Hospital.objects.create(name="Open Hospital", closed=False)
@@ -174,6 +222,11 @@ class SearchFrontendTestCase(TestCase):
         self.assertContains(response, "Hospital Records search")
         self.assertContains(response, 'name="q"')
         self.assertContains(response, 'value="York"')
+
+    def test_form_renders_sort_select_and_selected_value(self):
+        response = self.client.get(self.search_url, {"sort": "foundation_year_desc"})
+        self.assertContains(response, 'name="sort"')
+        self.assertContains(response, 'option value="foundation_year_desc" selected')
 
     def test_results_include_hospital_links(self):
         hospital = Hospital.objects.create(name="North Clinic", town="Leeds")
