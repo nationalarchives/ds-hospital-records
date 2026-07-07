@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from app.hospitaldetails.models.hospital import Hospital
+from app.hospitaldetails.models.status import Post1948Status, Pre1948Status
+from app.hospitaldetails.models.type import Post1948Type, Pre1948Type
 
 
 class SearchBackendTestCase(TestCase):
@@ -42,6 +44,125 @@ class SearchBackendTestCase(TestCase):
             content.index("Beta Hospital"),
             content.index("Zeta Hospital"),
         )
+
+    def test_filter_open_closed_status(self):
+        Hospital.objects.create(name="Open Hospital", closed=False)
+        Hospital.objects.create(name="Closed Hospital", closed=True)
+
+        response = self.client.get(
+            self.search_url,
+            {"open_closed_status": "open"},
+        )
+        self.assertContains(response, "Open Hospital")
+        self.assertNotContains(response, "Closed Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {"open_closed_status": "closed"},
+        )
+        self.assertContains(response, "Closed Hospital")
+        self.assertNotContains(response, "Open Hospital")
+
+    def test_filter_foundation_year_range(self):
+        Hospital.objects.create(
+            name="Founded before range",
+            foundation_year=1900,
+            closed=False,
+        )
+        Hospital.objects.create(
+            name="Founded in range",
+            foundation_year=1930,
+            closed=True,
+            closure_date=1980,
+        )
+        Hospital.objects.create(
+            name="Founded after range",
+            foundation_year=1960,
+            closed=True,
+            closure_date=1990,
+        )
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "foundation_year_from": "1920",
+                "foundation_year_to": "1950",
+            },
+        )
+
+        self.assertNotContains(response, "Founded before range")
+        self.assertContains(response, "Founded in range")
+        self.assertNotContains(response, "Founded after range")
+
+    def test_filter_foundation_year_with_only_to(self):
+        Hospital.objects.create(name="Ancient", foundation_year=1200, closed=False)
+        Hospital.objects.create(name="Modern", foundation_year=2000, closed=False)
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "foundation_year_to": "1500",
+            },
+        )
+
+        self.assertContains(response, "Ancient")
+        self.assertNotContains(response, "Modern")
+
+    def test_filter_pre_and_post_1948_status(self):
+        pre_local = Pre1948Status.objects.create(value="Local Authority")
+        post_nhs = Post1948Status.objects.create(value="NHS")
+
+        matching = Hospital.objects.create(name="Matching Status Hospital")
+        matching.pre_1948_status.add(pre_local)
+        matching.post_1948_status.add(post_nhs)
+
+        non_matching = Hospital.objects.create(name="Non Matching Status Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "pre_1948_status": [str(pre_local.id)],
+            },
+        )
+        self.assertContains(response, "Matching Status Hospital")
+        self.assertNotContains(response, "Non Matching Status Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "post_1948_status": [str(post_nhs.id)],
+            },
+        )
+        self.assertContains(response, "Matching Status Hospital")
+        self.assertNotContains(response, "Non Matching Status Hospital")
+
+    def test_filter_pre_and_post_1948_type(self):
+        pre_voluntary = Pre1948Type.objects.create(value="Voluntary")
+        post_special = Post1948Type.objects.create(value="Special")
+
+        matching = Hospital.objects.create(name="Matching Type Hospital")
+        matching.pre_1948_type.add(pre_voluntary)
+        matching.post_1948_type.add(post_special)
+
+        non_matching = Hospital.objects.create(name="Non Matching Type Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "pre_1948_type": [str(pre_voluntary.id)],
+            },
+        )
+        self.assertContains(response, "Matching Type Hospital")
+        self.assertNotContains(response, "Non Matching Type Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "post_1948_type": [str(post_special.id)],
+            },
+        )
+        self.assertContains(response, "Matching Type Hospital")
+        self.assertNotContains(response, "Non Matching Type Hospital")
 
 
 class SearchFrontendTestCase(TestCase):
