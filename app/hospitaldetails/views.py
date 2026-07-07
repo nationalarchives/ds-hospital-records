@@ -1,4 +1,5 @@
 import base64
+import datetime
 import json
 from urllib.parse import urlencode
 
@@ -7,7 +8,15 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from .models import Hospital, RecordsInfo, Repository
+from .models import (
+    Hospital,
+    Post1948Status,
+    Post1948Type,
+    Pre1948Status,
+    Pre1948Type,
+    RecordsInfo,
+    Repository,
+)
 
 
 def _build_page_numbers(current_page, total_pages, window=1, edges=1):
@@ -42,21 +51,111 @@ def encode_search_params(params):
     return b64.rstrip("=")
 
 
+def _parse_year(value):
+    if value is None:
+        return None
+
+    parsed = str(value).strip()
+    if not parsed:
+        return None
+
+    if not parsed.isdigit():
+        return None
+
+    return int(parsed)
+
+
+def _parse_int_list(values):
+    parsed_values = []
+
+    for value in values:
+        try:
+            parsed_values.append(int(value))
+        except (TypeError, ValueError):
+            continue
+
+    return parsed_values
+
+
 def search(request):
     """Search for hospitals by name or town."""
     query = request.GET.get("q", "").strip()
+    open_closed_status = request.GET.get("open_closed_status", "all")
+    if open_closed_status not in {"all", "open", "closed"}:
+        open_closed_status = "all"
+
+    foundation_year_from = _parse_year(request.GET.get("foundation_year_from"))
+    foundation_year_to = _parse_year(request.GET.get("foundation_year_to"))
+
+    current_year = datetime.date.today().year
+    effective_foundation_year_from = foundation_year_from
+    effective_foundation_year_to = foundation_year_to
+
+    if foundation_year_from is None and foundation_year_to is not None:
+        effective_foundation_year_from = 0
+    if foundation_year_to is None and foundation_year_from is not None:
+        effective_foundation_year_to = current_year
+
+    pre_1948_status_ids = _parse_int_list(request.GET.getlist("pre_1948_status"))
+    post_1948_status_ids = _parse_int_list(request.GET.getlist("post_1948_status"))
+    pre_1948_type_ids = _parse_int_list(request.GET.getlist("pre_1948_type"))
+    post_1948_type_ids = _parse_int_list(request.GET.getlist("post_1948_type"))
+
+    has_active_search = any(
+        [
+            query,
+            open_closed_status != "all",
+            foundation_year_from is not None,
+            foundation_year_to is not None,
+            pre_1948_status_ids,
+            post_1948_status_ids,
+            pre_1948_type_ids,
+            post_1948_type_ids,
+        ]
+    )
+
     results = Hospital.objects.none()
     page_obj = None
     paginator = None
     page_numbers = []
 
-    if query:
+    if has_active_search:
         # Search in hospital name, previous names, and town
-        results = Hospital.objects.filter(
-            Q(name__icontains=query)
-            | Q(previous_names__icontains=query)
-            | Q(town__icontains=query)
-        ).order_by("name")
+        results = Hospital.objects.all()
+
+        if query:
+            results = results.filter(
+                Q(name__icontains=query)
+                | Q(previous_names__icontains=query)
+                | Q(town__icontains=query)
+            )
+
+        if open_closed_status == "open":
+            results = results.filter(closed=False)
+        elif open_closed_status == "closed":
+            results = results.filter(closed=True)
+
+        if (
+            effective_foundation_year_from is not None
+            and effective_foundation_year_to is not None
+        ):
+            # Filter by year founded within the selected range.
+            results = results.filter(
+                foundation_year__isnull=False,
+                foundation_year__gte=effective_foundation_year_from,
+                foundation_year__lte=effective_foundation_year_to,
+            )
+
+        if pre_1948_status_ids:
+            results = results.filter(pre_1948_status__id__in=pre_1948_status_ids)
+        if post_1948_status_ids:
+            results = results.filter(post_1948_status__id__in=post_1948_status_ids)
+        if pre_1948_type_ids:
+            results = results.filter(pre_1948_type__id__in=pre_1948_type_ids)
+        if post_1948_type_ids:
+            results = results.filter(post_1948_type__id__in=post_1948_type_ids)
+
+        results = results.distinct().order_by("name")
 
         paginator = Paginator(results, 10)
         page_obj = paginator.get_page(request.GET.get("page"))
@@ -65,14 +164,37 @@ def search(request):
 
     breadcrumbs = _hospital_records_breadcrumbs()
 
+    search_params = {}
+    if query:
+        search_params["q"] = query
+    if open_closed_status != "all":
+        search_params["open_closed_status"] = open_closed_status
+    if foundation_year_from is not None:
+        search_params["foundation_year_from"] = str(foundation_year_from)
+    if foundation_year_to is not None:
+        search_params["foundation_year_to"] = str(foundation_year_to)
+    if pre_1948_status_ids:
+        search_params["pre_1948_status"] = [str(value) for value in pre_1948_status_ids]
+    if post_1948_status_ids:
+        search_params["post_1948_status"] = [str(value) for value in post_1948_status_ids]
+    if pre_1948_type_ids:
+        search_params["pre_1948_type"] = [str(value) for value in pre_1948_type_ids]
+    if post_1948_type_ids:
+        search_params["post_1948_type"] = [str(value) for value in post_1948_type_ids]
+
     search_hash = None
-    if query or (page_obj and page_obj.number):
-        search_params = {}
-        if query:
-            search_params["q"] = query
+    if search_params:
+        hash_params = dict(search_params)
         if page_obj and page_obj.number:
-            search_params["page"] = page_obj.number
-        search_hash = encode_search_params(search_params)
+            hash_params["page"] = page_obj.number
+        search_hash = encode_search_params(hash_params)
+
+    pagination_query = urlencode(search_params, doseq=True)
+
+    pre_1948_status_options = Pre1948Status.objects.all()
+    post_1948_status_options = Post1948Status.objects.all()
+    pre_1948_type_options = Pre1948Type.objects.all()
+    post_1948_type_options = Post1948Type.objects.all()
 
     context = {
         "query": query,
@@ -80,8 +202,21 @@ def search(request):
         "paginator": paginator,
         "page_obj": page_obj,
         "page_numbers": page_numbers,
+        "has_active_search": has_active_search,
         "breadcrumbs": breadcrumbs,
         "search_hash": search_hash,
+        "open_closed_status": open_closed_status,
+        "foundation_year_from": foundation_year_from,
+        "foundation_year_to": foundation_year_to,
+        "pre_1948_status_options": pre_1948_status_options,
+        "post_1948_status_options": post_1948_status_options,
+        "pre_1948_type_options": pre_1948_type_options,
+        "post_1948_type_options": post_1948_type_options,
+        "selected_pre_1948_status_ids": pre_1948_status_ids,
+        "selected_post_1948_status_ids": post_1948_status_ids,
+        "selected_pre_1948_type_ids": pre_1948_type_ids,
+        "selected_post_1948_type_ids": post_1948_type_ids,
+        "pagination_query": pagination_query,
     }
     return render(request, "hospitaldetails/search.html", context)
 
