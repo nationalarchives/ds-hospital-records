@@ -168,9 +168,7 @@ def _filter_hospitals(filters):
         )
 
     if filters["pre_1948_status_ids"]:
-        results = results.filter(
-            pre_1948_status__id__in=filters["pre_1948_status_ids"]
-        )
+        results = results.filter(pre_1948_status__id__in=filters["pre_1948_status_ids"])
     if filters["post_1948_status_ids"]:
         results = results.filter(
             post_1948_status__id__in=filters["post_1948_status_ids"]

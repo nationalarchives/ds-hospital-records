@@ -116,7 +116,7 @@ class SearchBackendTestCase(TestCase):
         matching.pre_1948_status.add(pre_local)
         matching.post_1948_status.add(post_nhs)
 
-        non_matching = Hospital.objects.create(name="Non Matching Status Hospital")
+        Hospital.objects.create(name="Non Matching Status Hospital")
 
         response = self.client.get(
             self.search_url,
@@ -144,7 +144,7 @@ class SearchBackendTestCase(TestCase):
         matching.pre_1948_type.add(pre_voluntary)
         matching.post_1948_type.add(post_special)
 
-        non_matching = Hospital.objects.create(name="Non Matching Type Hospital")
+        Hospital.objects.create(name="Non Matching Type Hospital")
 
         response = self.client.get(
             self.search_url,
