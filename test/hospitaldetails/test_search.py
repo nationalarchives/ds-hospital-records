@@ -289,7 +289,9 @@ class HospitalDetailOrderingTestCase(TestCase):
         self.assertContains(response, "Asylum, Maternity, Other")
         self.assertContains(response, "Acute, Special, Other")
 
-        self.assertLess(content.index("alpha, Zeta, Other"), content.index("beta, Gamma, Other"))
+        self.assertLess(
+            content.index("alpha, Zeta, Other"), content.index("beta, Gamma, Other")
+        )
         self.assertLess(
             content.index("Asylum, Maternity, Other"),
             content.index("Acute, Special, Other"),
