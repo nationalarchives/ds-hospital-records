@@ -1,13 +1,23 @@
 import base64
+import datetime
 import json
 from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from .models import Hospital, RecordsInfo, Repository
+from .models import (
+    Hospital,
+    Post1948Status,
+    Post1948Type,
+    Pre1948Status,
+    Pre1948Type,
+    RecordsInfo,
+    Repository,
+)
 
 
 def _build_page_numbers(current_page, total_pages, window=1, edges=1):
@@ -42,46 +52,260 @@ def encode_search_params(params):
     return b64.rstrip("=")
 
 
+def _parse_year(value):
+    if value is None:
+        return None
+
+    parsed = str(value).strip()
+    if not parsed:
+        return None
+
+    if not parsed.isdigit():
+        return None
+
+    return int(parsed)
+
+
+def _parse_int_list(values):
+    parsed_values = []
+
+    for value in values:
+        try:
+            parsed_values.append(int(value))
+        except (TypeError, ValueError):
+            continue
+
+    return parsed_values
+
+
+def _ordered_filter_options(queryset):
+    return queryset.annotate(
+        sort_other=Case(
+            When(value__iexact="other", then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        ),
+        sort_value=Lower("value"),
+    ).order_by("sort_other", "sort_value")
+
+
+def _parse_search_filters(request):
+    query = request.GET.get("q", "").strip()
+    sort = request.GET.get("sort", "name_asc")
+    if sort not in {
+        "name_asc",
+        "name_desc",
+        "foundation_year_asc",
+        "foundation_year_desc",
+        "last_updated_desc",
+    }:
+        sort = "name_asc"
+
+    open_closed_status = request.GET.get("open_closed_status", "all")
+    if open_closed_status not in {"all", "open", "closed"}:
+        open_closed_status = "all"
+
+    foundation_year_from = _parse_year(request.GET.get("foundation_year_from"))
+    foundation_year_to = _parse_year(request.GET.get("foundation_year_to"))
+
+    current_year = datetime.date.today().year
+    effective_foundation_year_from = foundation_year_from
+    effective_foundation_year_to = foundation_year_to
+
+    if foundation_year_from is None and foundation_year_to is not None:
+        effective_foundation_year_from = 0
+    if foundation_year_to is None and foundation_year_from is not None:
+        effective_foundation_year_to = current_year
+
+    pre_1948_status_ids = _parse_int_list(request.GET.getlist("pre_1948_status"))
+    post_1948_status_ids = _parse_int_list(request.GET.getlist("post_1948_status"))
+    pre_1948_type_ids = _parse_int_list(request.GET.getlist("pre_1948_type"))
+    post_1948_type_ids = _parse_int_list(request.GET.getlist("post_1948_type"))
+
+    has_active_search = any(
+        [
+            query,
+            open_closed_status != "all",
+            foundation_year_from is not None,
+            foundation_year_to is not None,
+            pre_1948_status_ids,
+            post_1948_status_ids,
+            pre_1948_type_ids,
+            post_1948_type_ids,
+        ]
+    )
+
+    return {
+        "query": query,
+        "sort": sort,
+        "open_closed_status": open_closed_status,
+        "foundation_year_from": foundation_year_from,
+        "foundation_year_to": foundation_year_to,
+        "effective_foundation_year_from": effective_foundation_year_from,
+        "effective_foundation_year_to": effective_foundation_year_to,
+        "pre_1948_status_ids": pre_1948_status_ids,
+        "post_1948_status_ids": post_1948_status_ids,
+        "pre_1948_type_ids": pre_1948_type_ids,
+        "post_1948_type_ids": post_1948_type_ids,
+        "has_active_search": has_active_search,
+    }
+
+
+def _filter_hospitals(filters):
+    results = Hospital.objects.all()
+
+    if filters["query"]:
+        results = results.filter(
+            Q(name__icontains=filters["query"])
+            | Q(previous_names__icontains=filters["query"])
+            | Q(town__icontains=filters["query"])
+        )
+
+    if filters["open_closed_status"] == "open":
+        results = results.filter(closed=False)
+    elif filters["open_closed_status"] == "closed":
+        results = results.filter(closed=True)
+
+    if (
+        filters["effective_foundation_year_from"] is not None
+        and filters["effective_foundation_year_to"] is not None
+    ):
+        # Filter by year founded within the selected range.
+        results = results.filter(
+            foundation_year__isnull=False,
+            foundation_year__gte=filters["effective_foundation_year_from"],
+            foundation_year__lte=filters["effective_foundation_year_to"],
+        )
+
+    if filters["pre_1948_status_ids"]:
+        results = results.filter(pre_1948_status__id__in=filters["pre_1948_status_ids"])
+    if filters["post_1948_status_ids"]:
+        results = results.filter(
+            post_1948_status__id__in=filters["post_1948_status_ids"]
+        )
+    if filters["pre_1948_type_ids"]:
+        results = results.filter(pre_1948_type__id__in=filters["pre_1948_type_ids"])
+    if filters["post_1948_type_ids"]:
+        results = results.filter(post_1948_type__id__in=filters["post_1948_type_ids"])
+
+    results = results.distinct()
+
+    if filters["sort"] == "name_desc":
+        return results.order_by(Lower("name").desc(), "-name")
+
+    if filters["sort"] == "foundation_year_asc":
+        return results.annotate(
+            sort_foundation_year_unknown=Case(
+                When(foundation_year__isnull=True, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+        ).order_by("sort_foundation_year_unknown", "foundation_year", Lower("name"))
+
+    if filters["sort"] == "foundation_year_desc":
+        return results.annotate(
+            sort_foundation_year_unknown=Case(
+                When(foundation_year__isnull=True, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+        ).order_by("sort_foundation_year_unknown", "-foundation_year", Lower("name"))
+
+    if filters["sort"] == "last_updated_desc":
+        return results.order_by("-last_updated_at", Lower("name"))
+
+    return results.order_by(Lower("name"), "name")
+
+
+def _build_search_params(filters):
+    search_params = {}
+
+    if filters["query"]:
+        search_params["q"] = filters["query"]
+    if filters["sort"] != "name_asc":
+        search_params["sort"] = filters["sort"]
+    if filters["open_closed_status"] != "all":
+        search_params["open_closed_status"] = filters["open_closed_status"]
+    if filters["foundation_year_from"] is not None:
+        search_params["foundation_year_from"] = str(filters["foundation_year_from"])
+    if filters["foundation_year_to"] is not None:
+        search_params["foundation_year_to"] = str(filters["foundation_year_to"])
+    if filters["pre_1948_status_ids"]:
+        search_params["pre_1948_status"] = [
+            str(value) for value in filters["pre_1948_status_ids"]
+        ]
+    if filters["post_1948_status_ids"]:
+        search_params["post_1948_status"] = [
+            str(value) for value in filters["post_1948_status_ids"]
+        ]
+    if filters["pre_1948_type_ids"]:
+        search_params["pre_1948_type"] = [
+            str(value) for value in filters["pre_1948_type_ids"]
+        ]
+    if filters["post_1948_type_ids"]:
+        search_params["post_1948_type"] = [
+            str(value) for value in filters["post_1948_type_ids"]
+        ]
+
+    return search_params
+
+
 def search(request):
     """Search for hospitals by name or town."""
-    query = request.GET.get("q", "").strip()
+    filters = _parse_search_filters(request)
+
     results = Hospital.objects.none()
     page_obj = None
     paginator = None
     page_numbers = []
 
-    if query:
-        # Search in hospital name, previous names, and town
-        results = Hospital.objects.filter(
-            Q(name__icontains=query)
-            | Q(previous_names__icontains=query)
-            | Q(town__icontains=query)
-        ).order_by("name")
+    results = _filter_hospitals(filters)
 
-        paginator = Paginator(results, 10)
-        page_obj = paginator.get_page(request.GET.get("page"))
-        results = page_obj.object_list
-        page_numbers = _build_page_numbers(page_obj.number, paginator.num_pages)
+    paginator = Paginator(results, 10)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    results = page_obj.object_list
+    page_numbers = _build_page_numbers(page_obj.number, paginator.num_pages)
 
     breadcrumbs = _hospital_records_breadcrumbs()
 
+    search_params = _build_search_params(filters)
+
     search_hash = None
-    if query or (page_obj and page_obj.number):
-        search_params = {}
-        if query:
-            search_params["q"] = query
+    if search_params:
+        hash_params = dict(search_params)
         if page_obj and page_obj.number:
-            search_params["page"] = page_obj.number
-        search_hash = encode_search_params(search_params)
+            hash_params["page"] = page_obj.number
+        search_hash = encode_search_params(hash_params)
+
+    pagination_query = urlencode(search_params, doseq=True)
+
+    pre_1948_status_options = _ordered_filter_options(Pre1948Status.objects.all())
+    post_1948_status_options = _ordered_filter_options(Post1948Status.objects.all())
+    pre_1948_type_options = _ordered_filter_options(Pre1948Type.objects.all())
+    post_1948_type_options = _ordered_filter_options(Post1948Type.objects.all())
 
     context = {
-        "query": query,
+        "query": filters["query"],
         "results": results,
         "paginator": paginator,
         "page_obj": page_obj,
         "page_numbers": page_numbers,
+        "has_active_search": True,
         "breadcrumbs": breadcrumbs,
         "search_hash": search_hash,
+        "sort": filters["sort"],
+        "open_closed_status": filters["open_closed_status"],
+        "foundation_year_from": filters["foundation_year_from"],
+        "foundation_year_to": filters["foundation_year_to"],
+        "pre_1948_status_options": pre_1948_status_options,
+        "post_1948_status_options": post_1948_status_options,
+        "pre_1948_type_options": pre_1948_type_options,
+        "post_1948_type_options": post_1948_type_options,
+        "selected_pre_1948_status_ids": filters["pre_1948_status_ids"],
+        "selected_post_1948_status_ids": filters["post_1948_status_ids"],
+        "selected_pre_1948_type_ids": filters["pre_1948_type_ids"],
+        "selected_post_1948_type_ids": filters["post_1948_type_ids"],
+        "pagination_query": pagination_query,
     }
     return render(request, "hospitaldetails/search.html", context)
 

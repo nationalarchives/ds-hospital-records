@@ -1,17 +1,24 @@
+import datetime
+
 from django.test import TestCase
 from django.urls import reverse
 
 from app.hospitaldetails.models.hospital import Hospital
+from app.hospitaldetails.models.status import Post1948Status, Pre1948Status
+from app.hospitaldetails.models.type import Post1948Type, Pre1948Type
 
 
 class SearchBackendTestCase(TestCase):
     def setUp(self):
         self.search_url = reverse("hospitaldetails:search")
 
-    def test_empty_query_returns_no_results(self):
+    def test_empty_query_returns_all_results(self):
+        Hospital.objects.create(name="Alpha Hospital")
+
         response = self.client.get(self.search_url)
         self.assertContains(response, "Search Hospitals", status_code=200)
-        self.assertNotContains(response, "Search Results")
+        self.assertContains(response, "Search Results")
+        self.assertContains(response, "Alpha Hospital")
 
     def test_search_matches_name_previous_name_and_town(self):
         Hospital.objects.create(name="St Marys", town="York")
@@ -43,6 +50,168 @@ class SearchBackendTestCase(TestCase):
             content.index("Zeta Hospital"),
         )
 
+    def test_sort_name_desc(self):
+        Hospital.objects.create(name="Zeta Hospital")
+        Hospital.objects.create(name="Alpha Hospital")
+        Hospital.objects.create(name="Beta Hospital")
+
+        response = self.client.get(self.search_url, {"sort": "name_desc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Zeta Hospital"), content.index("Beta Hospital"))
+        self.assertLess(content.index("Beta Hospital"), content.index("Alpha Hospital"))
+
+    def test_sort_foundation_year_asc_puts_unknown_last(self):
+        Hospital.objects.create(name="Unknown Year", foundation_year=None)
+        Hospital.objects.create(name="Older", foundation_year=1900)
+        Hospital.objects.create(name="Newer", foundation_year=1950)
+
+        response = self.client.get(self.search_url, {"sort": "foundation_year_asc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Older"), content.index("Newer"))
+        self.assertLess(content.index("Newer"), content.index("Unknown Year"))
+
+    def test_sort_foundation_year_desc_puts_unknown_last(self):
+        Hospital.objects.create(name="Unknown Year", foundation_year=None)
+        Hospital.objects.create(name="Older", foundation_year=1900)
+        Hospital.objects.create(name="Newer", foundation_year=1950)
+
+        response = self.client.get(self.search_url, {"sort": "foundation_year_desc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Newer"), content.index("Older"))
+        self.assertLess(content.index("Older"), content.index("Unknown Year"))
+
+    def test_sort_last_updated_desc(self):
+        older = Hospital.objects.create(name="Older Updated")
+        newer = Hospital.objects.create(name="Newer Updated")
+
+        older.last_updated_at = datetime.datetime(2020, 1, 1, 12, 0, 0)
+        older.save(update_fields=["last_updated_at"])
+        newer.last_updated_at = datetime.datetime(2021, 1, 1, 12, 0, 0)
+        newer.save(update_fields=["last_updated_at"])
+
+        response = self.client.get(self.search_url, {"sort": "last_updated_desc"})
+        content = response.content.decode("utf-8")
+        self.assertLess(content.index("Newer Updated"), content.index("Older Updated"))
+
+    def test_filter_open_closed_status(self):
+        Hospital.objects.create(name="Open Hospital", closed=False)
+        Hospital.objects.create(name="Closed Hospital", closed=True)
+
+        response = self.client.get(
+            self.search_url,
+            {"open_closed_status": "open"},
+        )
+        self.assertContains(response, "Open Hospital")
+        self.assertNotContains(response, "Closed Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {"open_closed_status": "closed"},
+        )
+        self.assertContains(response, "Closed Hospital")
+        self.assertNotContains(response, "Open Hospital")
+
+    def test_filter_foundation_year_range(self):
+        Hospital.objects.create(
+            name="Founded before range",
+            foundation_year=1900,
+            closed=False,
+        )
+        Hospital.objects.create(
+            name="Founded in range",
+            foundation_year=1930,
+            closed=True,
+            closure_date=1980,
+        )
+        Hospital.objects.create(
+            name="Founded after range",
+            foundation_year=1960,
+            closed=True,
+            closure_date=1990,
+        )
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "foundation_year_from": "1920",
+                "foundation_year_to": "1950",
+            },
+        )
+
+        self.assertNotContains(response, "Founded before range")
+        self.assertContains(response, "Founded in range")
+        self.assertNotContains(response, "Founded after range")
+
+    def test_filter_foundation_year_with_only_to(self):
+        Hospital.objects.create(name="Ancient", foundation_year=1200, closed=False)
+        Hospital.objects.create(name="Modern", foundation_year=2000, closed=False)
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "foundation_year_to": "1500",
+            },
+        )
+
+        self.assertContains(response, "Ancient")
+        self.assertNotContains(response, "Modern")
+
+    def test_filter_pre_and_post_1948_status(self):
+        pre_local = Pre1948Status.objects.create(value="Local Authority")
+        post_nhs = Post1948Status.objects.create(value="NHS")
+
+        matching = Hospital.objects.create(name="Matching Status Hospital")
+        matching.pre_1948_status.add(pre_local)
+        matching.post_1948_status.add(post_nhs)
+
+        Hospital.objects.create(name="Non Matching Status Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "pre_1948_status": [str(pre_local.id)],
+            },
+        )
+        self.assertContains(response, "Matching Status Hospital")
+        self.assertNotContains(response, "Non Matching Status Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "post_1948_status": [str(post_nhs.id)],
+            },
+        )
+        self.assertContains(response, "Matching Status Hospital")
+        self.assertNotContains(response, "Non Matching Status Hospital")
+
+    def test_filter_pre_and_post_1948_type(self):
+        pre_voluntary = Pre1948Type.objects.create(value="Voluntary")
+        post_special = Post1948Type.objects.create(value="Special")
+
+        matching = Hospital.objects.create(name="Matching Type Hospital")
+        matching.pre_1948_type.add(pre_voluntary)
+        matching.post_1948_type.add(post_special)
+
+        Hospital.objects.create(name="Non Matching Type Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "pre_1948_type": [str(pre_voluntary.id)],
+            },
+        )
+        self.assertContains(response, "Matching Type Hospital")
+        self.assertNotContains(response, "Non Matching Type Hospital")
+
+        response = self.client.get(
+            self.search_url,
+            {
+                "post_1948_type": [str(post_special.id)],
+            },
+        )
+        self.assertContains(response, "Matching Type Hospital")
+        self.assertNotContains(response, "Non Matching Type Hospital")
+
 
 class SearchFrontendTestCase(TestCase):
     def setUp(self):
@@ -53,6 +222,11 @@ class SearchFrontendTestCase(TestCase):
         self.assertContains(response, "Hospital Records search")
         self.assertContains(response, 'name="q"')
         self.assertContains(response, 'value="York"')
+
+    def test_form_renders_sort_select_and_selected_value(self):
+        response = self.client.get(self.search_url, {"sort": "foundation_year_desc"})
+        self.assertContains(response, 'name="sort"')
+        self.assertContains(response, 'option value="foundation_year_desc" selected')
 
     def test_results_include_hospital_links(self):
         hospital = Hospital.objects.create(name="North Clinic", town="Leeds")
