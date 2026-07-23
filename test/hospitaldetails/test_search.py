@@ -282,19 +282,15 @@ class HospitalDetailOrderingTestCase(TestCase):
             reverse("hospitaldetails:hospital_detail", kwargs={"id": hospital.id})
         )
 
-        self.assertEqual(
-            [status.value for status in response.context["pre_1948_statuses"]],
-            ["alpha", "Zeta", "Other"],
-        )
-        self.assertEqual(
-            [status.value for status in response.context["post_1948_statuses"]],
-            ["beta", "Gamma", "Other"],
-        )
-        self.assertEqual(
-            [type_.value for type_ in response.context["pre_1948_types"]],
-            ["Asylum", "Maternity", "Other"],
-        )
-        self.assertEqual(
-            [type_.value for type_ in response.context["post_1948_types"]],
-            ["Acute", "Special", "Other"],
+        content = response.content.decode("utf-8")
+
+        self.assertContains(response, "alpha, Zeta, Other")
+        self.assertContains(response, "beta, Gamma, Other")
+        self.assertContains(response, "Asylum, Maternity, Other")
+        self.assertContains(response, "Acute, Special, Other")
+
+        self.assertLess(content.index("alpha, Zeta, Other"), content.index("beta, Gamma, Other"))
+        self.assertLess(
+            content.index("Asylum, Maternity, Other"),
+            content.index("Acute, Special, Other"),
         )
