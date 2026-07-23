@@ -159,6 +159,7 @@ def _filter_hospitals(filters):
             Q(name__icontains=filters["query"])
             | Q(previous_names__icontains=filters["query"])
             | Q(town__icontains=filters["query"])
+            | Q(previous_locations__icontains=filters["query"])
         )
 
     if filters["open_closed_status"] == "open":
@@ -251,7 +252,7 @@ def _build_search_params(filters):
 
 
 def search(request):
-    """Search for hospitals by name or town."""
+    """Search for hospitals by name, location, or historic location."""
     filters = _parse_search_filters(request)
 
     results = Hospital.objects.none()
@@ -324,6 +325,11 @@ def hospital_detail(request, id):
     """Display details for a specific hospital."""
     hospital = get_object_or_404(Hospital, id=id)
 
+    pre_1948_statuses = _ordered_filter_options(hospital.pre_1948_status.all())
+    post_1948_statuses = _ordered_filter_options(hospital.post_1948_status.all())
+    pre_1948_types = _ordered_filter_options(hospital.pre_1948_type.all())
+    post_1948_types = _ordered_filter_options(hospital.post_1948_type.all())
+
     # Get related records info for this hospital
     records = (
         RecordsInfo.objects.filter(hospital=hospital).select_related("repository").all()
@@ -349,6 +355,10 @@ def hospital_detail(request, id):
         "hospital": hospital,
         "records": records,
         "back_link_href": back_link_href,
+        "pre_1948_statuses": pre_1948_statuses,
+        "post_1948_statuses": post_1948_statuses,
+        "pre_1948_types": pre_1948_types,
+        "post_1948_types": post_1948_types,
     }
     return render(request, "hospitaldetails/hospital_detail.html", context)
 

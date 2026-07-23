@@ -34,6 +34,17 @@ class SearchBackendTestCase(TestCase):
         response = self.client.get(self.search_url, {"q": "  yOrK  "})
         self.assertContains(response, "St Marys")
 
+    def test_search_matches_historic_location(self):
+        Hospital.objects.create(
+            name="Old Infirmary",
+            previous_locations="Old Road, Sheffield",
+        )
+        Hospital.objects.create(name="Coastal Clinic", previous_locations="Harbour Way")
+
+        response = self.client.get(self.search_url, {"q": "sheffield"})
+        self.assertContains(response, "Old Infirmary", status_code=200)
+        self.assertNotContains(response, "Coastal Clinic")
+
     def test_search_orders_results_by_name(self):
         Hospital.objects.create(name="Zeta Hospital")
         Hospital.objects.create(name="Alpha Hospital")
@@ -240,3 +251,50 @@ class SearchFrontendTestCase(TestCase):
     def test_no_results_message(self):
         response = self.client.get(self.search_url, {"q": "missing"})
         self.assertContains(response, "No hospitals found matching")
+
+
+class HospitalDetailOrderingTestCase(TestCase):
+    def test_status_and_type_are_alphabetical_with_other_last(self):
+        hospital = Hospital.objects.create(name="Ordering Test Hospital")
+
+        hospital.pre_1948_status.add(
+            Pre1948Status.objects.create(value="Zeta"),
+            Pre1948Status.objects.create(value="alpha"),
+            Pre1948Status.objects.create(value="Other"),
+        )
+        hospital.post_1948_status.add(
+            Post1948Status.objects.create(value="Gamma"),
+            Post1948Status.objects.create(value="beta"),
+            Post1948Status.objects.create(value="Other"),
+        )
+        hospital.pre_1948_type.add(
+            Pre1948Type.objects.create(value="Maternity"),
+            Pre1948Type.objects.create(value="Asylum"),
+            Pre1948Type.objects.create(value="Other"),
+        )
+        hospital.post_1948_type.add(
+            Post1948Type.objects.create(value="Special"),
+            Post1948Type.objects.create(value="Acute"),
+            Post1948Type.objects.create(value="Other"),
+        )
+
+        response = self.client.get(
+            reverse("hospitaldetails:hospital_detail", kwargs={"id": hospital.id})
+        )
+
+        self.assertEqual(
+            [status.value for status in response.context["pre_1948_statuses"]],
+            ["alpha", "Zeta", "Other"],
+        )
+        self.assertEqual(
+            [status.value for status in response.context["post_1948_statuses"]],
+            ["beta", "Gamma", "Other"],
+        )
+        self.assertEqual(
+            [type_.value for type_ in response.context["pre_1948_types"]],
+            ["Asylum", "Maternity", "Other"],
+        )
+        self.assertEqual(
+            [type_.value for type_ in response.context["post_1948_types"]],
+            ["Acute", "Special", "Other"],
+        )
