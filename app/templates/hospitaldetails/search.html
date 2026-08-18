@@ -194,7 +194,7 @@
       }) }}
     </div>
 
-    <div class="tna-button-group tna-!--margin-top-s">
+    <div class="tna-button-group">
       {{ tnaButton({
         "text": "Apply filters",
         "buttonElement": True,
@@ -213,14 +213,14 @@
     {% if total_results > 0 %}
       <h2 class="tna-visually-hidden">Search results</h2>
       {% if page_obj %}
-        <p class="tna-!--no-margin-top tna-!--margin-bottom-m">Showing <strong>{{ page_obj.start_index() }}–{{ page_obj.end_index() }}</strong> of <strong>{{ total_results }}</strong> {{ 'results for "' ~ request.GET.q ~ '"' if request.GET.q else 'hospitals' }}</p>
+        <p class="tna-!--no-margin-top tna-!--margin-bottom-s">Showing <strong>{{ page_obj.start_index() }}–{{ page_obj.end_index() }}</strong> of <strong>{{ total_results }}</strong> {{ 'results for "' ~ request.GET.q ~ '"' if request.GET.q else 'hospitals' }}</p>
       {% endif %}
 
       <ul class="tna-ul tna-ul--plain tna-!--no-margin-top">
         {% for hospital in results %}
-        <li class="tna-!--margin-bottom-l">
+        <li class="tna-!--margin-bottom-s">
           {% set body %}
-          <dl class="tna-dl tna-dl--zebra tna-dl--right-weighted">
+          <dl class="tna-dl tna-dl--right-weighted">
             {% if hospital.full_address %}
             <dt>Location</dt>
             <dd>{{ hospital.full_address }}</dd>
@@ -251,7 +251,7 @@
             "headingLevel": 3,
             "headingSize": "m",
             "href": detail_href,
-            "fullAreaClick": true,
+            "fullAreaClick": True,
             "style": "plain",
             "body": body | trim | safe
           }) }}
