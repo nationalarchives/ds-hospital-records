@@ -122,19 +122,6 @@ def _parse_search_filters(request):
     pre_1948_type_ids = _parse_int_list(request.GET.getlist("pre_1948_type"))
     post_1948_type_ids = _parse_int_list(request.GET.getlist("post_1948_type"))
 
-    has_active_search = any(
-        [
-            query,
-            open_closed_status != "all",
-            foundation_year_from is not None,
-            foundation_year_to is not None,
-            pre_1948_status_ids,
-            post_1948_status_ids,
-            pre_1948_type_ids,
-            post_1948_type_ids,
-        ]
-    )
-
     return {
         "query": query,
         "sort": sort,
@@ -147,7 +134,6 @@ def _parse_search_filters(request):
         "post_1948_status_ids": post_1948_status_ids,
         "pre_1948_type_ids": pre_1948_type_ids,
         "post_1948_type_ids": post_1948_type_ids,
-        "has_active_search": has_active_search,
     }
 
 
@@ -291,7 +277,6 @@ def search(request):
         "paginator": paginator,
         "page_obj": page_obj,
         "page_numbers": page_numbers,
-        "has_active_search": True,
         "breadcrumbs": breadcrumbs,
         "search_hash": search_hash,
         "sort": filters["sort"],
