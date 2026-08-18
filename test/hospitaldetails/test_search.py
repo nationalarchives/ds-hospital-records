@@ -16,8 +16,8 @@ class SearchBackendTestCase(TestCase):
         Hospital.objects.create(name="Alpha Hospital")
 
         response = self.client.get(self.search_url)
-        self.assertContains(response, "Search Hospitals", status_code=200)
-        self.assertContains(response, "Search Results")
+        self.assertContains(response, "Search hospitals", status_code=200)
+        self.assertContains(response, "Search results")
         self.assertContains(response, "Alpha Hospital")
 
     def test_search_matches_name_previous_name_and_town(self):
@@ -26,7 +26,7 @@ class SearchBackendTestCase(TestCase):
         Hospital.objects.create(name="Riverside Clinic", town="Bath")
 
         response = self.client.get(self.search_url, {"q": "general"})
-        self.assertContains(response, "Search Results", status_code=200)
+        self.assertContains(response, "Search results", status_code=200)
         self.assertContains(response, "South General")
         self.assertNotContains(response, "St Marys")
         self.assertNotContains(response, "Riverside Clinic")
