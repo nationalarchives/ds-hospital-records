@@ -230,7 +230,7 @@ class SearchFrontendTestCase(TestCase):
 
     def test_form_renders_and_preserves_query(self):
         response = self.client.get(self.search_url, {"q": "York"})
-        self.assertContains(response, "Hospital Records search")
+        self.assertContains(response, "Search hospitals")
         self.assertContains(response, 'name="q"')
         self.assertContains(response, 'value="York"')
 
