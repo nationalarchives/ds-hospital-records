@@ -7,7 +7,7 @@
 {%- from 'components/global-header/macro.html' import tnaGlobalHeader -%}
 
 {%- set theme = 'light' if request.COOKIES['theme'] == 'light' else 'dark' if request.COOKIES['theme'] == 'dark' else 'system' -%}
-{%- set themeAccent = themeAccent if themeAccent else 'yellow' -%}
+{%- set themeAccent = 'green' -%}
 {%- set htmlAttributes = {
   'data-ga4id': app_config.GA4_ID or '',
   'data-tna-cookies-domain': app_config.COOKIE_DOMAIN or ''
