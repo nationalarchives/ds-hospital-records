@@ -1,6 +1,7 @@
 import json
 import re
 from datetime import datetime
+from urllib.parse import quote_plus
 
 from django import template
 from django.conf import settings
@@ -43,6 +44,10 @@ def slugify(s):
     s = re.sub(r"[\s_-]+", "-", s)
     s = re.sub(r"^-+|-+$", "", s)
     return s
+
+
+def url_encode(s):
+    return quote_plus(s)
 
 
 def now_iso_8601():
@@ -123,5 +128,12 @@ def environment(**options):
             "now_iso_8601": now_iso_8601,
         }
     )
-    env.filters.update({"slugify": slugify, "linebreaksdl": linebreaksdl, "abbr": abbr})
+    env.filters.update(
+        {
+            "slugify": slugify,
+            "linebreaksdl": linebreaksdl,
+            "abbr": abbr,
+            "url_encode": url_encode,
+        }
+    )
     return env

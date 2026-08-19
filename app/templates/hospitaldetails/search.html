@@ -1,324 +1,313 @@
 {% extends "base.html" %}
-{% from "components/search-field/macro.html" import tnaSearchField %}
+
+{% from "components/button/macro.html" import tnaButton %}
 {% from "components/card/macro.html" import tnaCard %}
+{% from "components/checkboxes/macro.html" import tnaCheckboxes %}
+{% from "components/fieldset/macro.html" import tnaFieldset %}
 {% from "components/pagination/macro.html" import tnaPagination %}
 {% from "components/radios/macro.html" import tnaRadios %}
-{% from "components/checkboxes/macro.html" import tnaCheckboxes %}
-{% from "components/button/macro.html" import tnaButton %}
+{% from "components/search-field/macro.html" import tnaSearchField %}
 {% from "components/select/macro.html" import tnaSelect %}
+{% from "components/text-input/macro.html" import tnaTextInput %}
 
-{% block pageTitle %}Search Hospitals{% endblock pageTitle %}
+{% set pageTitle = "Search hospitals" %}
 
 {% block content %}
-<div class="tna-container">
-  <div class="tna-column tna-column--full">
-    <h1 class="tna-heading-xl tna-!--margin-bottom-m tna-!--margin-top-m">Search Hospitals</h1>
-
-    <form method="get" action="{{ url_for('hospitaldetails:search') }}" class="tna-form tna-container" id="search-form">
-      <div class="tna-column tna-column--full">
-        <div class="tna-form__group">
-          {{ tnaSearchField({
-            "label": "Hospital Records search",
-            "headingLevel": 1,
-            "headingSize": "l",
-            "id": "search",
-            "name": "q",
-            "value": query or "",
-            "hint": "Enter hospital name or town to search.",
-          }) }}
-        </div>
-      </div>
-      <div id="filter-panel" class="tna-column tna-column--width-1-4 tna-column--width-1-3-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
-        <h2 class="tna-heading-l tna-!--margin-top-xs">Filters</h2>
-
-        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
-          {{ tnaSelect({
-            "label": "Sort by",
-            "headingSize": "m",
-            "id": "sort",
-            "name": "sort",
-            "items": [
-              {
-                "text": "Hospital name (A-Z)",
-                "value": "name_asc"
-              },
-              {
-                "text": "Hospital name (Z-A)",
-                "value": "name_desc"
-              },
-              {
-                "text": "Foundation year (asc)",
-                "value": "foundation_year_asc"
-              },
-              {
-                "text": "Foundation year (desc)",
-                "value": "foundation_year_desc"
-              },
-              {
-                "text": "Last updated",
-                "value": "last_updated_desc"
-              }
-            ],
-            "selected": sort
-          }) }}
-        </div>
-
-        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
-          {{ tnaRadios({
-            "label": "Status",
-            "headingSize": "s",
-            "id": "open_closed_status",
-            "name": "open_closed_status",
-            "items": [
-              {
-                "text": "Show all",
-                "value": "all"
-              },
-              {
-                "text": "Show open",
-                "value": "open"
-              },
-              {
-                "text": "Show closed",
-                "value": "closed"
-              }
-            ],
-            "selected": open_closed_status,
-            "small": True
-          }) }}
-        </div>
-
-        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
-          <div class="tna-form__group">
-            <h3 class="tna-heading-s">Foundation year</h3>
-            <div class="tna-date-input" id="foundation_year_from_group">
-              <div class="tna-date-input__item tna-date-input__item--year">
-                <label for="foundation_year_from" class="tna-date-input__item-label">
-                  From
-                </label>
-                <input
-                  type="text"
-                  id="foundation_year_from"
-                  value="{{ foundation_year_from if foundation_year_from is not none else '' }}"
-                  name="foundation_year_from"
-                  class="tna-date-input__item-input tna-date-input__item-input--wider"
-                  inputmode="numeric"
-                  pattern="[0-9]*">
-              </div>
-            </div>
-            <div class="tna-date-input" id="foundation_year_to_group">
-              <div class="tna-date-input__item tna-date-input__item--year">
-                <label for="foundation_year_to" class="tna-date-input__item-label">
-                  To
-                </label>
-                <input
-                  type="text"
-                  id="foundation_year_to"
-                  value="{{ foundation_year_to if foundation_year_to is not none else '' }}"
-                  name="foundation_year_to"
-                  class="tna-date-input__item-input tna-date-input__item-input--wider"
-                  inputmode="numeric"
-                  pattern="[0-9]*">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {% set pre_1948_status_items = [] %}
-        {% for status in pre_1948_status_options %}
-          {% set _ = pre_1948_status_items.append({
-            "text": status.value,
-            "value": status.id,
-            "checked": status.id in selected_pre_1948_status_ids
-          }) %}
-        {% endfor %}
-        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
-          {{ tnaCheckboxes({
-            "label": "Pre-1948 status",
-            "headingSize": "s",
-            "id": "pre_1948_status",
-            "name": "pre_1948_status",
-            "items": pre_1948_status_items,
-            "small": True
-          }) }}
-        </div>
-
-        {% set post_1948_status_items = [] %}
-        {% for status in post_1948_status_options %}
-          {% set _ = post_1948_status_items.append({
-            "text": status.value,
-            "value": status.id,
-            "checked": status.id in selected_post_1948_status_ids
-          }) %}
-        {% endfor %}
-        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
-          {{ tnaCheckboxes({
-            "label": "Post-1948 status",
-            "headingSize": "s",
-            "id": "post_1948_status",
-            "name": "post_1948_status",
-            "items": post_1948_status_items,
-            "small": True
-          }) }}
-        </div>
-
-        {% set pre_1948_type_items = [] %}
-        {% for type in pre_1948_type_options %}
-          {% set _ = pre_1948_type_items.append({
-            "text": type.value,
-            "value": type.id,
-            "checked": type.id in selected_pre_1948_type_ids
-          }) %}
-        {% endfor %}
-        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
-          {{ tnaCheckboxes({
-            "label": "Pre-1948 type",
-            "headingSize": "s",
-            "id": "pre_1948_type",
-            "name": "pre_1948_type",
-            "items": pre_1948_type_items,
-            "small": True
-          }) }}
-        </div>
-
-        {% set post_1948_type_items = [] %}
-        {% for type in post_1948_type_options %}
-          {% set _ = post_1948_type_items.append({
-            "text": type.value,
-            "value": type.id,
-            "checked": type.id in selected_post_1948_type_ids
-          }) %}
-        {% endfor %}
-        <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
-          {{ tnaCheckboxes({
-            "label": "Post-1948 type",
-            "headingSize": "s",
-            "id": "post_1948_type",
-            "name": "post_1948_type",
-            "items": post_1948_type_items,
-            "small": True
-          }) }}
-        </div>
-
-        <div class="tna-button-group tna-!--margin-top-s">
-          {{ tnaButton({
-            "text": "Apply filters",
-            "buttonElement": True,
-            "buttonType": "submit"
-          }) }}
-        </div>
-      </div>
-
-      <div id="results" class="tna-column tna-column--width-3-4 tna-column--width-2-3-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
-      {% if has_active_search %}
-        <h2 class="tna-heading-l">Search Results</h2>
-
-        {% if paginator %}
-          {% set total_results = paginator.count %}
-        {% else %}
-          {% set total_results = results|length %}
-        {% endif %}
-
-        {% if total_results > 0 %}
-        <p>Found {{ total_results }} hospital{% if total_results != 1 %}s{% endif %}.</p>
-        {% if page_obj %}
-        <p>Showing {{ page_obj.start_index() }}-{{ page_obj.end_index() }} of {{ total_results }}.</p>
-        {% endif %}
-
-          <ul class="tna-ul tna-ul--plain">
-            {% for hospital in results %}
-            <li class="tna-!--margin-bottom-l">
-              {% set body %}
-              <dl class="tna-dl tna-dl--zebra tna-dl--right-weighted">
-                {% if hospital.full_address %}
-                <dt>Location</dt>
-                <dd>{{ hospital.full_address }}</dd>
-                {% endif %}
-
-                <dt>Founded</dt>
-                {% if hospital.foundation_year %}
-                <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
-                {% else %}
-                <dd>Unknown</dd>
-                {% endif %}
-
-                {% if hospital.closed %}
-                <dt>Status</dt>
-                <dd>Closed{% if hospital.closure_date %} ({{ hospital.closure_date }}){% endif %}</dd>
-                {% else %}
-                <dt>Status</dt>
-                <dd>Open</dd>
-                {% endif %}
-              </dl>
-              {% endset %}
-              {% set detail_href = url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}) %}
-              {% if search_hash %}
-                {% set detail_href = detail_href ~ '?search=' ~ search_hash %}
-              {% endif %}
-              {{ tnaCard({
-                "title": hospital.name,
-                "headingLevel": 3,
-                "headingSize": "m",
-                "href": detail_href,
-                "fullAreaClick": true,
-                "style": "plain",
-                "body": body | trim | safe
-              }) }}
-            </li>
-            {% endfor -%}
-          </ul>
-        {% if page_obj and paginator and paginator.num_pages > 1 %}
-          {% set pagination_items = [] %}
-          {% for page_number in page_numbers %}
-            {% if page_number %}
-              {% set page_href = url_for('hospitaldetails:search') ~ '?' %}
-              {% if pagination_query %}
-                {% set page_href = page_href ~ pagination_query ~ '&' %}
-              {% endif %}
-              {% set page_href = page_href ~ 'page=' ~ page_number %}
-              {% set _ = pagination_items.append({
-                "number": page_number,
-                "href": page_href,
-                "current": page_number == page_obj.number
-              }) %}
-            {% else %}
-              {% set _ = pagination_items.append({"ellipsis": True}) %}
-            {% endif %}
-          {% endfor %}
-
-        {% set pagination_previous = None %}
-        {% if page_obj.has_previous() %}
-          {% set pagination_previous_href = url_for('hospitaldetails:search') ~ '?' %}
-          {% if pagination_query %}
-            {% set pagination_previous_href = pagination_previous_href ~ pagination_query ~ '&' %}
-          {% endif %}
-          {% set pagination_previous = {"href": pagination_previous_href ~ 'page=' ~ page_obj.previous_page_number()} %}
-        {% endif %}
-
-        {% set pagination_next = None %}
-        {% if page_obj.has_next() %}
-          {% set pagination_next_href = url_for('hospitaldetails:search') ~ '?' %}
-          {% if pagination_query %}
-            {% set pagination_next_href = pagination_next_href ~ pagination_query ~ '&' %}
-          {% endif %}
-          {% set pagination_next = {"href": pagination_next_href ~ 'page=' ~ page_obj.next_page_number()} %}
-        {% endif %}
-
-          <div class="tna-section">
-            {{ tnaPagination({
-              "previous": pagination_previous,
-              "items": pagination_items,
-              "next": pagination_next
-            }) }}
-          </div>
-        {% endif %}
-        {% else %}
-        <p>No hospitals found matching your search criteria.</p>
-        <p>Try broadening your search or adjusting the filters.</p>
-        {% endif %}
-      {% endif %}
-      </div>
-    </form>
+<form method="get" action="{{ url_for('hospitaldetails:search') }}" class="tna-container" id="search-form">
+  <div class="tna-column tna-column--full tna-!--margin-top-m">
+    {{ tnaSearchField({
+      "label": "Search hospitals",
+      "headingLevel": 1 if results|length > 0 else 2,
+      "headingSize": "xl",
+      "id": "search",
+      "name": "q",
+      "value": query or "",
+      "hint": "Enter hospital name or town",
+    }) }}
   </div>
-</div>
+  <div id="filter-panel" class="tna-column tna-column--width-1-4 tna-column--width-1-3-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+    <h2 class="tna-visually-hidden">Filters</h2>
+
+    <div class="tna-aside tna-aside--tight tna-background-tint tna-!--no-margin-top">
+      {{ tnaSelect({
+        "label": "Sort by",
+        "headingSize": "s",
+        "id": "sort",
+        "name": "sort",
+        "items": [
+          {
+            "text": "Hospital name (A-Z)",
+            "value": "name_asc"
+          },
+          {
+            "text": "Hospital name (Z-A)",
+            "value": "name_desc"
+          },
+          {
+            "text": "Foundation year (asc)",
+            "value": "foundation_year_asc"
+          },
+          {
+            "text": "Foundation year (desc)",
+            "value": "foundation_year_desc"
+          },
+          {
+            "text": "Last updated",
+            "value": "last_updated_desc"
+          }
+        ],
+        "selected": sort
+      }) }}
+    </div>
+
+    <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
+      {{ tnaRadios({
+        "label": "Status",
+        "headingSize": "s",
+        "id": "open_closed_status",
+        "name": "open_closed_status",
+        "items": [
+          {
+            "text": "Show all",
+            "value": "all"
+          },
+          {
+            "text": "Only show open",
+            "value": "open"
+          },
+          {
+            "text": "Only show closed",
+            "value": "closed"
+          }
+        ],
+        "selected": open_closed_status,
+        "small": True
+      }) }}
+    </div>
+
+    <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
+      {% call tnaFieldset({
+        "legend": "Foundation year",
+        "headingLevel": 3,
+        "headingSize": "s",
+        "id": "foundation_year"
+      }) %}
+        {{ tnaTextInput({
+          "label": "From",
+          "headingSize": "xs",
+          "id": "foundation_year_from",
+          "name": "foundation_year_from",
+          "value": foundation_year_from or "",
+          "size": "xs",
+          "attributes": {
+            "inputmode": "numeric"
+          }
+        }) }}
+        
+        {{ tnaTextInput({
+          "label": "To",
+          "headingSize": "xs",
+          "id": "foundation_year_to",
+          "name": "foundation_year_to",
+          "value": foundation_year_to or "",
+          "size": "xs",
+          "attributes": {
+            "inputmode": "numeric"
+          }
+        }) }}
+      {% endcall %}
+    </div>
+
+    {% set pre_1948_status_items = [] %}
+    {% for status in pre_1948_status_options %}
+      {% set _ = pre_1948_status_items.append({
+        "text": status.value,
+        "value": status.id,
+        "checked": status.id in selected_pre_1948_status_ids
+      }) %}
+    {% endfor %}
+    <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
+      {{ tnaCheckboxes({
+        "label": "Pre-1948 status",
+        "headingSize": "s",
+        "id": "pre_1948_status",
+        "name": "pre_1948_status",
+        "items": pre_1948_status_items,
+        "small": True
+      }) }}
+    </div>
+
+    {% set post_1948_status_items = [] %}
+    {% for status in post_1948_status_options %}
+      {% set _ = post_1948_status_items.append({
+        "text": status.value,
+        "value": status.id,
+        "checked": status.id in selected_post_1948_status_ids
+      }) %}
+    {% endfor %}
+    <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
+      {{ tnaCheckboxes({
+        "label": "Post-1948 status",
+        "headingSize": "s",
+        "id": "post_1948_status",
+        "name": "post_1948_status",
+        "items": post_1948_status_items,
+        "small": True
+      }) }}
+    </div>
+
+    {% set pre_1948_type_items = [] %}
+    {% for type in pre_1948_type_options %}
+      {% set _ = pre_1948_type_items.append({
+        "text": type.value,
+        "value": type.id,
+        "checked": type.id in selected_pre_1948_type_ids
+      }) %}
+    {% endfor %}
+    <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
+      {{ tnaCheckboxes({
+        "label": "Pre-1948 type",
+        "headingSize": "s",
+        "id": "pre_1948_type",
+        "name": "pre_1948_type",
+        "items": pre_1948_type_items,
+        "small": True
+      }) }}
+    </div>
+
+    {% set post_1948_type_items = [] %}
+    {% for type in post_1948_type_options %}
+      {% set _ = post_1948_type_items.append({
+        "text": type.value,
+        "value": type.id,
+        "checked": type.id in selected_post_1948_type_ids
+      }) %}
+    {% endfor %}
+    <div class="tna-aside tna-aside--tight tna-background-tint tna-!--margin-top-s">
+      {{ tnaCheckboxes({
+        "label": "Post-1948 type",
+        "headingSize": "s",
+        "id": "post_1948_type",
+        "name": "post_1948_type",
+        "items": post_1948_type_items,
+        "small": True
+      }) }}
+    </div>
+
+    <div class="tna-button-group">
+      {{ tnaButton({
+        "text": "Apply filters",
+        "buttonElement": True,
+        "buttonType": "submit"
+      }) }}
+    </div>
+  </div>
+
+  <div id="results" class="tna-column tna-column--width-3-4 tna-column--width-2-3-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+    {% if paginator %}
+      {% set total_results = paginator.count %}
+    {% else %}
+      {% set total_results = results|length %}
+    {% endif %}
+
+    {% if total_results > 0 %}
+      <h2 class="tna-visually-hidden">Search results</h2>
+      {% if page_obj %}
+        <p class="tna-!--no-margin-top tna-!--margin-bottom-s">Showing <strong>{{ page_obj.start_index() }}–{{ page_obj.end_index() }}</strong> of <strong>{{ total_results }}</strong> {{ 'results for "' ~ request.GET.q ~ '"' if request.GET.q else 'hospitals' }}</p>
+      {% endif %}
+
+      <ul class="tna-ul tna-ul--plain tna-!--no-margin-top">
+        {% for hospital in results %}
+        <li class="tna-!--margin-bottom-s">
+          {% set body %}
+          <dl class="tna-dl tna-dl--right-weighted">
+            {% if hospital.full_address %}
+            <dt>Location</dt>
+            <dd>{{ hospital.full_address }}</dd>
+            {% endif %}
+
+            <dt>Founded</dt>
+            {% if hospital.foundation_year %}
+            <dd>{{ hospital.foundation_year }}{% if hospital.foundation_year_approximate %} (approximately){% endif %}</dd>
+            {% else %}
+            <dd>Unknown</dd>
+            {% endif %}
+
+            {% if hospital.closed %}
+            <dt>Status</dt>
+            <dd>Closed{% if hospital.closure_date %} ({{ hospital.closure_date }}){% endif %}</dd>
+            {% else %}
+            <dt>Status</dt>
+            <dd>Open</dd>
+            {% endif %}
+          </dl>
+          {% endset %}
+          {% set detail_href = url_for('hospitaldetails:hospital_detail', kwargs={'id': hospital.id}) %}
+          {% if search_hash %}
+            {% set detail_href = detail_href ~ '?search=' ~ search_hash %}
+          {% endif %}
+          {{ tnaCard({
+            "title": hospital.name,
+            "headingLevel": 3,
+            "headingSize": "m",
+            "href": detail_href,
+            "fullAreaClick": True,
+            "style": "plain",
+            "body": body | trim | safe
+          }) }}
+        </li>
+        {% endfor -%}
+      </ul>
+      {% if page_obj and paginator and paginator.num_pages > 1 %}
+        {% set pagination_items = [] %}
+        {% for page_number in page_numbers %}
+          {% if page_number %}
+            {% set page_href = url_for('hospitaldetails:search') ~ '?' %}
+            {% if pagination_query %}
+              {% set page_href = page_href ~ pagination_query ~ '&' %}
+            {% endif %}
+            {% set page_href = page_href ~ 'page=' ~ page_number %}
+            {% set _ = pagination_items.append({
+              "number": page_number,
+              "href": page_href,
+              "current": page_number == page_obj.number
+            }) %}
+          {% else %}
+            {% set _ = pagination_items.append({"ellipsis": True}) %}
+          {% endif %}
+        {% endfor %}
+
+      {% set pagination_previous = None %}
+      {% if page_obj.has_previous() %}
+        {% set pagination_previous_href = url_for('hospitaldetails:search') ~ '?' %}
+        {% if pagination_query %}
+          {% set pagination_previous_href = pagination_previous_href ~ pagination_query ~ '&' %}
+        {% endif %}
+        {% set pagination_previous = {"href": pagination_previous_href ~ 'page=' ~ page_obj.previous_page_number()} %}
+      {% endif %}
+
+      {% set pagination_next = None %}
+      {% if page_obj.has_next() %}
+        {% set pagination_next_href = url_for('hospitaldetails:search') ~ '?' %}
+        {% if pagination_query %}
+          {% set pagination_next_href = pagination_next_href ~ pagination_query ~ '&' %}
+        {% endif %}
+        {% set pagination_next = {"href": pagination_next_href ~ 'page=' ~ page_obj.next_page_number()} %}
+      {% endif %}
+
+      <div class="tna-section">
+        {{ tnaPagination({
+          "previous": pagination_previous,
+          "items": pagination_items,
+          "next": pagination_next
+        }) }}
+      </div>
+    {% endif %}
+    {% else %}
+    <h1 class="tna-heading-xl">No results</h1>
+    <p>No hospitals found matching your search criteria.</p>
+    <p>Try broadening your search or adjusting the filters.</p>
+    {% endif %}
+  </div>
+</form>
 {% endblock content %}

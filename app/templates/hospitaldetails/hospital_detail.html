@@ -4,7 +4,7 @@
 {% from "components/sidebar/macro.html" import tnaSidebar %}
 {% from "components/warning/macro.html" import tnaWarning %}
 
-{% block pageTitle %}{{ hospital.name }}{% endblock pageTitle %}
+{% set pageTitle = hospital.name %}
 
 {% block content %}
 
@@ -48,9 +48,9 @@
 
 <div class="tna-template__body">
   <main class="tna-container tna-main">
-    <div class="tna-column tna-column--full tna-!--padding-top-xs">
+    <div class="tna-column tna-column--full tna-!--margin-vertical-s">
       {{ tnaBackLink({
-        "text": "Back to search results page",
+        "text": "Back to search results",
         "href": back_link_href
       }) }}
     </div>
