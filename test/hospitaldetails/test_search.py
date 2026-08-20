@@ -252,6 +252,12 @@ class SearchFrontendTestCase(TestCase):
         response = self.client.get(self.search_url, {"q": "missing"})
         self.assertContains(response, "No hospitals found matching")
 
+    def test_out_of_range_page_returns_404(self):
+        Hospital.objects.create(name="Alpha Hospital")
+
+        response = self.client.get(self.search_url, {"page": "999"})
+        self.assertEqual(response.status_code, 404)
+
 
 class HospitalDetailOrderingTestCase(TestCase):
     def test_status_and_type_are_alphabetical_with_other_last(self):
