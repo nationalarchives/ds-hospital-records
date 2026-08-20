@@ -213,7 +213,7 @@
     {% if total_results > 0 %}
       <h2 class="tna-visually-hidden">Search results</h2>
       {% if page_obj %}
-        <p class="tna-!--no-margin-top tna-!--margin-bottom-s">Showing <strong>{{ page_obj.start_index() }}–{{ page_obj.end_index() }}</strong> of <strong>{{ total_results }}</strong> {{ 'results for "' ~ request.GET.q ~ '"' if request.GET.q else 'hospitals' }}</p>
+        <p class="tna-!--no-margin-top tna-!--margin-bottom-s">Showing <strong>{{ page_obj.start_index() }}–{{ page_obj.end_index() }}</strong> of <strong>{{ "{:,}".format(total_results) }}</strong> {{ 'results for "' ~ request.GET.q ~ '"' if request.GET.q else 'hospitals' }}</p>
       {% endif %}
 
       <ul class="tna-ul tna-ul--plain tna-!--no-margin-top">
