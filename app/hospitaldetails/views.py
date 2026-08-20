@@ -3,9 +3,10 @@ import datetime
 import json
 from urllib.parse import urlencode
 
-from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Case, IntegerField, Q, Value, When
 from django.db.models.functions import Lower
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -249,7 +250,11 @@ def search(request):
     results = _filter_hospitals(filters)
 
     paginator = Paginator(results, 10)
-    page_obj = paginator.get_page(request.GET.get("page"))
+    requested_page = request.GET.get("page", "1")
+    try:
+        page_obj = paginator.page(requested_page)
+    except (PageNotAnInteger, EmptyPage) as exc:
+        raise Http404("Page not found") from exc
     results = page_obj.object_list
     page_numbers = _build_page_numbers(page_obj.number, paginator.num_pages)
 
