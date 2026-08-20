@@ -252,13 +252,13 @@ def search(request):
     paginator = Paginator(results, 10)
     requested_page = request.GET.get("page", "1").strip()
 
-    if not requested_page.isdigit():
-        return HttpResponseBadRequest("Invalid page parameter")
-
     try:
         page_obj = paginator.page(requested_page)
-    except (PageNotAnInteger, EmptyPage) as exc:
+    except PageNotAnInteger:
+        return HttpResponseBadRequest("Invalid page parameter")
+    except EmptyPage as exc:
         raise Http404("Page not found") from exc
+
     results = page_obj.object_list
     page_numbers = _build_page_numbers(page_obj.number, paginator.num_pages)
 
