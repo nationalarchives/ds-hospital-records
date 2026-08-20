@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Case, IntegerField, Q, Value, When
 from django.db.models.functions import Lower
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -250,7 +250,11 @@ def search(request):
     results = _filter_hospitals(filters)
 
     paginator = Paginator(results, 10)
-    requested_page = request.GET.get("page", "1")
+    requested_page = request.GET.get("page", "1").strip()
+
+    if not requested_page.isdigit():
+        return HttpResponseBadRequest("Invalid page parameter")
+
     try:
         page_obj = paginator.page(requested_page)
     except (PageNotAnInteger, EmptyPage) as exc:
