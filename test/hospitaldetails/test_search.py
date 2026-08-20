@@ -258,6 +258,12 @@ class SearchFrontendTestCase(TestCase):
         response = self.client.get(self.search_url, {"page": "999"})
         self.assertEqual(response.status_code, 404)
 
+    def test_non_numeric_page_returns_400(self):
+        Hospital.objects.create(name="Alpha Hospital")
+
+        response = self.client.get(self.search_url, {"page": "foobar"})
+        self.assertEqual(response.status_code, 400)
+
 
 class HospitalDetailOrderingTestCase(TestCase):
     def test_status_and_type_are_alphabetical_with_other_last(self):
