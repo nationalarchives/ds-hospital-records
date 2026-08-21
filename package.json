@@ -11,18 +11,16 @@
     "test:lint": "prettier --check . && stylelint 'src/styles/**/*.scss' && eslint 'src/scripts/**/*.js'"
   },
   "dependencies": {
-    "@nationalarchives/frontend": "0.40.0"
+    "@nationalarchives/frontend": "1.2.0"
   },
   "devDependencies": {
     "@babel/core": "8.0.1",
     "@babel/preset-env": "8.0.2",
     "babel-loader": "10.1.1",
-    "eslint": "10.8.1",
     "prettier": "3.9.6",
     "sass": "1.102.0",
     "@nationalarchives/stylelint-config": "0.1.4",
     "@nationalarchives/eslint-config": "0.1.8",
-    "stylelint": "17.14.1",
     "stylelint-config-standard-scss": "17.0.0",
     "stylelint-order": "8.1.1",
     "stylelint-selector-bem-pattern": "5.0.0",
