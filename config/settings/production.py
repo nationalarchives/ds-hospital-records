@@ -116,6 +116,9 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Override the default Django admin URL with an environment variable
+ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
