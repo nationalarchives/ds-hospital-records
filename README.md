@@ -35,35 +35,36 @@ docker compose exec app format
 
 In addition to the [base Docker image variables](https://github.com/nationalarchives/docker/blob/main/docker/tna-python/README.md#environment-variables), this application has support for:
 
-| Variable                 | Purpose                                                   | Default                                                   |
-| ------------------------ | --------------------------------------------------------- | --------------------------------------------------------- |
-| `DJANGO_SETTINGS_MODULE` | The configuration to use                                  | `config.settings.production`                              |
-| `ALLOWED_HOSTS`          | A comma-separated list of allowed hosts                   | _none_ on production and staging, `*` on develop and test |
-| `USE_X_FORWARDED_HOST`   | Use the `X-Forwarded-Host` header in preference to `Host` | `False`                                                   |
-| `DEBUG`                  | If true, allow debugging                                  | `False`                                                   |
-| `COOKIE_DOMAIN`          | The domain to save cookie preferences against             | `.nationalarchives.gov.uk`                                |
-| `COOKIE_PREFERENCES_URL` | The URL for changing cookie preferences                   | `/cookies/`                                               |
-| `COOKIE_PREFERENCES_KEY` | The URL for changing cookie preferences                   | `dontShowCookieNotice`                                    |
-| `DATABASE_NAME`          | The name of the Postgres database                         | _none_                                                    |
-| `DATABASE_USER`          | The username needed to access the Postgres database       | _none_                                                    |
-| `DATABASE_PASSWORD`      | The password needed to access the Postgres database       | _none_                                                    |
-| `DATABASE_HOST`          | The Postgres database host                                | _none_                                                    |
-| `DATABASE_PORT`          | The Postgres database port                                | `5432`                                                    |
-| `CSP_IMG_SRC`            | A comma separated list of CSP rules for `img-src`         | `'self'`                                                  |
-| `CSP_SCRIPT_SRC`         | A comma separated list of CSP rules for `script-src`      | `'self'`                                                  |
-| `CSP_STYLE_SRC`          | A comma separated list of CSP rules for `style-src`       | `'self'`                                                  |
-| `CSP_FONT_SRC`           | A comma separated list of CSP rules for `font-src`        | `'self'`                                                  |
-| `CSP_CONNECT_SRC`        | A comma separated list of CSP rules for `connect-src`     | `'self'`                                                  |
-| `CSP_MEDIA_SRC`          | A comma separated list of CSP rules for `media-src`       | `'self'`                                                  |
-| `CSP_WORKER_SRC`         | A comma separated list of CSP rules for `worker-src`      | `'self'`                                                  |
-| `CSP_FRAME_SRC`          | A comma separated list of CSP rules for `frame-src`       | `'self'`                                                  |
-| `CSP_REPORT_URL`         | The URL to report CSP violations to                       | _none_                                                    |
-| `GA4_ID`                 | The Google Analytics 4 ID                                 | _none_                                                    |
-| `MSSQL_HOST`             | The MSSQL server hostname (for data migration)            | _none_                                                    |
-| `MSSQL_PORT`             | The MSSQL server port (for data migration)                | `1433`                                                    |
-| `MSSQL_DATABASE`         | The MSSQL database name (for data migration)              | _none_                                                    |
-| `MSSQL_USER`             | The MSSQL username (for data migration)                   | _none_                                                    |
-| `MSSQL_PASSWORD`         | The MSSQL password (for data migration)                   | _none_                                                    |
+| Variable                 | Purpose                                                     | Default                                                   |
+| ------------------------ | ----------------------------------------------------------- | --------------------------------------------------------- |
+| `DJANGO_SETTINGS_MODULE` | The configuration to use                                    | `config.settings.production`                              |
+| `ALLOWED_HOSTS`          | A comma-separated list of allowed hosts                     | _none_ on production and staging, `*` on develop and test |
+| `CSRF_TRUSTED_ORIGINS`   | A comma-separated list of trusted origins, including scheme | _none_                                                    |
+| `USE_X_FORWARDED_HOST`   | Use the `X-Forwarded-Host` header in preference to `Host`   | `False`                                                   |
+| `DEBUG`                  | If true, allow debugging                                    | `False`                                                   |
+| `COOKIE_DOMAIN`          | The domain to save cookie preferences against               | `.nationalarchives.gov.uk`                                |
+| `COOKIE_PREFERENCES_URL` | The URL for changing cookie preferences                     | `/cookies/`                                               |
+| `COOKIE_PREFERENCES_KEY` | The URL for changing cookie preferences                     | `dontShowCookieNotice`                                    |
+| `DATABASE_NAME`          | The name of the Postgres database                           | _none_                                                    |
+| `DATABASE_USER`          | The username needed to access the Postgres database         | _none_                                                    |
+| `DATABASE_PASSWORD`      | The password needed to access the Postgres database         | _none_                                                    |
+| `DATABASE_HOST`          | The Postgres database host                                  | _none_                                                    |
+| `DATABASE_PORT`          | The Postgres database port                                  | `5432`                                                    |
+| `CSP_IMG_SRC`            | A comma separated list of CSP rules for `img-src`           | `'self'`                                                  |
+| `CSP_SCRIPT_SRC`         | A comma separated list of CSP rules for `script-src`        | `'self'`                                                  |
+| `CSP_STYLE_SRC`          | A comma separated list of CSP rules for `style-src`         | `'self'`                                                  |
+| `CSP_FONT_SRC`           | A comma separated list of CSP rules for `font-src`          | `'self'`                                                  |
+| `CSP_CONNECT_SRC`        | A comma separated list of CSP rules for `connect-src`       | `'self'`                                                  |
+| `CSP_MEDIA_SRC`          | A comma separated list of CSP rules for `media-src`         | `'self'`                                                  |
+| `CSP_WORKER_SRC`         | A comma separated list of CSP rules for `worker-src`        | `'self'`                                                  |
+| `CSP_FRAME_SRC`          | A comma separated list of CSP rules for `frame-src`         | `'self'`                                                  |
+| `CSP_REPORT_URL`         | The URL to report CSP violations to                         | _none_                                                    |
+| `GA4_ID`                 | The Google Analytics 4 ID                                   | _none_                                                    |
+| `MSSQL_HOST`             | The MSSQL server hostname (for data migration)              | _none_                                                    |
+| `MSSQL_PORT`             | The MSSQL server port (for data migration)                  | `1433`                                                    |
+| `MSSQL_DATABASE`         | The MSSQL database name (for data migration)                | _none_                                                    |
+| `MSSQL_USER`             | The MSSQL username (for data migration)                     | _none_                                                    |
+| `MSSQL_PASSWORD`         | The MSSQL password (for data migration)                     | _none_                                                    |
 
 ## Data Migration
 
