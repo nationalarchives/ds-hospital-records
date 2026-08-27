@@ -4,8 +4,7 @@ from sysconfig import get_path
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.csp import CSP
-
-from config.util import strtobool
+from tna_utilities import strtobool
 
 from .features import *  # noqa: F403
 

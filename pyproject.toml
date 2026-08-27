@@ -15,6 +15,7 @@ whitenoise = "6.12.0"
 pymssql = "2.3.13"
 sentry-sdk = "2.68.0"
 nh3 = "0.3.6"
+tna-utilities = "1.9.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -38,3 +39,4 @@ DJANGO_SETTINGS_MODULE = "config.settings.test"
 
 [solver]
 min-release-age = 7
+min-release-age-exclude = "tna-utilities,tna-frontend-jinja"

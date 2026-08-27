@@ -1,7 +1,7 @@
 import os
 import sys
 
-from config.util import strtobool
+from tna_utilities import strtobool
 
 from .features import *  # noqa: F403
 from .production import *  # noqa: F403

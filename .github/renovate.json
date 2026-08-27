@@ -1,4 +1,16 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>nationalarchives/renovate-config"]
+  "extends": ["github>nationalarchives/renovate-config"],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["@nationalarchives/*"],
+      "minimumReleaseAge": 0
+    },
+    {
+      "matchManagers": ["poetry", "pip_requirements"],
+      "matchPackageNames": ["tna-*"],
+      "minimumReleaseAge": 0
+    }
+  ]
 }
