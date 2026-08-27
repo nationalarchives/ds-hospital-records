@@ -34,7 +34,7 @@ version = "3.5.1"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 optional = false
 python-versions = ">=3.7"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "charset_normalizer-3.5.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d1ee1e296209fdce05b81b663250eefa02213a2da7b41bf26f7829b8ba3545aa"},
     {file = "charset_normalizer-3.5.1-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:e9fbdce1e47394b09bc9f26ab117dfc8d6491977a11d86f592bb42c779db2fda"},
@@ -250,7 +250,7 @@ version = "3.19"
 description = "Internationalized Domain Names in Applications (IDNA)"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "idna-3.19-py3-none-any.whl", hash = "sha256:815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4"},
     {file = "idna-3.19.tar.gz", hash = "sha256:5e0811a4383b21dc5838069f801c4fb62113b7447663d2530d2bd6e77b49bf15"},
@@ -645,7 +645,7 @@ version = "2.34.2"
 description = "Python HTTP for Humans."
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "requests-2.34.2-py3-none-any.whl", hash = "sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0"},
     {file = "requests-2.34.2.tar.gz", hash = "sha256:f288924cae4e29463698d6d60bc6a4da69c89185ad1e0bcc4104f584e960b9ed"},
@@ -778,6 +778,24 @@ jinja2 = ">=3"
 wtforms = ["flask-wtf[email]"]
 
 [[package]]
+name = "tna-utilities"
+version = "1.9.0"
+description = "A library of common National Archives Python functions"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "tna_utilities-1.9.0-py3-none-any.whl", hash = "sha256:11c998c177e176aa064eacaedffaaba1491b7bbfc2da1597c4b31b2148ea2014"},
+    {file = "tna_utilities-1.9.0.tar.gz", hash = "sha256:4283180a935491839a3fff34e578a88e9790f44579984e1d163183579e0b23dc"},
+]
+
+[package.dependencies]
+requests = "*"
+
+[package.extras]
+flask = ["Flask"]
+
+[[package]]
 name = "tzdata"
 version = "2026.3"
 description = "Provider of IANA time zone data"
@@ -826,4 +844,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.14"
-content-hash = "f86a15b65b9483c97e0aa9b6d50b4d5c29bc344e573b2f8ee9c003184a7780dd"
+content-hash = "5715485d3edb9bda78adf73867c8c4faf4e1457184db06c647cb952df88f964d"
