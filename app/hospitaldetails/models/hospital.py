@@ -1,4 +1,5 @@
-import datetime
+from datetime import UTC, datetime
+from typing import ClassVar
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -13,7 +14,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital has had this name since (YYYY)",
     )
@@ -27,7 +28,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital moved to this address (YYYY)",
     )
@@ -40,7 +41,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital was founded (YYYY)",
     )
@@ -51,7 +52,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital closed (YYYY)",
     )
@@ -158,6 +159,6 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         return self.name
 
     class Meta:
-        ordering = ["name"]
+        ordering: ClassVar[list[str]] = ["name"]
         verbose_name = "Hospital"
         verbose_name_plural = "Hospitals"

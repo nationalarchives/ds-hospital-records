@@ -1,0 +1,3 @@
+# Extend the default Ruff configuration
+extend = "/home/app/ruff.toml"
+extend-exclude = ["migrations"]

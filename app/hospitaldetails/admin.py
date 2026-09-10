@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from django.contrib import admin
 
 from app.hospitaldetails.models import Hospital, RecordsInfo, Repository
@@ -5,7 +7,7 @@ from app.hospitaldetails.models import Hospital, RecordsInfo, Repository
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
-    list_display = [
+    list_display: ClassVar[list[str]] = [
         "name",
         "town",
         "postcode",
@@ -13,14 +15,14 @@ class HospitalAdmin(admin.ModelAdmin):
         "foundation_year",
         "last_updated_at",
     ]
-    list_filter = [
+    list_filter: ClassVar[list[str]] = [
         "closed",
         "more_research_required",
         "pre_1974_county",
         "post_1974_county",
     ]
-    search_fields = ["name", "previous_names", "town", "postcode"]
-    readonly_fields = ["created_at", "last_updated_at"]
+    search_fields: ClassVar[list[str]] = ["name", "previous_names", "town", "postcode"]
+    readonly_fields: ClassVar[list[str]] = ["created_at", "last_updated_at"]
 
     fieldsets = (
         ("Basic Information", {"fields": ("name", "name_since", "previous_names")}),
@@ -109,7 +111,7 @@ class HospitalAdmin(admin.ModelAdmin):
         ),
     )
 
-    filter_horizontal = [
+    filter_horizontal: ClassVar[list[str]] = [
         "pre_1948_status",
         "post_1948_status",
         "pre_1948_type",
@@ -119,9 +121,15 @@ class HospitalAdmin(admin.ModelAdmin):
 
 @admin.register(Repository)
 class RepositoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "town", "postcode", "archon_code", "last_updated_at"]
-    search_fields = ["name", "town", "postcode"]
-    readonly_fields = ["created_at", "last_updated_at"]
+    list_display: ClassVar[list[str]] = [
+        "name",
+        "town",
+        "postcode",
+        "archon_code",
+        "last_updated_at",
+    ]
+    search_fields: ClassVar[list[str]] = ["name", "town", "postcode"]
+    readonly_fields: ClassVar[list[str]] = ["created_at", "last_updated_at"]
 
     fieldsets = (
         ("Basic Information", {"fields": ("name", "archon_code")}),
@@ -155,10 +163,14 @@ class RepositoryAdmin(admin.ModelAdmin):
 
 @admin.register(RecordsInfo)
 class RecordsInfoAdmin(admin.ModelAdmin):
-    list_display = ["hospital", "repository", "last_updated_at"]
-    list_filter = ["more_research_required"]
-    search_fields = ["hospital__name", "repository__name", "finding_aids_details"]
-    readonly_fields = ["created_at", "last_updated_at"]
+    list_display: ClassVar[list[str]] = ["hospital", "repository", "last_updated_at"]
+    list_filter: ClassVar[list[str]] = ["more_research_required"]
+    search_fields: ClassVar[list[str]] = [
+        "hospital__name",
+        "repository__name",
+        "finding_aids_details",
+    ]
+    readonly_fields: ClassVar[list[str]] = ["created_at", "last_updated_at"]
 
     fieldsets = (
         ("Associations", {"fields": ("hospital", "repository", "repository_code")}),
@@ -185,4 +197,4 @@ class RecordsInfoAdmin(admin.ModelAdmin):
         ),
     )
 
-    filter_horizontal = ["finding_aids", "finding_aids_location"]
+    filter_horizontal: ClassVar[list[str]] = ["finding_aids", "finding_aids_location"]
