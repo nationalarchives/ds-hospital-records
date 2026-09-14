@@ -156,7 +156,6 @@ try:
             .get("version", "")
         )
 except Exception:
-    # LOG THE EXCEPTION
     logger.exception("Failed to read TNA_FRONTEND_VERSION from package-lock.json")
 
 SECRET_KEY: str = os.environ.get("SECRET_KEY", "")
