@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 from django.db import models
 
 from app.hospitaldetails.mixins import NH3CleanSaveMixin
@@ -47,6 +45,6 @@ class Repository(NH3CleanSaveMixin, models.Model):
         return self.name
 
     class Meta:
-        ordering: ClassVar[list[str]] = ["name"]
+        ordering = ["name"]
         verbose_name = "Repository"
         verbose_name_plural = "Repositories"

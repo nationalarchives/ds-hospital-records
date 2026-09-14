@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 from django.db import models
 
 from app.hospitaldetails.mixins import NH3CleanSaveMixin
@@ -12,7 +10,7 @@ class Pre1974County(NH3CleanSaveMixin, models.Model):
         return self.name
 
     class Meta:
-        ordering: ClassVar[list[str]] = ["name"]
+        ordering = ["name"]
         verbose_name = "Pre-1974 County"
         verbose_name_plural = "Pre-1974 Counties"
 
@@ -24,7 +22,7 @@ class Post1974County(NH3CleanSaveMixin, models.Model):
         return self.name
 
     class Meta:
-        ordering: ClassVar[list[str]] = ["name"]
+        ordering = ["name"]
         verbose_name = "Post-1974 County"
         verbose_name_plural = "Post-1974 Counties"
 
@@ -36,6 +34,6 @@ class Post1996County(NH3CleanSaveMixin, models.Model):
         return self.name
 
     class Meta:
-        ordering: ClassVar[list[str]] = ["name"]
+        ordering = ["name"]
         verbose_name = "Post-1996 County"
         verbose_name_plural = "Post-1996 Counties"

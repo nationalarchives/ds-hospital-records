@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 import nh3
 from django.db import models
 
@@ -13,8 +11,8 @@ class NH3CleanSaveMixin:
     """
 
     nh3_clean_fields = None
-    nh3_tags: ClassVar[set] = set()
-    nh3_attributes: ClassVar[dict] = {}
+    nh3_tags = set()
+    nh3_attributes = {}
 
     def _iter_nh3_clean_field_names(self):
         if self.nh3_clean_fields is not None:

@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from typing import ClassVar
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -270,6 +269,6 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         return f"Records Info for {self.hospital.name} at {self.repository.name}"
 
     class Meta:
-        ordering: ClassVar[list[str]] = ["hospital__name", "repository__name"]
+        ordering = ["hospital__name", "repository__name"]
         verbose_name = "Records Information"
         verbose_name_plural = "Records Information"

@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from typing import ClassVar
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -159,6 +158,6 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         return self.name
 
     class Meta:
-        ordering: ClassVar[list[str]] = ["name"]
+        ordering = ["name"]
         verbose_name = "Hospital"
         verbose_name_plural = "Hospitals"
