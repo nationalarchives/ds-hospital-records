@@ -5,12 +5,12 @@
     {
       "matchManagers": ["npm"],
       "matchPackageNames": ["@nationalarchives/*"],
-      "minimumReleaseAge": 0
+      "minimumReleaseAge": "0 days"
     },
     {
       "matchManagers": ["poetry", "pip_requirements"],
       "matchPackageNames": ["tna-*"],
-      "minimumReleaseAge": 0
+      "minimumReleaseAge": "0 days"
     }
   ]
 }
