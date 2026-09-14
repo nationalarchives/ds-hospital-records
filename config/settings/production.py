@@ -145,7 +145,7 @@ BUILD_VERSION: str = os.environ.get("BUILD_VERSION", "")
 TNA_FRONTEND_VERSION: str = ""
 try:
     package_lock_json_path = os.path.join(
-        os.path.realpath(os.path.dirname(__file__)),
+        os.path.realpath(os.path.join(os.path.dirname(__file__), "../..")),
         "package-lock.json",
     )
     with open(package_lock_json_path) as package_json:
