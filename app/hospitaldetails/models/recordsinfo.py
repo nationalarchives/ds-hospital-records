@@ -1,4 +1,4 @@
-import datetime
+from datetime import UTC, datetime
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -23,7 +23,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the administrative records start (YYYY)",
     )
@@ -32,7 +32,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the administrative records finish (YYYY)",
     )
@@ -41,7 +41,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the general records start (YYYY)",
     )
@@ -50,7 +50,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the general records finish (YYYY)",
     )
@@ -59,7 +59,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the finance records start (YYYY)",
     )
@@ -68,7 +68,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the finance records finish (YYYY)",
     )
@@ -77,7 +77,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the estates records start (YYYY)",
     )
@@ -86,7 +86,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the estates records finish (YYYY)",
     )
@@ -95,7 +95,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the nursing records start (YYYY)",
     )
@@ -104,7 +104,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the nursing records finish (YYYY)",
     )
@@ -113,7 +113,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the staff records start (YYYY)",
     )
@@ -122,7 +122,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the staff records finish (YYYY)",
     )
@@ -131,7 +131,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the ephemera records start (YYYY)",
     )
@@ -140,7 +140,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the ephemera records finish (YYYY)",
     )
@@ -149,7 +149,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the pictorial records start (YYYY)",
     )
@@ -158,7 +158,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the pictorial records finish (YYYY)",
     )
@@ -167,7 +167,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the private papers records start (YYYY)",
     )
@@ -176,7 +176,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the private papers records finish (YYYY)",
     )
@@ -185,7 +185,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the other records start (YYYY)",
     )
@@ -194,7 +194,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the other records finish (YYYY)",
     )
@@ -203,7 +203,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the patients records start (YYYY)",
     )
@@ -212,7 +212,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the patients records finish (YYYY)",
     )
@@ -221,7 +221,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the admission records start (YYYY)",
     )
@@ -230,7 +230,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the admission records finish (YYYY)",
     )
@@ -239,7 +239,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the clinical records start (YYYY)",
     )
@@ -248,7 +248,7 @@ class RecordsInfo(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the clinical records finish (YYYY)",
     )

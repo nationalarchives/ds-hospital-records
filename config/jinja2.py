@@ -1,6 +1,6 @@
 import json
 import re
-from datetime import datetime
+from datetime import UTC, datetime
 from urllib.parse import quote_plus
 
 from django import template
@@ -51,7 +51,7 @@ def url_encode(s):
 
 
 def now_iso_8601():
-    now = datetime.now()
+    now = datetime.now(UTC)
     now_date = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     return now_date
 

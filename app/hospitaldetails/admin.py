@@ -119,7 +119,13 @@ class HospitalAdmin(admin.ModelAdmin):
 
 @admin.register(Repository)
 class RepositoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "town", "postcode", "archon_code", "last_updated_at"]
+    list_display = [
+        "name",
+        "town",
+        "postcode",
+        "archon_code",
+        "last_updated_at",
+    ]
     search_fields = ["name", "town", "postcode"]
     readonly_fields = ["created_at", "last_updated_at"]
 
@@ -157,7 +163,11 @@ class RepositoryAdmin(admin.ModelAdmin):
 class RecordsInfoAdmin(admin.ModelAdmin):
     list_display = ["hospital", "repository", "last_updated_at"]
     list_filter = ["more_research_required"]
-    search_fields = ["hospital__name", "repository__name", "finding_aids_details"]
+    search_fields = [
+        "hospital__name",
+        "repository__name",
+        "finding_aids_details",
+    ]
     readonly_fields = ["created_at", "last_updated_at"]
 
     fieldsets = (

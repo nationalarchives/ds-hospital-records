@@ -1,6 +1,6 @@
 import base64
-import datetime
 import json
+from datetime import UTC, datetime
 from urllib.parse import urlencode
 
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -109,7 +109,7 @@ def _parse_search_filters(request):
     foundation_year_from = _parse_year(request.GET.get("foundation_year_from"))
     foundation_year_to = _parse_year(request.GET.get("foundation_year_to"))
 
-    current_year = datetime.date.today().year
+    current_year = datetime.now(UTC).year
     effective_foundation_year_from = foundation_year_from
     effective_foundation_year_to = foundation_year_to
 
@@ -311,7 +311,7 @@ def decode_search_params(hash_str):
     try:
         json_str = base64.urlsafe_b64decode(padded.encode()).decode()
         return json.loads(json_str)
-    except Exception:
+    except Exception:  # noqa: BLE001
         return {}
 
 

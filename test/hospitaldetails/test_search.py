@@ -1,4 +1,4 @@
-import datetime
+from datetime import UTC, datetime
 
 from django.test import TestCase
 from django.urls import reverse
@@ -95,9 +95,9 @@ class SearchBackendTestCase(TestCase):
         older = Hospital.objects.create(name="Older Updated")
         newer = Hospital.objects.create(name="Newer Updated")
 
-        older.last_updated_at = datetime.datetime(2020, 1, 1, 12, 0, 0)
+        older.last_updated_at = datetime(2020, 1, 1, 12, 0, 0, tzinfo=UTC)
         older.save(update_fields=["last_updated_at"])
-        newer.last_updated_at = datetime.datetime(2021, 1, 1, 12, 0, 0)
+        newer.last_updated_at = datetime(2021, 1, 1, 12, 0, 0, tzinfo=UTC)
         newer.save(update_fields=["last_updated_at"])
 
         response = self.client.get(self.search_url, {"sort": "last_updated_desc"})
