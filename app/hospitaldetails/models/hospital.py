@@ -1,4 +1,4 @@
-import datetime
+from datetime import UTC, datetime
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -13,7 +13,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital has had this name since (YYYY)",
     )
@@ -27,7 +27,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital moved to this address (YYYY)",
     )
@@ -40,7 +40,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital was founded (YYYY)",
     )
@@ -51,7 +51,7 @@ class Hospital(NH3CleanSaveMixin, models.Model):
         blank=True,
         validators=[
             MinValueValidator(1000),
-            MaxValueValidator(datetime.date.today().year),
+            MaxValueValidator(datetime.now(UTC).year),
         ],
         help_text="Year the hospital closed (YYYY)",
     )

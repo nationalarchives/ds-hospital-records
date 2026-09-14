@@ -83,7 +83,7 @@ class Command(BaseCommand):
             )
             return conn
         except Exception as e:
-            raise CommandError(f"Failed to connect to MSSQL: {str(e)}") from e
+            raise CommandError(f"Failed to connect to MSSQL: {e!s}") from e
 
     def handle(self, *args, **options):
         # Validate required connection parameters
@@ -141,7 +141,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Migration completed successfully"))
 
         except Exception as e:
-            raise CommandError(f"Migration failed: {str(e)}") from e
+            raise CommandError(f"Migration failed: {e!s}") from e
         finally:
             cursor.close()
             conn.close()
@@ -314,7 +314,7 @@ class Command(BaseCommand):
                     continue
 
                 if not dry_run:
-                    item, created = config["model"].objects.update_or_create(
+                    _item, created = config["model"].objects.update_or_create(
                         id=item_id, defaults={"name": item_name}
                     )
                     if created:
@@ -322,10 +322,10 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(f"Would create: {item_name} (ID: {item_id})")
 
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.stdout.write(
                     self.style.ERROR(
-                        f"Error processing {config['label']} {row.get(config['name_field'])}: {str(e)}"
+                        f"Error processing {config['label']} {row.get(config['name_field'])}: {e!s}"
                     )
                 )
                 continue
@@ -892,10 +892,10 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(f"Would create/update: {hospital_data['name']}")
 
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.stdout.write(
                     self.style.ERROR(
-                        f"Error processing hospital {row.get('PresentName')}: {str(e)}"
+                        f"Error processing hospital {row.get('PresentName')}: {e!s}"
                     )
                 )
                 continue
@@ -987,10 +987,10 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(f"Would create/update: {repository_data['name']}")
 
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.stdout.write(
                     self.style.ERROR(
-                        f"Error processing repository {row.get('Name')}: {str(e)}"
+                        f"Error processing repository {row.get('Name')}: {e!s}"
                     )
                 )
                 continue
@@ -1259,10 +1259,10 @@ class Command(BaseCommand):
                         f"Would create/update records info for Hospital {hospital_id} / Repository {repository_id}"
                     )
 
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.stdout.write(
                     self.style.ERROR(
-                        f"Error processing folder {row.get('Folder_No')}: {str(e)}"
+                        f"Error processing folder {row.get('Folder_No')}: {e!s}"
                     )
                 )
                 continue
