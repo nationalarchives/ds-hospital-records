@@ -8,9 +8,9 @@ packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = "^3.14"
-tna-frontend-jinja = "1.4.0"
+tna-frontend-jinja = "1.5.0"
 django = "6.1.1"
-psycopg2-binary = "2.9.12"
+psycopg2-binary = "2.9.13"
 whitenoise = "6.12.0"
 pymssql = "2.4.1"
 sentry-sdk = "2.69.1"
