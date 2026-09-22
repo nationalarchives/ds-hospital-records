@@ -1,10 +1,10 @@
-{%- extends 'layouts/base.html' -%}
+{%- extends "layouts/base.html" -%}
 
-{%- from 'components/breadcrumbs/macro.html' import tnaBreadcrumbs -%}
-{%- from 'components/button/macro.html' import tnaButton -%}
-{%- from 'components/cookie-banner/macro.html' import tnaCookieBanner -%}
-{%- from 'components/footer/macro.html' import tnaFooter -%}
-{%- from 'components/global-header/macro.html' import tnaGlobalHeader -%}
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+{%- from "components/button/macro.html" import tnaButton -%}
+{%- from "components/cookie-banner/macro.html" import tnaCookieBanner -%}
+{%- from "components/footer/macro.html" import tnaFooter -%}
+{%- from "components/global-header/macro.html" import tnaGlobalHeader -%}
 
 {%- set theme = 'light' if request.COOKIES['theme'] == 'light' else 'dark' if request.COOKIES['theme'] == 'dark' else 'system' -%}
 {%- set themeAccent = 'green' -%}
