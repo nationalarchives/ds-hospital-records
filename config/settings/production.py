@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from sysconfig import get_path
 
@@ -7,6 +8,8 @@ from django.utils.csp import CSP
 from tna_utilities import strtobool
 
 from .features import *
+
+logger = logging.getLogger(__name__)
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
@@ -141,20 +144,19 @@ CONTAINER_IMAGE: str = os.environ.get("CONTAINER_IMAGE", "")
 BUILD_VERSION: str = os.environ.get("BUILD_VERSION", "")
 TNA_FRONTEND_VERSION: str = ""
 try:
-    with open(
-        os.path.join(
-            os.path.realpath(os.path.dirname(__file__)),
-            "node_modules/@nationalarchives/frontend",
-            "package.json",
+    package_lock_json_path = os.path.join(
+        os.path.realpath(os.path.join(os.path.dirname(__file__), "../..")),
+        "package-lock.json",
+    )
+    with open(package_lock_json_path) as package_json:
+        data = json.load(package_json)
+        TNA_FRONTEND_VERSION: str = (
+            data.get("packages", {})
+            .get("node_modules/@nationalarchives/frontend", {})
+            .get("version", "")
         )
-    ) as package_json:
-        try:
-            data = json.load(package_json)
-            TNA_FRONTEND_VERSION = data["version"] or ""
-        except ValueError:
-            pass
-except FileNotFoundError:
-    pass
+except Exception:
+    logger.exception("Failed to read TNA_FRONTEND_VERSION from package-lock.json")
 
 SECRET_KEY: str = os.environ.get("SECRET_KEY", "")
 if not SECRET_KEY:
