@@ -7,7 +7,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Case, IntegerField, Q, Value, When
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from .models import (
@@ -17,7 +17,6 @@ from .models import (
     Pre1948Status,
     Pre1948Type,
     RecordsInfo,
-    Repository,
 )
 
 
@@ -355,31 +354,6 @@ def hospital_detail(request, id):
         "post_1948_types": post_1948_types,
     }
     return render(request, "hospitaldetails/hospital_detail.html", context)
-
-
-def repository_detail(request, id):
-    """Display details for a specific repository."""
-    repository = get_object_or_404(Repository, id=id)
-
-    if repository.archon_url:
-        return redirect(repository.archon_url)
-
-    records = (
-        RecordsInfo.objects.filter(repository=repository)
-        .select_related("hospital")
-        .all()
-    )
-
-    breadcrumbs = _hospital_records_breadcrumbs() + [
-        {"text": "Search hospitals", "href": reverse("hospitaldetails:search")}
-    ]
-
-    context = {
-        "repository": repository,
-        "records": records,
-        "breadcrumbs": breadcrumbs,
-    }
-    return render(request, "hospitaldetails/repository_detail.html", context)
 
 
 def home_page(request):
