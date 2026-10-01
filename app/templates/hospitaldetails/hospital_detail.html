@@ -10,6 +10,7 @@
 
 {% set has_status = hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
 {% set has_type = hospital.pre_1948_type.exists() or hospital.post_1948_type.exists() %}
+{% set has_other_information = hospital.other_information %}
 {% set has_records = records %}
 {% set sidebar_items = [
     {
@@ -34,6 +35,14 @@
         {
             "text": "Type",
             "href": "#type"
+        }
+    ] %}
+{% endif %}
+{% if has_other_information %}
+    {% set sidebar_items = sidebar_items + [
+        {
+            "text": "Other information",
+            "href": "#other-information"
         }
     ] %}
 {% endif %}
