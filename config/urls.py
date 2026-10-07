@@ -30,7 +30,9 @@ sitemaps = {
 }
 
 urlpatterns = [
-    path("hospital-records/sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
+    path(
+        "hospital-records/sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"
+    ),
     path(
         "",
         include(("app.main.urls", "main"), namespace="main"),
