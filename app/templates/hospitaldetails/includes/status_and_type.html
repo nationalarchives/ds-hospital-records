@@ -6,8 +6,6 @@
             {% for status in pre_1948_statuses %}{{ status.value }}{% if not loop.last %}, {% endif %}{% endfor %}
         {% endcall %}
         
-        {{ detail_item('Regional Board (1948-1974)', hospital.regional_board.name if hospital.regional_board else None) }}
-        
         {{ detail_item('Pre-1948 information', hospital.pre_1948_status_info|linebreaksdl) }}
             
         {% call(label, value) detail_item('Post-1948', condition=post_1948_statuses) %}
