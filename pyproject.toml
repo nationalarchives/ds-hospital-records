@@ -39,4 +39,4 @@ DJANGO_SETTINGS_MODULE = "config.settings.test"
 
 [solver]
 min-release-age = 7
-min-release-age-exclude = "tna-utilities,tna-frontend-jinja"
+min-release-age-exclude = "tna-frontend-jinja,tna-utilities,tna-ruff-config"
