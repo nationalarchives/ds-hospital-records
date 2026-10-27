@@ -8,7 +8,7 @@
     "dev": "npm run dev:css & npm run dev:js &"
   },
   "dependencies": {
-    "@nationalarchives/frontend": "1.5.0"
+    "@nationalarchives/frontend": "1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^8.0.0",
