@@ -7,12 +7,15 @@ We are only updating the name of Repositories at current, because it'd be a bett
 ARCHON pages which are the source of truth for the data, rather than updating the database here.
 """
 
+import time
+
 import requests
 from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
     help = "Pull ARCHON data for repositories from the Discovery API"
+    REQUEST_INTERVAL_SECONDS = 1
 
     def handle(self, *args, **options):
         from app.hospitaldetails.models import Repository
@@ -21,8 +24,10 @@ class Command(BaseCommand):
         repositories = Repository.objects.filter(
             archon_code__isnull=False,
         ).exclude(archon_code=0)
-        for repository in repositories:
+        for index, repository in enumerate(repositories):
             try:
+                if index:
+                    time.sleep(self.REQUEST_INTERVAL_SECONDS)
                 new_name = self.get_name_from_archon_code(repository.archon_code)
                 if new_name and new_name != repository.name:
                     self.update_repository_name(repository, new_name)
