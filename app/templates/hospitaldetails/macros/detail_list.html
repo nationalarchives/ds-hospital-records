@@ -4,19 +4,22 @@
 {% if heading %}
     {{ block_heading(heading, heading_id) }}
 {% endif %}
-
-<div class="tna-container">
-    <div class="tna-column tna-column--full tna-!--margin-top-s">
-        <dl class="tna-dl tna-dl--zebra">
-            {{ caller() }}
-        </dl>
-    </div>
-</div>
+<dl class="tna-dl tna-dl--lined tna-dl--right-weighted">
+    {{ caller() }}
+</dl>
 {% endmacro %}
 
 {% macro detail_item(label, value=None, condition=True) %}
     {% if condition and (value or caller is defined) %}
         <dt>{{ label }}</dt>
-        <dd>{% if caller is defined %}{{ caller()|abbr }}{% else %}{{ value|abbr }}{% endif %}</dd>
+        {% if caller is defined %}
+            <dd>{{ caller()|abbr }}</dd>
+        {% else %}
+            {% if value and ('<' ~ 'dd>') in value %}
+                {{ value|abbr }}
+            {% else %}
+                <dd>{{ value|abbr }}</dd>
+            {% endif %}
+        {% endif %}
     {% endif %}
 {% endmacro %}

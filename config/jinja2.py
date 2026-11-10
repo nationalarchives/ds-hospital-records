@@ -1,8 +1,8 @@
 import json
 import re
-from datetime import datetime
+from datetime import UTC, datetime
+from urllib.parse import quote_plus
 
-from app.lib.constants import ABBR_PATTERNS
 from django import template
 from django.conf import settings
 from django.templatetags.static import StaticNode
@@ -10,6 +10,8 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from jinja2 import Environment
 from markupsafe import Markup
+
+from app.lib.constants import ABBR_PATTERNS
 
 register = template.Library()
 
@@ -44,14 +46,18 @@ def slugify(s):
     return s
 
 
+def url_encode(s):
+    return quote_plus(s)
+
+
 def now_iso_8601():
-    now = datetime.now()
+    now = datetime.now(UTC)
     now_date = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     return now_date
 
 
 def linebreaksdl(text):
-    """Convert newlines to <dd> items inside a nested <dl>."""
+    """Convert newlines to <dd> items."""
     if not text:
         return text
     lines = [line.strip() for line in str(text).splitlines() if line.strip()]
@@ -59,7 +65,7 @@ def linebreaksdl(text):
         return ""
 
     items = "".join(f"<dd>{line}</dd>" for line in lines)
-    return Markup(f"<dl>{items}</dl>")
+    return Markup(items)
 
 
 def _abbr_replacer(rule, match):
@@ -115,10 +121,19 @@ def environment(**options):
                 "BUILD_VERSION": settings.BUILD_VERSION,
                 "TNA_FRONTEND_VERSION": TNA_FRONTEND_VERSION,
                 "COOKIE_DOMAIN": settings.COOKIE_DOMAIN,
+                "COOKIE_PREFERENCES_URL": settings.COOKIE_PREFERENCES_URL,
+                "COOKIE_PREFERENCES_KEY": settings.COOKIE_PREFERENCES_KEY,
             },
             "url_for": reverse,
             "now_iso_8601": now_iso_8601,
         }
     )
-    env.filters.update({"slugify": slugify, "linebreaksdl": linebreaksdl, "abbr": abbr})
+    env.filters.update(
+        {
+            "slugify": slugify,
+            "linebreaksdl": linebreaksdl,
+            "abbr": abbr,
+            "url_encode": url_encode,
+        }
+    )
     return env

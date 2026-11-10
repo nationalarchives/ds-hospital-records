@@ -1,7 +1,7 @@
 ABBR_PATTERNS = [
     {
         "pattern": r"\bc\.(\s*\d{1,4})",
-        "title": "circa",
+        "title": "about",
         "abbr": "c.",
         "suffix_group": 1,
     },

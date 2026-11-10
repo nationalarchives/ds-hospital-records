@@ -1,6 +1,6 @@
 import os
 
-from config.util import strtobool
+from tna_utilities import strtobool
 
 from .features import *
 from .production import *

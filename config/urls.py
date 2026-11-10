@@ -19,9 +19,20 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 
+from app.sitemaps import HospitalSitemap, StaticSitemap
+
+sitemaps = {
+    "static": StaticSitemap,
+    "hospitals": HospitalSitemap,
+}
+
 urlpatterns = [
+    path(
+        "hospital-records/sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"
+    ),
     path(
         "",
         include(("app.main.urls", "main"), namespace="main"),
@@ -34,7 +45,7 @@ urlpatterns = [
         ),
     ),
     path("healthcheck/", include("app.healthcheck.urls")),
-    path("admin/", admin.site.urls),
+    path(settings.ADMIN_URL, admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

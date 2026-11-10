@@ -1,7 +1,7 @@
 import os
 import sys
 
-from config.util import strtobool
+from tna_utilities import strtobool
 
 from .features import *
 from .production import *
@@ -17,15 +17,15 @@ IS_TESTING = any(
 )  # Bypass debug toolbar when running tests, DJDT can't be used with tests (debug_toolbar.E001)
 if DEBUG and not IS_TESTING:
     try:
-        import debug_toolbar
+        import debug_toolbar  # noqa: F401
 
-        INSTALLED_APPS += [  # noqa: F405
+        INSTALLED_APPS += [
             "debug_toolbar",
         ]
 
         MIDDLEWARE = [
             "debug_toolbar.middleware.DebugToolbarMiddleware",
-        ] + MIDDLEWARE  # noqa: F405
+        ] + MIDDLEWARE
 
         DEBUG_TOOLBAR_CONFIG = {
             "SHOW_TOOLBAR_CALLBACK": lambda request: True,

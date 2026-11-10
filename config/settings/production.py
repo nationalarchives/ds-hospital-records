@@ -2,8 +2,9 @@ import json
 import os
 from sysconfig import get_path
 
-from config.util import strtobool
-from csp.constants import NONE, SELF
+from django.core.exceptions import ImproperlyConfigured
+from django.utils.csp import CSP
+from tna_utilities import strtobool
 
 from .features import *
 
@@ -11,6 +12,9 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS", "https://www.nationalarchives.gov.uk"
+).split(",")
 USE_X_FORWARDED_HOST = strtobool(os.getenv("USE_X_FORWARDED_HOST", "False"))
 
 # Application definition
@@ -19,10 +23,10 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.sitemaps",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "csp",
 ]
 
 MIDDLEWARE = [
@@ -34,7 +38,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "csp.middleware.CSPMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -107,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 
 TIME_ZONE = "UTC"
 
@@ -115,10 +119,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Override the default Django admin URL with an environment variable
+ADMIN_URL = os.environ.get("ADMIN_URL", "admin/")
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "hospital-records/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "app", "static")]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -151,29 +158,35 @@ except FileNotFoundError:
     pass
 
 SECRET_KEY: str = os.environ.get("SECRET_KEY", "")
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "SECRET_KEY environment variable must be set and cannot be empty."
+    )
 
 DEBUG: bool = False
 
-COOKIE_DOMAIN: str = os.environ.get("COOKIE_DOMAIN", "")
+COOKIE_DOMAIN: str = os.environ.get("COOKIE_DOMAIN", ".nationalarchives.gov.uk")
+COOKIE_PREFERENCES_URL: str = os.environ.get("COOKIE_PREFERENCES_URL", "/cookies/")
+COOKIE_PREFERENCES_KEY: str = os.environ.get(
+    "COOKIE_PREFERENCES_KEY", "dontShowCookieNotice"
+)
 
 CSP_REPORT_URL: str = os.environ.get("CSP_REPORT_URL", "")
 if CSP_REPORT_URL:
     CSP_REPORT_URL += f"&sentry_release={BUILD_VERSION}" if BUILD_VERSION else ""
-CONTENT_SECURITY_POLICY = {
-    "DIRECTIVES": {
-        "default-src": [SELF],
-        "base-uri": [NONE],
-        "object-src": [NONE],
-        "img-src": os.environ.get("CSP_IMG_SRC", SELF).split(","),
-        "script-src": os.environ.get("CSP_SCRIPT_SRC", SELF).split(","),
-        "style-src": os.environ.get("CSP_STYLE_SRC", SELF).split(","),
-        "font-src": os.environ.get("CSP_FONT_SRC", SELF).split(","),
-        "connect-src": os.environ.get("CSP_CONNECT_SRC", SELF).split(","),
-        "media-src": os.environ.get("CSP_MEDIA_SRC", SELF).split(","),
-        "worker-src": os.environ.get("CSP_WORKER_SRC", SELF).split(","),
-        "frame-src": os.environ.get("CSP_FRAME_SRC", SELF).split(","),
-        "report-uri": CSP_REPORT_URL or None,
-    }
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "base-uri": [CSP.NONE],
+    "object-src": [CSP.NONE],
+    "img-src": os.environ.get("CSP_IMG_SRC", CSP.SELF).split(","),
+    "script-src": os.environ.get("CSP_SCRIPT_SRC", CSP.SELF).split(","),
+    "style-src": os.environ.get("CSP_STYLE_SRC", CSP.SELF).split(","),
+    "font-src": os.environ.get("CSP_FONT_SRC", CSP.SELF).split(","),
+    "connect-src": os.environ.get("CSP_CONNECT_SRC", CSP.SELF).split(","),
+    "media-src": os.environ.get("CSP_MEDIA_SRC", CSP.SELF).split(","),
+    "worker-src": os.environ.get("CSP_WORKER_SRC", CSP.SELF).split(","),
+    "frame-src": os.environ.get("CSP_FRAME_SRC", CSP.SELF).split(","),
+    "report-uri": CSP_REPORT_URL or None,
 }
 
 GA4_ID = os.environ.get("GA4_ID", "")

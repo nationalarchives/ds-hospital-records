@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - feature/*
+      - fix/*
 
 concurrency:
   group: cd-${{ github.ref }}
@@ -16,7 +17,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Run tests
         uses: ./.github/actions/node-tests
 
@@ -25,7 +28,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Run tests
         uses: ./.github/actions/python-tests
 
@@ -34,7 +39,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Run tests
         uses: ./.github/actions/check-formatting
 
@@ -48,12 +55,12 @@ jobs:
       packages: write
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Generate version tag
         id: version-tag
-        uses: nationalarchives/ds-docker-actions/.github/actions/get-version-tag@main
+        uses: nationalarchives/ds-docker-actions/.github/actions/get-version-tag@main # zizmor: ignore[unpinned-uses] Owned by The National Archives
       - name: Build Docker image
-        uses: nationalarchives/ds-docker-actions/.github/actions/build@main
+        uses: nationalarchives/ds-docker-actions/.github/actions/build@main # zizmor: ignore[unpinned-uses] Owned by The National Archives
         with:
           version: ${{ steps.version-tag.outputs.version-tag }}
           latest: ${{ github.ref == 'refs/heads/main' }}
@@ -65,7 +72,7 @@ jobs:
           wiz-project-id: ${{ secrets.WIZ_PROJECT_DIGITALSERVICES }}
       - name: Create tag
         if: github.ref == 'refs/heads/main'
-        uses: actions/github-script@v5
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             github.rest.git.createRef({
@@ -76,3 +83,31 @@ jobs:
             })
     outputs:
       version: ${{ steps.version-tag.outputs.version-tag }}
+
+  update-ds-infrastructure-web:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: nationalarchives/ds-infrastructure-web
+          ref: main
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
+      - name: Set up git config
+        run: |
+          git config user.name "${{ github.triggering_actor }}"
+          git config user.email "<>"
+      - name: Install jq
+        run: sudo apt-get install jq
+      - name: Update config
+        run: jq --indent 4 '(.services.hospitalrecords.version|="${{ needs.build.outputs.version }}")' config/develop.json > tmp.$$.json && mv tmp.$$.json config/develop.json
+      - name: Push new version
+        run: |
+          git add config/develop.json
+          COMMIT_MESSAGE_HEADER=$(git log -1 --pretty=%B | head -n 1)
+          git commit -m "Update hospitalrecords to v${{ needs.build.outputs.version }}" -m "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          git push origin main

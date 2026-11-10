@@ -1,13 +1,14 @@
-from config.jinja2 import abbr
 from django.test import TestCase
+
+from config.jinja2 import abbr
 
 
 class TestAbbr(TestCase):
-    def test_abbr_circa_with_space(self):
-        self.assertEqual(abbr("c. 1900"), '<abbr title="circa">c.</abbr> 1900')
+    def test_abbr_c_with_space(self):
+        self.assertEqual(abbr("c. 1900"), '<abbr title="about">c.</abbr> 1900')
 
-    def test_abbr_circa_without_space(self):
-        self.assertEqual(abbr("c.1900"), '<abbr title="circa">c.</abbr>1900')
+    def test_abbr_c_without_space(self):
+        self.assertEqual(abbr("c.1900"), '<abbr title="about">c.</abbr>1900')
 
     def test_abbr_colon_codes(self):
         value = "PLI: Foo LA: Bar"
@@ -33,4 +34,9 @@ class TestAbbr(TestCase):
         self.assertEqual(abbr(value), expected)
 
     def test_abbr_no_change(self):
-        self.assertEqual(abbr("No abbreviations here"), "No abbreviations here")
+        self.assertEqual(
+            abbr(
+                "No abbreviations here, even if you're ACTUALLY testing something with VOLUME, and a word that ends in C, like zinc. There should be no issue here."
+            ),
+            "No abbreviations here, even if you're ACTUALLY testing something with VOLUME, and a word that ends in C, like zinc. There should be no issue here.",
+        )

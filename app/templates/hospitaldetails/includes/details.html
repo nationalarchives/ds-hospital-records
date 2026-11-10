@@ -1,6 +1,6 @@
 {% from 'hospitaldetails/macros/detail_list.html' import detail_list, detail_item %}
 
-{% call detail_list(heading="Hospital Details", heading_id="hospital-details") %}
+{% call detail_list(heading="Details", heading_id="details") %}
     {{ detail_item('Previous Names', hospital.previous_names|linebreaksdl) }}
 
     {% call(label, value) detail_item('Address', value=True, condition=True) %}

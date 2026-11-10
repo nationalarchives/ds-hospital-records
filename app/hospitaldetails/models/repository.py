@@ -1,5 +1,6 @@
-from app.hospitaldetails.mixins import NH3CleanSaveMixin
 from django.db import models
+
+from app.hospitaldetails.mixins import NH3CleanSaveMixin
 
 
 class Repository(NH3CleanSaveMixin, models.Model):
@@ -42,3 +43,8 @@ class Repository(NH3CleanSaveMixin, models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Repository"
+        verbose_name_plural = "Repositories"
