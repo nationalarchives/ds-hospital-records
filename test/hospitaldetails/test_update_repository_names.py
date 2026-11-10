@@ -11,6 +11,14 @@ from app.hospitaldetails.models.repository import Repository
 
 
 class UpdateRepositoryNamesCommandTestCase(TestCase):
+    def test_update_preserves_ampersands_and_sanitizes_angle_brackets(self):
+        repository = Repository.objects.create(name="Old name", archon_code=1)
+
+        Command().update_repository_name(repository, "R&D < D")
+
+        repository.refresh_from_db()
+        self.assertEqual(repository.name, "R&D &lt; D")
+
     @patch(
         "app.hospitaldetails.management.commands.update_repository_names.requests.get"
     )

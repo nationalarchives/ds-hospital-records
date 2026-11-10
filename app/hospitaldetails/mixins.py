@@ -4,7 +4,8 @@ from django.db import models
 
 class NH3CleanSaveMixin:
     """
-    Mixin to clean HTML from CharField and TextField fields before saving.
+    Mixin to clean HTML from CharField and TextField fields before saving while
+    preserving literal ampersands.
 
     This ensures that data passed to the frontend is clean and prevents
     admins/editors from accidentally breaking the frontend with unescaped HTML.
@@ -33,5 +34,5 @@ class NH3CleanSaveMixin:
                 tags=self.nh3_tags,
                 attributes=self.nh3_attributes,
             )
-            setattr(self, field_name, cleaned)
+            setattr(self, field_name, cleaned.replace("&amp;", "&"))
         return super().save(*args, **kwargs)
