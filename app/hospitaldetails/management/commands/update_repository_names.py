@@ -11,6 +11,7 @@ import time
 
 import requests
 from django.core.management.base import BaseCommand, CommandError
+from django.db import DatabaseError
 
 
 class Command(BaseCommand):
@@ -31,24 +32,24 @@ class Command(BaseCommand):
                 new_name = self.get_name_from_archon_code(repository.archon_code)
                 if new_name and new_name != repository.name:
                     self.update_repository_name(repository, new_name)
-            except Exception as e:
+            except (CommandError, DatabaseError) as e:
                 self.stderr.write(f"Error processing repository {repository.name}: {e}")
 
     def get_name_from_archon_code(self, archon_code):
         """
         Call Discovery API to get the name of the Repository for a given ARCHON code.
         """
-        response = requests.get(
-            f"https://discovery.nationalarchives.gov.uk/API/search/v1/archive/{archon_code}"
-        )
         try:
+            response = requests.get(
+                f"https://discovery.nationalarchives.gov.uk/API/search/v1/archive/{archon_code}"
+            )
             response.raise_for_status()
             data = response.json()
             return data.get("repositories", [{}])[0].get("title")
-        except Exception as e:
+        except (requests.RequestException, ValueError) as e:
             raise CommandError(
                 f"Failed to retrieve name for ARCHON code: {archon_code}, error: {e}"
-            )
+            ) from e
 
     def update_repository_name(self, repository, new_name):
         """
