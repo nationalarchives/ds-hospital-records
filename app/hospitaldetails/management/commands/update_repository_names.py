@@ -11,7 +11,6 @@ import time
 
 import requests
 from django.core.management.base import BaseCommand, CommandError
-from django.db import DatabaseError
 
 
 class Command(BaseCommand):
@@ -32,7 +31,7 @@ class Command(BaseCommand):
                 new_name = self.get_name_from_archon_code(repository.archon_code)
                 if new_name and new_name != repository.name:
                     self.update_repository_name(repository, new_name)
-            except (CommandError, DatabaseError) as e:
+            except Exception as e:  # noqa: BLE001
                 self.stderr.write(f"Error processing repository {repository.name}: {e}")
 
     def get_name_from_archon_code(self, archon_code):
@@ -46,7 +45,7 @@ class Command(BaseCommand):
             response.raise_for_status()
             data = response.json()
             return data.get("repositories", [{}])[0].get("title")
-        except (requests.RequestException, ValueError) as e:
+        except Exception as e:
             raise CommandError(
                 f"Failed to retrieve name for ARCHON code: {archon_code}, error: {e}"
             ) from e
