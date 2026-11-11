@@ -1,13 +1,8 @@
 [tool.poetry]
-name = "tna-django-application"
-version = "0.1.0"
-description = ""
-authors = ["Andrew Hosgood <andrew.hosgood@nationalarchives.gov.uk>"]
-readme = "README.md"
-packages = [{include = "app"}]
+package-mode=false
 
 [tool.poetry.dependencies]
-python = "^3.14"
+python = "~3.15"
 tna-frontend-jinja = "1.6.1"
 django = "6.1.2"
 psycopg2-binary = "2.9.13"
@@ -23,13 +18,6 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 requests-mock = "1.12.1"
 pytest-django = "4.14.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-include = '\.pyi?$'
 
 [tool.pytest.ini_options]
 testpaths = [
