@@ -3,11 +3,11 @@ package-mode=false
 
 [tool.poetry.dependencies]
 python = "~3.15"
-tna-frontend-jinja = "1.6.0"
+tna-frontend-jinja = "1.6.1"
 django = "6.1.2"
 psycopg2-binary = "2.9.13"
 whitenoise = "6.12.0"
-pymssql = "2.4.5"
+pymssql = "2.4.6"
 sentry-sdk = "2.73.0"
 nh3 = "0.3.7"
 tna-utilities = "1.9.0"
