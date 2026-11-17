@@ -867,14 +867,14 @@ wtforms = ["flask-wtf[email]"]
 
 [[package]]
 name = "tna-utilities"
-version = "1.9.0"
+version = "1.10.0"
 description = "A library of common National Archives Python functions"
 optional = false
-python-versions = ">=3.10"
+python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "tna_utilities-1.9.0-py3-none-any.whl", hash = "sha256:11c998c177e176aa064eacaedffaaba1491b7bbfc2da1597c4b31b2148ea2014"},
-    {file = "tna_utilities-1.9.0.tar.gz", hash = "sha256:4283180a935491839a3fff34e578a88e9790f44579984e1d163183579e0b23dc"},
+    {file = "tna_utilities-1.10.0-py3-none-any.whl", hash = "sha256:4ba9d988e754ad04a05a5eb55fbd5b7bf5cbc5e5b1daed1146794e5009c360ee"},
+    {file = "tna_utilities-1.10.0.tar.gz", hash = "sha256:032a6c89c391e8a2a040870d6cd21e2096548e611dc0d80e12d9b22c99c686b5"},
 ]
 
 [package.dependencies]
@@ -932,4 +932,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.15"
-content-hash = "685264953a5dc2039f18d2f36046cb818f288da6dfba4d4ae6a10c6362705f73"
+content-hash = "dc89d2fbbf6ee2eade7853dc70d60b683d38b89ebfabca3afef640b692ca5ff2"
