@@ -10,7 +10,7 @@ whitenoise = "6.12.0"
 pymssql = "2.4.6"
 sentry-sdk = "2.74.0"
 nh3 = "0.3.7"
-tna-utilities = "1.9.0"
+tna-utilities = "1.10.0"
 
 [tool.poetry.group.dev]
 optional = true
