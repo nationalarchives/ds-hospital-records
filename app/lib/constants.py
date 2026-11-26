@@ -133,3 +133,5 @@ ABBR_PATTERNS = [
         "suffix_group": 2,
     },
 ]
+
+WAGTAIL_NOTIFICATIONS_CACHE_KEY = "wagtail_notifications"

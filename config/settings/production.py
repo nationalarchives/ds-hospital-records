@@ -53,6 +53,9 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "environment": "config.jinja2.environment",
+            "context_processors": [
+                "app.lib.context_processors.wagtail_notifications",
+            ],
         },
     },
     {
@@ -190,3 +193,7 @@ SECURE_CSP = {
 }
 
 GA4_ID = os.environ.get("GA4_ID", "")
+
+WAGTAIL_API_CACHE_TIMEOUT: int = int(os.environ.get("WAGTAIL_API_CACHE_TIMEOUT", 900))
+WAGTAIL_API_URL: str = os.environ.get("WAGTAIL_API_URL", "")
+WAGTAIL_API_KEY: str = os.environ.get("WAGTAIL_API_KEY", "")

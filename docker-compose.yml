@@ -23,6 +23,9 @@ services:
       - CSP_STYLE_SRC='self',fonts.googleapis.com,p.typekit.net,use.typekit.net
       - CSP_FONT_SRC='self',fonts.gstatic.com,use.typekit.net
       - ADMIN_URL=admin/
+      - WAGTAIL_API_URL=http://host.docker.internal:8000/api/v2
+      - WAGTAIL_API_KEY
+      - WAGTAIL_API_CACHE_TIMEOUT=60
     env_file:
       - path: ./.env
         required: false

@@ -60,11 +60,18 @@ In addition to the [base Docker image variables](https://github.com/nationalarch
 | `CSP_FRAME_SRC`          | A comma separated list of CSP rules for `frame-src`         | `'self'`                                                  |
 | `CSP_REPORT_URL`         | The URL to report CSP violations to                         | _none_                                                    |
 | `GA4_ID`                 | The Google Analytics 4 ID                                   | _none_                                                    |
+| `WAGTAIL_API_URL`        | The base URL of the Wagtail API                             | _none_                                                    |
+| `WAGTAIL_API_KEY`        | The Wagtail API token                                       | _none_                                                    |
+| `WAGTAIL_API_CACHE_TIMEOUT` | Notification cache lifetime in seconds                   | `900`                                                     |
 | `MSSQL_HOST`             | The MSSQL server hostname (for data migration)              | _none_                                                    |
 | `MSSQL_PORT`             | The MSSQL server port (for data migration)                  | `1433`                                                    |
 | `MSSQL_DATABASE`         | The MSSQL database name (for data migration)                | _none_                                                    |
 | `MSSQL_USER`             | The MSSQL username (for data migration)                     | _none_                                                    |
 | `MSSQL_PASSWORD`         | The MSSQL password (for data migration)                     | _none_                                                    |
+
+Wagtail notifications are available as `wagtail_notifications` in Jinja templates
+rendered with a request. API errors or missing configuration are logged and leave
+the value as `None`; notifications are not displayed automatically.
 
 ## Data Migration
 
