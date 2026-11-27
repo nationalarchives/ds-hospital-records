@@ -8,6 +8,7 @@
     "dev": "npm run dev:css & npm run dev:js &"
   },
   "dependencies": {
+    "@nationalarchives/cookies": "0.2.1",
     "@nationalarchives/frontend": "1.7.0"
   },
   "devDependencies": {

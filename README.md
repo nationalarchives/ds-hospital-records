@@ -71,7 +71,9 @@ In addition to the [base Docker image variables](https://github.com/nationalarch
 
 Wagtail notifications are available as `wagtail_notifications` in Jinja templates
 rendered with a request. API errors or missing configuration are logged and leave
-the value as `None`; notifications are not displayed automatically.
+the value as `None`. Dismissed alerts are stored in a session cookie when settings
+cookies are enabled. To share dismissals with catalogue, both applications must use
+the same `COOKIE_DOMAIN`; catalogue currently expects numeric notification IDs.
 
 ## Data Migration
 
