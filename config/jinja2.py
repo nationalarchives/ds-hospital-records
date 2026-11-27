@@ -3,6 +3,7 @@ import re
 from datetime import UTC, datetime
 from urllib.parse import quote_plus
 
+import nh3
 from django import template
 from django.conf import settings
 from django.templatetags.static import StaticNode
@@ -48,6 +49,10 @@ def slugify(s):
 
 def url_encode(s):
     return quote_plus(s)
+
+
+def tna_html(value):
+    return Markup(nh3.clean(value))
 
 
 def now_iso_8601():
@@ -134,6 +139,7 @@ def environment(**options):
             "linebreaksdl": linebreaksdl,
             "abbr": abbr,
             "url_encode": url_encode,
+            "tna_html": tna_html,
         }
     )
     return env
