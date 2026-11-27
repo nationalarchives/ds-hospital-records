@@ -1,0 +1,83 @@
+@use "@nationalarchives/frontend/nationalarchives/tools/borders";
+@use "@nationalarchives/frontend/nationalarchives/tools/colour";
+@use "@nationalarchives/frontend/nationalarchives/tools/media";
+@use "@nationalarchives/frontend/nationalarchives/tools/spacing";
+@use "@nationalarchives/frontend/nationalarchives/tools/typography";
+
+/**
+ * COPIED FROM https://github.com/nationalarchives/ds-frontend/blob/main/src/styles/main/_global-alerts.scss
+ */
+.etna-global-alert {
+  @include spacing.space-above;
+
+  @include colour.thick-keyline;
+  @include colour.colour-font("font-base");
+  @include colour.colour-background("background");
+  @include borders.rounded-border;
+
+  padding: spacing.space(0.75) spacing.space(1);
+
+  position: relative;
+
+  &--high {
+    @include colour.thick-keyline-error;
+  }
+
+  &--medium {
+    @include colour.yellow-accent;
+
+    @include colour.thick-keyline-accent;
+  }
+
+  &--low {
+    @include colour.blue-accent;
+
+    @include colour.thick-keyline-accent;
+  }
+
+  &__heading {
+    @include colour.thick-keyline-dark(bottom);
+
+    display: inline-block;
+  }
+
+  &__body {
+    margin-top: spacing.space(0.25);
+
+    @include typography.font-size(16);
+    @include typography.main-font-weight-medium;
+
+    p + p {
+      margin-top: spacing.space(0.25);
+    }
+  }
+
+  &__dismiss {
+  }
+
+  @include media.on-larger-than-mobile {
+    &__heading {
+      margin-right: 10rem;
+    }
+
+    &__dismiss {
+      position: absolute;
+      top: spacing.space(0.25);
+      right: spacing.space(0.25);
+    }
+  }
+}
+
+.etna-mourning-notice {
+  .tna-background-accent & {
+    @include colour.contrast;
+  }
+
+  &__body {
+    @include typography.font-size(16);
+
+    p + p {
+      margin-top: spacing.space(0.25);
+    }
+  }
+}

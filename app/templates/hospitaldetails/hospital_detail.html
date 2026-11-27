@@ -6,6 +6,18 @@
 
 {% set pageTitle = hospital.name %}
 
+{% block beforeContent %}
+<div class="tna-container">
+  <div class="tna-column tna-column--full tna-!--margin-vertical-s">
+    {{ tnaBackLink({
+      "text": "Back to search results",
+      "href": back_link_href
+    }) }}
+  </div>
+</div>
+{{ super() }}
+{% endblock beforeContent %}
+
 {% block content %}
 
 {% set has_status = hospital.pre_1948_status.exists() or hospital.post_1948_status.exists() %}
@@ -57,13 +69,6 @@
 
 <div class="tna-template__body">
   <main class="tna-container tna-main">
-    <div class="tna-column tna-column--full tna-!--margin-vertical-s">
-      {{ tnaBackLink({
-        "text": "Back to search results",
-        "href": back_link_href
-      }) }}
-    </div>
-    
     <div class="tna-column tna-column--width-1-4 tna-column--margin-right-1-12 tna-column--no-margin-right-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
         {{ tnaSidebar({
             "title": "On this page",
